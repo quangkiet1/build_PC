@@ -1,0 +1,10 @@
+﻿<svg width='300' height='300' xmlns='http://www.w3.org/2000/svg'>
+  <rect width='300' height='300' fill='#1f2937'/>
+  <text x='150' y='130' text-anchor='middle' fill='#10b981' font-family='Arial' font-size='20' font-weight='bold'>MAINBOARD</text>
+  <text x='150' y='160' text-anchor='middle' fill='#6b7280' font-family='Arial' font-size='16'>MSI MPG</text>
+  <text x='150' y='180' text-anchor='middle' fill='#6b7280' font-family='Arial' font-size='14'>B850-E</text>
+  <rect x='50' y='200' width='200' height='60' fill='#374151' stroke='#10b981' stroke-width='2'/>
+  <circle cx='100' cy='230' r='8' fill='#10b981'/>
+  <circle cx='150' cy='230' r='8' fill='#10b981'/>
+  <circle cx='200' cy='230' r='8' fill='#10b981'/>
+</svg>

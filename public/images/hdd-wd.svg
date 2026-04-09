@@ -1,0 +1,15 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" rx="8" fill="#1e293b"/>
+  <!-- HDD Case -->
+  <rect x="12" y="20" width="40" height="24" rx="2" fill="#0f172a" stroke="#3b82f6" stroke-width="2"/>
+  <!-- Platters -->
+  <circle cx="32" cy="32" r="8" fill="#1a1d26" stroke="#64748b" stroke-width="1"/>
+  <circle cx="32" cy="32" r="4" fill="#0f172a"/>
+  <!-- Read/Write head -->
+  <rect x="30" y="28" width="4" height="8" fill="#3b82f6"/>
+  <!-- PCB -->
+  <rect x="16" y="40" width="32" height="2" fill="#64748b"/>
+  <!-- SATA connector -->
+  <rect x="48" y="30" width="4" height="4" fill="#64748b"/>
+  <text x="32" y="56" text-anchor="middle" fill="#3b82f6" font-family="Arial, sans-serif" font-size="8" font-weight="bold">HDD</text>
+</svg>

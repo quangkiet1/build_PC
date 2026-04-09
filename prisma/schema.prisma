@@ -1,9 +1,11 @@
 generator client {
   provider = "prisma-client-js"
+  engineType = "binary"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // ====================== NGƯỜI DÙNG ======================
@@ -52,6 +54,8 @@ model SanPham {
   moTa          String?
   soLuongTon    Int      @default(100)
   thongSoKyThuat Json?   // Lưu socket, chipset, DDR, wattage...
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   danhMucId     String
   danhMuc       DanhMuc  @relation(fields: [danhMucId], references: [id])
