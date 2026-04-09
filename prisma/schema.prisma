@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ====================== NGƯỜI DÙNG ======================
+model NguoiDung {
+  id            String   @id @default(cuid())
+  hoTen         String
+  email         String   @unique
+  matKhauHash   String
+  vaiTro        VaiTro   @default(KHACH_HANG)
+  soDienThoai   String?
+  diaChi        String?
+  ngayTao       DateTime @default(now())
+  ngayCapNhat   DateTime @updatedAt
+
+  // Quan hệ
+  donHangs      DonHang[]
+  cauHinhPCs    CauHinhPC[]
+  tinNhanChats  TinNhanChat[]
+  gioHangs      GioHang[]
+
+  @@map("nguoi_dung")
+}
+
+enum VaiTro {
+  KHACH_HANG
+  QUAN_TRI_VIEN
+}
+
+// ====================== SẢN PHẨM & DANH MỤC ======================
+model DanhMuc {
+  id          String    @id @default(cuid())
+  tenDanhMuc  String
+  moTa        String?
+  sanPhams    SanPham[]
+
+  @@map("danh_muc")
+}
+
+model SanPham {
+  id            String   @id @default(cuid())
+  tenSanPham    String
+  slug          String   @unique
+  gia           Float
+  hinhAnh       String?
+  hinhAnhs      String[] @default([])
+  moTa          String?
+  soLuongTon    Int      @default(100)
+  thongSoKyThuat Json?   // Lưu socket, chipset, DDR, wattage...
+
+  danhMucId     String
+  danhMuc       DanhMuc  @relation(fields: [danhMucId], references: [id])
+
+  // Quan hệ
+  chiTietDonHangs ChiTietDonHang[]
+  buildItems      BuildItem[]
+  gioHangItems    GioHangItem[]
+
+  @@map("san_pham")
+}
+
+// ====================== BUILD PC ======================
+model CauHinhPC {
+  id              String      @id @default(cuid())
+  tenCauHinh      String?
+  tongGia         Float       @default(0)
+  ngayTao         DateTime    @default(now())
+
+  nguoiDungId     String
+  nguoiDung       NguoiDung   @relation(fields: [nguoiDungId], references: [id])
+
+  items           BuildItem[]
+
+  @@map("cau_hinh_pc")
+}
+
+model BuildItem {
+  id            String   @id @default(cuid())
+  soLuong       Int      @default(1)
+
+  cauHinhPCId   String
+  sanPhamId     String
+
+  cauHinhPC     CauHinhPC @relation(fields: [cauHinhPCId], references: [id])
+  sanPham       SanPham   @relation(fields: [sanPhamId], references: [id])
+
+  @@unique([cauHinhPCId, sanPhamId])
+  @@map("build_item")
+}
+
+// ====================== GIỎ HÀNG ======================
+model GioHang {
+  id            String       @id @default(cuid())
+  nguoiDungId   String       @unique
+  nguoiDung     NguoiDung    @relation(fields: [nguoiDungId], references: [id])
+
+  items         GioHangItem[]
+
+  @@map("gio_hang")
+}
+
+model GioHangItem {
+  id            String   @id @default(cuid())
+  soLuong       Int      @default(1)
+
+  gioHangId     String
+  sanPhamId     String
+
+  gioHang       GioHang  @relation(fields: [gioHangId], references: [id])
+  sanPham       SanPham  @relation(fields: [sanPhamId], references: [id])
+
+  @@unique([gioHangId, sanPhamId])
+  @@map("gio_hang_item")
+}
+
+// ====================== ĐƠN HÀNG ======================
+model DonHang {
+  id                String         @id @default(cuid())
+  maDonHang         String         @unique
+  trangThai         TrangThaiDon   @default(CHO_XAC_NHAN)
+  tongTien          Float
+  diaChiGiaoHang    String
+  ghiChu            String?
+  ngayTao           DateTime       @default(now())
+
+  nguoiDungId       String
+  nguoiDung         NguoiDung      @relation(fields: [nguoiDungId], references: [id])
+
+  chiTietDonHangs   ChiTietDonHang[]
+  thanhToans        ThanhToan[]
+
+  @@map("don_hang")
+}
+
+model ChiTietDonHang {
+  id            String   @id @default(cuid())
+  soLuong       Int
+  giaBanLucMua  Float
+
+  donHangId     String
+  sanPhamId     String
+
+  donHang       DonHang  @relation(fields: [donHangId], references: [id])
+  sanPham       SanPham  @relation(fields: [sanPhamId], references: [id])
+
+  @@map("chi_tiet_don_hang")
+}
+
+enum TrangThaiDon {
+  CHO_XAC_NHAN
+  DA_XAC_NHAN
+  DANG_GIAO
+  DA_GIAO
+  DA_HUY
+}
+
+// ====================== THANH TOÁN ======================
+model ThanhToan {
+  id            String      @id @default(cuid())
+  maThanhToan   String      @unique
+  soTien        Float
+  phuongThuc    String      // VNPAY, MOMO, COD...
+  trangThai     String      @default("PENDING")
+  ngayThanhToan DateTime?
+
+  donHangId     String
+  donHang       DonHang     @relation(fields: [donHangId], references: [id])
+
+  @@map("thanh_toan")
+}
+
+// ====================== AI CHAT ======================
+model TinNhanChat {
+  id            String   @id @default(cuid())
+  noiDung       String
+  vaiTro        VaiTroTinNhan   // USER hoặc AI
+  ngayTao       DateTime @default(now())
+
+  nguoiDungId   String
+  nguoiDung     NguoiDung @relation(fields: [nguoiDungId], references: [id])
+
+  @@map("tin_nhan_chat")
+}
+
+enum VaiTroTinNhan {
+  USER
+  AI
+}
