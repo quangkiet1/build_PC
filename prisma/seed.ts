@@ -1,7 +1,9 @@
 // prisma/seed.ts
 // Chạy với: npx prisma db seed
 
-import { prisma } from '../lib/prisma'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 async function main() {
   console.log('🌱 Bắt đầu seeding database...')
@@ -43,224 +45,599 @@ async function main() {
     data: { tenDanhMuc: 'PSU', moTa: 'Nguồn điện' },
   })
 
-  // Tạo sản phẩm CPU
-  await prisma.sanPham.create({
-    data: {
-      tenSanPham: 'Intel Core i7-13700K',
-      slug: 'intel-i7-13700k',
-      gia: 12500000,
-      hinhAnh: 'https://via.placeholder.com/300x300?text=i7-13700K',
-      moTa: 'CPU desktop cao cấp, LGA1700 Socket, 16 lõi / 24 luồng',
-      soLuongTon: 15,
+  // ============== THÊM NHIỀU CPU ==============
+  const cpuProducts = [
+    // Intel CPUs
+    {
+      tenSanPham: 'Intel Core i9-14900KS',
+      slug: 'intel-core-i9-14900ks',
+      gia: 24500000,
+      moTa: 'CPU flagship Intel phiên bản K Special Edition, 24 cores/32 threads',
       thongSoKyThuat: {
-        socket: 'LGA1700',
-        cores: 16,
-        threads: 24,
-        tdp: '125W',
-      },
-      danhMucId: cpuCat.id,
+        cores: 24,
+        threads: 32,
+        baseFreq: '3.2 GHz',
+        boostFreq: '6.2 GHz',
+        socket: 'LGA 1700',
+        tdp: '150W'
+      }
     },
-  })
-
-  await prisma.sanPham.create({
-    data: {
+    {
+      tenSanPham: 'Intel Core i9-14900K',
+      slug: 'intel-core-i9-14900k',
+      gia: 22500000,
+      moTa: 'CPU cao cấp Intel thế hệ 14, 24 cores/32 threads',
+      thongSoKyThuat: {
+        cores: 24,
+        threads: 32,
+        baseFreq: '3.2 GHz',
+        boostFreq: '5.6 GHz',
+        socket: 'LGA 1700',
+        tdp: '125W'
+      }
+    },
+    {
+      tenSanPham: 'Intel Core i7-14700K',
+      slug: 'intel-core-i7-14700k',
+      gia: 18500000,
+      moTa: 'CPU cao cấp Intel thế hệ 14 cho gaming và xử lý đa nhiệm',
+      thongSoKyThuat: {
+        cores: 20,
+        threads: 28,
+        baseFreq: '3.4 GHz',
+        boostFreq: '5.6 GHz',
+        socket: 'LGA 1700',
+        tdp: '125W'
+      }
+    },
+    {
+      tenSanPham: 'Intel Core i7-14700',
+      slug: 'intel-core-i7-14700',
+      gia: 16000000,
+      moTa: 'Intel Core i7 phiên bản tiêu chuẩn, 20 cores/28 threads',
+      thongSoKyThuat: {
+        cores: 20,
+        threads: 28,
+        baseFreq: '3.4 GHz',
+        boostFreq: '5.4 GHz',
+        socket: 'LGA 1700',
+        tdp: '65W'
+      }
+    },
+    {
+      tenSanPham: 'Intel Core i5-14600K',
+      slug: 'intel-core-i5-14600k',
+      gia: 8500000,
+      moTa: 'CPU mid-range Intel đa năng cho gaming và công việc',
+      thongSoKyThuat: {
+        cores: 14,
+        threads: 20,
+        baseFreq: '3.5 GHz',
+        boostFreq: '5.3 GHz',
+        socket: 'LGA 1700',
+        tdp: '125W'
+      }
+    },
+    // AMD CPUs
+    {
+      tenSanPham: 'AMD Ryzen 9 7950X3D',
+      slug: 'amd-ryzen-9-7950x3d',
+      gia: 22000000,
+      moTa: 'Ryzen 9 cao cấp với công nghệ 3D V-Cache, 16 cores/32 threads',
+      thongSoKyThuat: {
+        cores: 16,
+        threads: 32,
+        baseFreq: '4.2 GHz',
+        boostFreq: '5.7 GHz',
+        socket: 'AM5',
+        tdp: '162W'
+      }
+    },
+    {
+      tenSanPham: 'AMD Ryzen 9 7950X',
+      slug: 'amd-ryzen-9-7950x',
+      gia: 20000000,
+      moTa: 'AMD Ryzen 9 phiên bản X, 16 cores/32 threads',
+      thongSoKyThuat: {
+        cores: 16,
+        threads: 32,
+        baseFreq: '4.5 GHz',
+        boostFreq: '5.7 GHz',
+        socket: 'AM5',
+        tdp: '105W'
+      }
+    },
+    {
+      tenSanPham: 'AMD Ryzen 9 7900X',
+      slug: 'amd-ryzen-9-7900x',
+      gia: 15500000,
+      moTa: 'Ryzen 9 phiên bản X, 12 cores/24 threads',
+      thongSoKyThuat: {
+        cores: 12,
+        threads: 24,
+        baseFreq: '4.7 GHz',
+        boostFreq: '5.6 GHz',
+        socket: 'AM5',
+        tdp: '120W'
+      }
+    },
+    {
       tenSanPham: 'AMD Ryzen 7 7700X',
       slug: 'amd-ryzen-7-7700x',
-      gia: 11800000,
-      hinhAnh: 'https://via.placeholder.com/300x300?text=Ryzen-7700X',
-      moTa: 'CPU desktop hiệu suất cao, AM5 Socket, 8 lõi / 16 luồng',
-      soLuongTon: 20,
+      gia: 11500000,
+      moTa: 'Ryzen 7 bản X cho gaming và xử lý nội dung',
       thongSoKyThuat: {
-        socket: 'AM5',
         cores: 8,
         threads: 16,
-        tdp: '105W',
-      },
-      danhMucId: cpuCat.id,
+        baseFreq: '4.5 GHz',
+        boostFreq: '5.4 GHz',
+        socket: 'AM5',
+        tdp: '105W'
+      }
     },
-  })
-
-  // Tạo sản phẩm Mainboard
-  await prisma.sanPham.create({
-    data: {
-      tenSanPham: 'ASUS ROG STRIX Z790-E',
-      slug: 'asus-rog-strix-z790-e',
-      gia: 8500000,
-      hinhAnh: 'https://via.placeholder.com/300x300?text=ROG-Z790',
-      moTa: 'Bo mạch chủ chuyên game, LGA1700, PCIe 5.0',
-      soLuongTon: 8,
+    {
+      tenSanPham: 'AMD Ryzen 5 7500F',
+      slug: 'amd-ryzen-5-7500f',
+      gia: 4500000,
+      moTa: 'Ryzen 5 phiên bản F (không có GPU tích hợp), 6 cores/12 threads',
       thongSoKyThuat: {
-        socket: 'LGA1700',
-        chipset: 'Z790',
-        ramType: 'DDR5',
-      },
-      danhMucId: mainboardCat.id,
-    },
-  })
+        cores: 6,
+        threads: 12,
+        baseFreq: '3.7 GHz',
+        boostFreq: '5.0 GHz',
+        socket: 'AM5',
+        tdp: '65W'
+      }
+    }
+  ]
 
-  await prisma.sanPham.create({
-    data: {
-      tenSanPham: 'MSI MPG B850-E EDGE WIFI',
-      slug: 'msi-mpg-b850-e-edge',
-      gia: 6500000,
-      hinhAnh: 'https://via.placeholder.com/300x300?text=B850-Edge',
-      moTa: 'Bo mạch chủ chuyên game, AM5, PCIe 5.0',
-      soLuongTon: 12,
+  for (const cpu of cpuProducts) {
+    await prisma.sanPham.create({
+      data: {
+        ...cpu,
+        hinhAnh: `https://via.placeholder.com/300x300?text=${cpu.slug}`,
+        soLuongTon: 50,
+        danhMucId: cpuCat.id
+      }
+    })
+  }
+
+  // ============== THÊM NHIỀU GPU ==============
+  const gpuProducts = [
+    {
+      tenSanPham: 'NVIDIA RTX 4090',
+      slug: 'nvidia-rtx-4090',
+      gia: 42000000,
+      moTa: 'Card đồ họa flagship NVIDIA, 24GB GDDR6X',
+      thongSoKyThuat: {
+        memory: '24GB GDDR6X',
+        memoryClock: '20 Gbps',
+        cudaCores: 16384,
+        tgp: '575W'
+      }
+    },
+    {
+      tenSanPham: 'NVIDIA RTX 4080 Super',
+      slug: 'nvidia-rtx-4080-super',
+      gia: 35000000,
+      moTa: 'Card đồ họa cao cấp NVIDIA RTX 4080 Super, 16GB',
+      thongSoKyThuat: {
+        memory: '16GB GDDR6X',
+        memoryClock: '20 Gbps',
+        cudaCores: 10240,
+        tgp: '320W'
+      }
+    },
+    {
+      tenSanPham: 'NVIDIA RTX 4080',
+      slug: 'nvidia-rtx-4080',
+      gia: 32000000,
+      moTa: 'Card đồ họa cao cấp cho gaming 1440p+',
+      thongSoKyThuat: {
+        memory: '16GB GDDR6X',
+        memoryClock: '20 Gbps',
+        cudaCores: 9728,
+        tgp: '320W'
+      }
+    },
+    {
+      tenSanPham: 'NVIDIA RTX 4070 Ti Super',
+      slug: 'nvidia-rtx-4070-ti-super',
+      gia: 31000000,
+      moTa: 'RTX 4070 Ti phiên bản Super, 12GB GDDR6X',
+      thongSoKyThuat: {
+        memory: '12GB GDDR6X',
+        memoryClock: '21 Gbps',
+        cudaCores: 8064,
+        tgp: '285W'
+      }
+    },
+    {
+      tenSanPham: 'NVIDIA RTX 4070 Ti',
+      slug: 'nvidia-rtx-4070-ti',
+      gia: 28500000,
+      moTa: 'Card đồ họa mid-high end, 12GB GDDR6X',
+      thongSoKyThuat: {
+        memory: '12GB GDDR6X',
+        memoryClock: '21 Gbps',
+        cudaCores: 7680,
+        tgp: '285W'
+      }
+    },
+    {
+      tenSanPham: 'NVIDIA RTX 4070',
+      slug: 'nvidia-rtx-4070',
+      gia: 21000000,
+      moTa: 'Card đồ họa tầm trung cho gaming 1440p',
+      thongSoKyThuat: {
+        memory: '12GB GDDR6',
+        memoryClock: '21 Gbps',
+        cudaCores: 5888,
+        tgp: '200W'
+      }
+    },
+    {
+      tenSanPham: 'AMD Radeon RX 7900 XTX',
+      slug: 'amd-radeon-rx-7900-xtx',
+      gia: 31000000,
+      moTa: 'Card đồ họa AMD cao cấp, 24GB GDDR6',
+      thongSoKyThuat: {
+        memory: '24GB GDDR6',
+        memoryClock: '20 Gbps',
+        streamProcessors: 6144,
+        tgp: '500W'
+      }
+    },
+    {
+      tenSanPham: 'AMD Radeon RX 7900 XT',
+      slug: 'amd-radeon-rx-7900-xt',
+      gia: 24000000,
+      moTa: 'Card đồ họa AMD Radeon RX 7900 XT',
+      thongSoKyThuat: {
+        memory: '20GB GDDR6',
+        memoryClock: '20 Gbps',
+        streamProcessors: 5376,
+        tgp: '420W'
+      }
+    }
+  ]
+
+  for (const gpu of gpuProducts) {
+    await prisma.sanPham.create({
+      data: {
+        ...gpu,
+        hinhAnh: `https://via.placeholder.com/300x300?text=${gpu.slug}`,
+        soLuongTon: 30,
+        danhMucId: gpuCat.id
+      }
+    })
+  }
+
+  // ============== THÊM NHIỀU RAM ==============
+  const ramProducts = [
+    {
+      tenSanPham: 'Corsair Vengeance DDR5 64GB (2x32GB)',
+      slug: 'corsair-vengeance-ddr5-64gb',
+      gia: 9500000,
+      moTa: 'Bộ RAM DDR5 Corsair Vengeance 64GB tốc độ cao',
+      thongSoKyThuat: {
+        capacity: '64GB (2x32GB)',
+        type: 'DDR5',
+        speed: '6400MHz',
+        latency: 'CL32'
+      }
+    },
+    {
+      tenSanPham: 'Corsair Vengeance DDR5 32GB (2x16GB)',
+      slug: 'corsair-vengeance-ddr5-32gb',
+      gia: 4500000,
+      moTa: 'Bộ RAM DDR5 Corsair, 32GB tốc độ 6400MHz',
+      thongSoKyThuat: {
+        capacity: '32GB (2x16GB)',
+        type: 'DDR5',
+        speed: '6400MHz',
+        latency: 'CL32'
+      }
+    },
+    {
+      tenSanPham: 'Kingston Fury Beast DDR5 32GB',
+      slug: 'kingston-fury-beast-ddr5-32gb',
+      gia: 4200000,
+      moTa: 'RAM Kingston Fury Beast DDR5 32GB',
+      thongSoKyThuat: {
+        capacity: '32GB (2x16GB)',
+        type: 'DDR5',
+        speed: '6400MHz',
+        latency: 'CL32'
+      }
+    },
+    {
+      tenSanPham: 'G.Skill Trident Z5 DDR5 48GB',
+      slug: 'gskill-trident-z5-ddr5-48gb',
+      gia: 7200000,
+      moTa: 'RAM G.Skill Trident Z5 DDR5 48GB tốc độ siêu cao',
+      thongSoKyThuat: {
+        capacity: '48GB (2x24GB)',
+        type: 'DDR5',
+        speed: '7200MHz',
+        latency: 'CL30'
+      }
+    },
+    {
+      tenSanPham: 'Crucial Pro DDR5 32GB',
+      slug: 'crucial-pro-ddr5-32gb',
+      gia: 4000000,
+      moTa: 'RAM Crucial Pro DDR5 32GB đáng tin cậy',
+      thongSoKyThuat: {
+        capacity: '32GB (2x16GB)',
+        type: 'DDR5',
+        speed: '6400MHz',
+        latency: 'CL32'
+      }
+    },
+    {
+      tenSanPham: 'ROG STRIX FLARE II DDR5 32GB',
+      slug: 'rog-strix-flare-ii-ddr5-32gb',
+      gia: 5500000,
+      moTa: 'RAM ASUS ROG STRIX Flare II DDR5 32GB RGB',
+      thongSoKyThuat: {
+        capacity: '32GB (2x16GB)',
+        type: 'DDR5',
+        speed: '7200MHz',
+        latency: 'CL34'
+      }
+    }
+  ]
+
+  for (const ram of ramProducts) {
+    await prisma.sanPham.create({
+      data: {
+        ...ram,
+        hinhAnh: `https://via.placeholder.com/300x300?text=${ram.slug}`,
+        soLuongTon: 100,
+        danhMucId: ramCat.id
+      }
+    })
+  }
+
+  // ============== THÊM NHIỀU STORAGE ==============
+  const storageProducts = [
+    {
+      tenSanPham: 'Samsung 990 Pro 4TB',
+      slug: 'samsung-990-pro-4tb',
+      gia: 16500000,
+      moTa: 'SSD NVMe Samsung 990 Pro 4TB PCIe 4.0',
+      thongSoKyThuat: {
+        capacity: '4TB',
+        interface: 'NVMe PCIe 4.0',
+        readSpeed: '7450MB/s',
+        writeSpeed: '6900MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Samsung 990 Pro 2TB',
+      slug: 'samsung-990-pro-2tb',
+      gia: 8500000,
+      moTa: 'SSD NVMe Samsung 990 Pro 2TB PCIe 4.0',
+      thongSoKyThuat: {
+        capacity: '2TB',
+        interface: 'NVMe PCIe 4.0',
+        readSpeed: '7450MB/s',
+        writeSpeed: '6900MB/s'
+      }
+    },
+    {
+      tenSanPham: 'WD Black SN850X 2TB',
+      slug: 'wd-black-sn850x-2tb',
+      gia: 7200000,
+      moTa: 'SSD WD Black SN850X NVMe PCIe 4.0 2TB',
+      thongSoKyThuat: {
+        capacity: '2TB',
+        interface: 'NVMe PCIe 4.0',
+        readSpeed: '7100MB/s',
+        writeSpeed: '5700MB/s'
+      }
+    },
+    {
+      tenSanPham: 'WD Black SN850X 4TB',
+      slug: 'wd-black-sn850x-4tb',
+      gia: 14000000,
+      moTa: 'SSD WD Black SN850X NVMe 4TB',
+      thongSoKyThuat: {
+        capacity: '4TB',
+        interface: 'NVMe PCIe 4.0',
+        readSpeed: '7100MB/s',
+        writeSpeed: '5700MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Kingston NV2 1TB',
+      slug: 'kingston-nv2-1tb',
+      gia: 2500000,
+      moTa: 'SSD Kingston NV2 NVMe 1TB giá rẻ',
+      thongSoKyThuat: {
+        capacity: '1TB',
+        interface: 'NVMe M.2',
+        readSpeed: '3500MB/s',
+        writeSpeed: '2800MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Seagate Barracuda 4TB HDD',
+      slug: 'seagate-barracuda-4tb',
+      gia: 2800000,
+      moTa: 'Ổ cứng HDD Seagate Barracuda 4TB',
+      thongSoKyThuat: {
+        capacity: '4TB',
+        interface: 'SATA 3.5"',
+        rpm: '5400 RPM',
+        cache: '256MB'
+      }
+    }
+  ]
+
+  for (const storage of storageProducts) {
+    await prisma.sanPham.create({
+      data: {
+        ...storage,
+        hinhAnh: `https://via.placeholder.com/300x300?text=${storage.slug}`,
+        soLuongTon: 75,
+        danhMucId: storageCat.id
+      }
+    })
+  }
+
+  // ============== THÊM NHIỀU PSU ==============
+  const psuProducts = [
+    {
+      tenSanPham: 'Corsair HX1200i 1200W',
+      slug: 'corsair-hx1200i-1200w',
+      gia: 8500000,
+      moTa: 'Nguồn Corsair HX1200i 1200W 80+ Platinum',
+      thongSoKyThuat: {
+        wattage: '1200W',
+        efficiency: '80+ Platinum',
+        modular: 'Fully Modular'
+      }
+    },
+    {
+      tenSanPham: 'Corsair RM850x 850W',
+      slug: 'corsair-rm850x-850w',
+      gia: 3200000,
+      moTa: 'Nguồn Corsair RM850x 850W 80+ Gold',
+      thongSoKyThuat: {
+        wattage: '850W',
+        efficiency: '80+ Gold',
+        modular: 'Fully Modular'
+      }
+    },
+    {
+      tenSanPham: 'EVGA SuperNOVA 850 G6',
+      slug: 'evga-supernova-850-g6',
+      gia: 3500000,
+      moTa: 'Nguồn EVGA SuperNOVA 850 G6 850W 80+ Gold',
+      thongSoKyThuat: {
+        wattage: '850W',
+        efficiency: '80+ Gold',
+        modular: 'Fully Modular'
+      }
+    },
+    {
+      tenSanPham: 'Seasonic Focus 750W',
+      slug: 'seasonic-focus-750w',
+      gia: 3000000,
+      moTa: 'Nguồn Seasonic Focus 750W 80+ Gold',
+      thongSoKyThuat: {
+        wattage: '750W',
+        efficiency: '80+ Gold',
+        modular: 'Fully Modular'
+      }
+    },
+    {
+      tenSanPham: 'MSI MAG A650GL 650W',
+      slug: 'msi-mag-a650gl-650w',
+      gia: 2200000,
+      moTa: 'Nguồn MSI MAG A650GL 650W 80+ Gold',
+      thongSoKyThuat: {
+        wattage: '650W',
+        efficiency: '80+ Gold',
+        modular: 'Fully Modular'
+      }
+    }
+  ]
+
+  for (const psu of psuProducts) {
+    await prisma.sanPham.create({
+      data: {
+        ...psu,
+        hinhAnh: `https://via.placeholder.com/300x300?text=${psu.slug}`,
+        soLuongTon: 60,
+        danhMucId: psuCat.id
+      }
+    })
+  }
+
+  // ============== THÊM NHIỀU MAINBOARD ==============
+  const motherboardProducts = [
+    {
+      tenSanPham: 'ASUS ROG MAXIMUS Z890-E',
+      slug: 'asus-rog-maximus-z890-e',
+      gia: 8500000,
+      moTa: 'Bo mạch chủ ASUS ROG MAXIMUS Z890-E Socket LGA 1700',
+      thongSoKyThuat: {
+        socket: 'LGA 1700',
+        chipset: 'Z890',
+        formFactor: 'ATX',
+        memory: 'DDR5'
+      }
+    },
+    {
+      tenSanPham: 'MSI MPG Z890 CARBON WiFi',
+      slug: 'msi-mpg-z890-carbon-wifi',
+      gia: 7500000,
+      moTa: 'Bo mạch chủ MSI MPG Z890 Carbon WiFi LGA 1700',
+      thongSoKyThuat: {
+        socket: 'LGA 1700',
+        chipset: 'Z890',
+        formFactor: 'ATX',
+        memory: 'DDR5'
+      }
+    },
+    {
+      tenSanPham: 'Gigabyte Z890 MASTER',
+      slug: 'gigabyte-z890-master',
+      gia: 6800000,
+      moTa: 'Bo mạch chủ Gigabyte Z890 Master Socket LGA 1700',
+      thongSoKyThuat: {
+        socket: 'LGA 1700',
+        chipset: 'Z890',
+        formFactor: 'ATX',
+        memory: 'DDR5'
+      }
+    },
+    {
+      tenSanPham: 'ASUS ROG STRIX X870-E-E GAMING WiFi',
+      slug: 'asus-rog-strix-x870-e-gaming',
+      gia: 9200000,
+      moTa: 'Bo mạch chủ ASUS ROG STRIX X870-E Socket AM5',
+      thongSoKyThuat: {
+        socket: 'AM5',
+        chipset: 'X870-E',
+        formFactor: 'ATX',
+        memory: 'DDR5'
+      }
+    },
+    {
+      tenSanPham: 'MSI MPG B850 EDGE WiFi',
+      slug: 'msi-mpg-b850-edge-wifi',
+      gia: 5500000,
+      moTa: 'Bo mạch chủ MSI MPG B850 Edge WiFi Socket AM5',
       thongSoKyThuat: {
         socket: 'AM5',
         chipset: 'B850',
-        ramType: 'DDR5',
-      },
-      danhMucId: mainboardCat.id,
-    },
-  })
+        formFactor: 'ATX',
+        memory: 'DDR5'
+      }
+    }
+  ]
 
-  // Tạo sản phẩm RAM
-  await prisma.sanPham.create({
-    data: {
-      tenSanPham: 'CORSAIR Vengeance DDR5 32GB',
-      slug: 'corsair-vengeance-ddr5-32gb',
-      gia: 2800000,
-      hinhAnh: 'https://via.placeholder.com/300x300?text=DDR5-32GB',
-      moTa: 'RAM DDR5, 32GB (2x16GB), 6000MHz',
-      soLuongTon: 30,
-      thongSoKyThuat: {
-        ramType: 'DDR5',
-        capacity: '32GB',
-        frequency: '6000MHz',
-      },
-      danhMucId: ramCat.id,
-    },
-  })
+  for (const mobo of motherboardProducts) {
+    await prisma.sanPham.create({
+      data: {
+        ...mobo,
+        hinhAnh: `https://via.placeholder.com/300x300?text=${mobo.slug}`,
+        soLuongTon: 40,
+        danhMucId: mainboardCat.id
+      }
+    })
+  }
 
-  await prisma.sanPham.create({
-    data: {
-      tenSanPham: 'G.SKILL Trident Z5 32GB DDR5',
-      slug: 'gskill-trident-z5-32gb',
-      gia: 2600000,
-      hinhAnh: 'https://via.placeholder.com/300x300?text=TridentZ5',
-      moTa: 'RAM DDR5, 32GB (2x16GB), 5600MHz',
-      soLuongTon: 25,
-      thongSoKyThuat: {
-        ramType: 'DDR5',
-        capacity: '32GB',
-        frequency: '5600MHz',
-      },
-      danhMucId: ramCat.id,
-    },
-  })
-
-  // Tạo sản phẩm Storage
-  await prisma.sanPham.create({
-    data: {
-      tenSanPham: 'Samsung 990 Pro 1TB NVMe',
-      slug: 'samsung-990-pro-1tb',
-      gia: 2500000,
-      hinhAnh: 'https://via.placeholder.com/300x300?text=990Pro-1TB',
-      moTa: 'SSD NVMe M.2, 1TB, PCIe 4.0',
-      soLuongTon: 40,
-      thongSoKyThuat: {
-        type: 'NVMe',
-        capacity: '1TB',
-        interface: 'PCIe 4.0',
-      },
-      danhMucId: storageCat.id,
-    },
-  })
-
-  await prisma.sanPham.create({
-    data: {
-      tenSanPham: 'WD Blue SSD 1TB',
-      slug: 'wd-blue-ssd-1tb',
-      gia: 1800000,
-      hinhAnh: 'https://via.placeholder.com/300x300?text=WD-Blue-1TB',
-      moTa: 'SSD SATA, 1TB, 2.5 inch',
-      soLuongTon: 35,
-      thongSoKyThuat: {
-        type: 'SATA',
-        capacity: '1TB',
-        formFactor: '2.5 inch',
-      },
-      danhMucId: storageCat.id,
-    },
-  })
-
-  // Tạo sản phẩm GPU
-  await prisma.sanPham.create({
-    data: {
-      tenSanPham: 'NVIDIA RTX 4090',
-      slug: 'nvidia-rtx-4090',
-      gia: 49500000,
-      hinhAnh: 'https://via.placeholder.com/300x300?text=RTX-4090',
-      moTa: 'Card màn hình cao cấp, 24GB GDDR6X',
-      soLuongTon: 3,
-      thongSoKyThuat: {
-        memory: '24GB',
-        tdp: '450W',
-        interface: 'PCIe 4.0',
-      },
-      danhMucId: gpuCat.id,
-    },
-  })
-
-  await prisma.sanPham.create({
-    data: {
-      tenSanPham: 'AMD Radeon RX 7900 XT',
-      slug: 'amd-rx-7900-xt',
-      gia: 35000000,
-      hinhAnh: 'https://via.placeholder.com/300x300?text=RX-7900XT',
-      moTa: 'Card màn hình gaming, 24GB GDDR6',
-      soLuongTon: 5,
-      thongSoKyThuat: {
-        memory: '24GB',
-        tdp: '420W',
-        interface: 'PCIe 4.0',
-      },
-      danhMucId: gpuCat.id,
-    },
-  })
-
-  // Tạo sản phẩm PSU
-  await prisma.sanPham.create({
-    data: {
-      tenSanPham: 'CORSAIR RM1000x Gold',
-      slug: 'corsair-rm1000x-gold',
-      gia: 4500000,
-      hinhAnh: 'https://via.placeholder.com/300x300?text=RM1000x',
-      moTa: 'Nguồn 1000W fully modular, 80+ Gold',
-      soLuongTon: 10,
-      thongSoKyThuat: {
-        wattage: '1000W',
-        certification: '80+ Gold',
-        modularity: 'Fully Modular',
-      },
-      danhMucId: psuCat.id,
-    },
-  })
-
-  await prisma.sanPham.create({
-    data: {
-      tenSanPham: 'Seasonic Focus Plus 850W Gold',
-      slug: 'seasonic-focus-plus-850w',
-      gia: 3200000,
-      hinhAnh: 'https://via.placeholder.com/300x300?text=Focus-850W',
-      moTa: 'Nguồn 850W fully modular, 80+ Gold',
-      soLuongTon: 15,
-      thongSoKyThuat: {
-        wattage: '850W',
-        certification: '80+ Gold',
-        modularity: 'Fully Modular',
-      },
-      danhMucId: psuCat.id,
-    },
-  })
-
-  // Tạo người dùng
+  // Tạo người dùng demo
   const user = await prisma.nguoiDung.create({
     data: {
       hoTen: 'Nguyễn Văn A',
       email: 'user@example.com',
-      matKhauHash: 'hashed_password_here', // Trong thực tế phải hash bằng bcrypt
+      matKhauHash: 'hashed_password_here',
       vaiTro: 'KHACH_HANG',
       soDienThoai: '0123456789',
       diaChi: '123 Đường ABC, TP HCM',
@@ -275,6 +652,15 @@ async function main() {
   })
 
   console.log('✅ Seeding hoàn tất!')
+  console.log('📊 Tổng cộng:')
+  console.log('   - 6 danh mục')
+  console.log('   - 10 CPU')
+  console.log('   - 8 GPU')
+  console.log('   - 6 RAM')
+  console.log('   - 6 Storage')
+  console.log('   - 5 PSU')
+  console.log('   - 5 Motherboard')
+  console.log('   = 45 sản phẩm')
 }
 
 main()

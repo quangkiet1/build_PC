@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { AddToCartButton } from '@/components/add-to-cart-button'
 import {
   Star,
   ShoppingCart,
@@ -372,19 +373,14 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
             {/* Actions */}
             <div className="space-y-4">
-              <div className="flex gap-4">
-                <Button
-                  size="lg"
-                  className="flex-1 gaming-gradient hover:scale-105 transition"
-                  disabled={product.soLuongTon === 0}
-                >
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  Thêm vào giỏ hàng
-                </Button>
-                <Button size="lg" variant="outline" className="border-slate-700 hover:bg-slate-800">
+              <div className="flex gap-4 flex-col sm:flex-row">
+                <div className="flex-1">
+                  <AddToCartButton productId={product.id} />
+                </div>
+                <Button size="lg" variant="outline" className="border-slate-700 hover:bg-slate-800 w-full sm:w-auto">
                   <Heart className="w-5 h-5" />
                 </Button>
-                <Button size="lg" variant="outline" className="border-slate-700 hover:bg-slate-800">
+                <Button size="lg" variant="outline" className="border-slate-700 hover:bg-slate-800 w-full sm:w-auto">
                   <Share2 className="w-5 h-5" />
                 </Button>
               </div>

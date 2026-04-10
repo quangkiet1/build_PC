@@ -3,24 +3,49 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useToast } from '@/app/providers/toast-provider'
+import { useCart } from '@/app/providers/cart-provider'
 
 import type { Product } from './types'
 
 interface ProductCardProps {
   product: Product
-  onAddToCart?: (product: Product) => void
+  onAddToCart?: (product: Product) => Promise<void> | void
 }
 
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const [isAdding, setIsAdding] = useState(false)
   const [imageError, setImageError] = useState(false)
+  const { addToast } = useToast()
+  const { addItem, fetchCartCount } = useCart()
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     setIsAdding(true)
-    if (onAddToCart) {
-      onAddToCart(product)
+
+    try {
+      if (onAddToCart) {
+        await onAddToCart(product)
+      } else {
+        const response = await fetch('/api/cart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId: product.id, quantity: 1 })
+        })
+
+        const result = await response.json()
+        if (!response.ok) {
+          throw new Error(result.error || 'Lỗi khi thêm vào giỏ hàng')
+        }
+      }
+
+      addToast('✓ Đã thêm vào giỏ hàng', 'success')
+      addItem(product.id)
+      fetchCartCount()
+    } catch (error) {
+      addToast(error instanceof Error ? error.message : 'Lỗi khi thêm vào giỏ hàng', 'error')
+    } finally {
+      setIsAdding(false)
     }
-    setTimeout(() => setIsAdding(false), 1000)
   }
 
   const formatPrice = (price: number) => {
@@ -114,11 +139,11 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         )}
 
         {/* Buttons */}
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2">
           <button
             onClick={handleAddToCart}
             disabled={product.soLuongTon === 0 || isAdding}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-2.5 rounded-lg font-semibold transition duration-300 transform hover:scale-105 active:scale-95"
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-2.5 rounded-lg font-semibold transition duration-300 transform hover:scale-105 active:scale-95"
           >
             {isAdding ? (
               <span className="flex items-center justify-center gap-2">
@@ -126,12 +151,12 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
                 Đang thêm...
               </span>
             ) : (
-              '🛒 Thêm giỏ'
+              '🛒 Thêm vào giỏ'
             )}
           </button>
           <Link
             href={`/products/${product.slug}`}
-            className="flex-1 border border-blue-500 text-blue-400 hover:bg-blue-500/10 py-2.5 rounded-lg font-semibold transition duration-300 text-center transform hover:scale-105 active:scale-95"
+            className="w-full border border-blue-500 text-blue-400 hover:bg-blue-500/10 py-2.5 rounded-lg font-semibold transition duration-300 text-center transform hover:scale-105 active:scale-95"
           >
             👁️ Xem chi tiết
           </Link>

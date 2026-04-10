@@ -3,6 +3,8 @@
 
 import { useState, useEffect } from 'react'
 import { ProductCard } from './ProductCard'
+import { useToast } from '@/app/providers/toast-provider'
+import { useCart } from '@/app/providers/cart-provider'
 import type { Product } from './types'
 
 interface ProductListProps {
@@ -16,6 +18,8 @@ export function ProductList({ limit = 12, showPagination = false }: ProductListP
   const [error, setError] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const { addToast } = useToast()
+  const { addItem, fetchCartCount } = useCart()
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -41,10 +45,25 @@ export function ProductList({ limit = 12, showPagination = false }: ProductListP
     fetchProducts()
   }, [page, limit])
 
-  const handleAddToCart = (product: Product) => {
-    // TODO: Thêm vào giỏ hàng
-    console.log('Thêm vào giỏ hàng:', product)
-    // Có thể gọi API /api/cart hoặc lưu vào state/context
+  const handleAddToCart = async (product: Product) => {
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: product.id, quantity: 1 })
+      })
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Lỗi khi thêm vào giỏ hàng')
+      }
+
+      addToast('✓ Đã thêm vào giỏ hàng', 'success')
+      addItem(product.id)
+      fetchCartCount()
+    } catch (err) {
+      addToast(err instanceof Error ? err.message : 'Lỗi khi thêm vào giỏ hàng', 'error')
+    }
   }
 
   if (loading && products.length === 0) {

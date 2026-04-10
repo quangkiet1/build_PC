@@ -1,54 +1,28 @@
-'use client'
+﻿'use client'
 
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import {
-  Trash2,
-  Plus,
+  ShoppingCart,
   Minus,
-  ShoppingBag,
-  CreditCard,
-  ArrowLeft,
+  Plus,
+  X,
+  ChevronRight,
   Shield,
   Truck,
-  RefreshCw,
-  Star
+  Tag,
+  ArrowRight,
+  CreditCard,
+  Banknote,
+  CheckCircle2,
+  Wrench
 } from 'lucide-react'
 
-// Mock cart data - in real app this would come from context/state management
-const cartItems = [
-  {
-    id: '1',
-    name: 'Intel Core i7-13700K',
-    brand: 'Intel',
-    price: 12500000,
-    image: '/images/cpu-i7.svg',
-    quantity: 1,
-    category: 'CPU'
-  },
-  {
-    id: '2',
-    name: 'ASUS ROG STRIX Z790-E',
-    brand: 'ASUS',
-    price: 8500000,
-    image: '/images/mb-rog.svg',
-    quantity: 1,
-    category: 'Mainboard'
-  },
-  {
-    id: '3',
-    name: 'CORSAIR Vengeance DDR5 32GB',
-    brand: 'CORSAIR',
-    price: 2800000,
-    image: '/images/ram-corsair.svg',
-    quantity: 2,
-    category: 'RAM'
-  }
-]
+const SHIPPING_FREE_THRESHOLD = 5000000
+const SHIPPING_COST = 50000
 
 const shippingOptions = [
   { id: 'standard', name: 'Giao hàng tiêu chuẩn', price: 30000, days: '3-5 ngày' },
@@ -56,286 +30,389 @@ const shippingOptions = [
   { id: 'pickup', name: 'Nhận tại cửa hàng', price: 0, days: 'Ngay lập tức' }
 ]
 
-export default function CartPage() {
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-  const shipping = 30000
-  const tax = Math.round(subtotal * 0.08) // 8% VAT
-  const total = subtotal + shipping + tax
+const formatPrice = (value: number) =>
+  value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 })
 
-  const updateQuantity = (id: string, newQuantity: number) => {
-    // In real app, this would update the cart state
-    console.log(`Update ${id} to quantity ${newQuantity}`)
+type CartProduct = {
+  id: string
+  slug: string
+  tenSanPham: string
+  gia: number
+  hinhAnh?: string | null
+  danhMuc?: { tenDanhMuc: string } | null
+}
+
+type CartItem = {
+  id: string
+  soLuong: number
+  sanPham: CartProduct
+}
+
+export default function CartPage() {
+  const [items, setItems] = useState<CartItem[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [couponCode, setCouponCode] = useState('')
+  const [couponApplied, setCouponApplied] = useState(false)
+  const [selectedShipping, setSelectedShipping] = useState(shippingOptions[0].id)
+  const [processing, setProcessing] = useState(false)
+  const [couponMessage, setCouponMessage] = useState<string | null>(null)
+
+  const subtotal = useMemo(
+    () => items.reduce((sum, item) => sum + item.sanPham.gia * item.soLuong, 0),
+    [items]
+  )
+
+  const shippingValue = useMemo(() => {
+    const option = shippingOptions.find((option) => option.id === selectedShipping)
+    return option?.price ?? SHIPPING_COST
+  }, [selectedShipping])
+
+  const shippingCost = subtotal >= SHIPPING_FREE_THRESHOLD ? 0 : shippingValue
+  const discount = couponApplied ? Math.round(subtotal * 0.05) : 0
+  const totalPrice = subtotal + shippingCost - discount
+  const totalItems = useMemo(
+    () => items.reduce((sum, item) => sum + item.soLuong, 0),
+    [items]
+  )
+
+  const fetchCart = async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const response = await fetch('/api/cart')
+      const data = await response.json()
+      if (!response.ok) {
+        setError(data.error || 'Không thể tải giỏ hàng. Vui lòng thử lại sau.')
+        setItems([])
+      } else {
+        setItems(data.cart?.items ?? [])
+      }
+    } catch {
+      setError('Không thể kết nối đến server. Vui lòng kiểm tra lại mạng.')
+      setItems([])
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const removeItem = (id: string) => {
-    // In real app, this would remove from cart
-    console.log(`Remove item ${id}`)
+  useEffect(() => {
+    fetchCart()
+  }, [])
+
+  const updateQuantity = async (itemId: string, quantity: number) => {
+    if (quantity < 1) return
+    setProcessing(true)
+    setError(null)
+
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId, quantity })
+      })
+      const data = await response.json()
+      if (!response.ok) {
+        setError(data.error || 'Cập nhật số lượng thất bại.')
+      } else {
+        setItems((prev) =>
+          prev.map((item) =>
+            item.id === itemId ? { ...item, soLuong: quantity } : item
+          )
+        )
+      }
+    } catch {
+      setError('Không thể cập nhật giỏ hàng. Vui lòng thử lại.')
+    } finally {
+      setProcessing(false)
+    }
+  }
+
+  const removeItem = async (itemId: string) => {
+    setProcessing(true)
+    setError(null)
+
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId })
+      })
+      const data = await response.json()
+      if (!response.ok) {
+        setError(data.error || 'Xóa sản phẩm thất bại.')
+      } else {
+        setItems((prev) => prev.filter((item) => item.id !== itemId))
+      }
+    } catch {
+      setError('Không thể xóa sản phẩm khỏi giỏ hàng.')
+    } finally {
+      setProcessing(false)
+    }
+  }
+
+  const clearCart = async () => {
+    if (items.length === 0) return
+    setProcessing(true)
+    setError(null)
+
+    try {
+      await Promise.all(
+        items.map((item) =>
+          fetch('/api/cart', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ itemId: item.id })
+          })
+        )
+      )
+      setItems([])
+      setCouponApplied(false)
+      setCouponCode('')
+    } catch {
+      setError('Không thể xóa toàn bộ giỏ hàng.')
+    } finally {
+      setProcessing(false)
+    }
+  }
+
+  const handleCoupon = () => {
+    const normalized = couponCode.trim().toUpperCase()
+    if (normalized === 'COREBUILD5') {
+      setCouponApplied(true)
+      setCouponMessage('Mã giảm giá đã được áp dụng.')
+    } else {
+      setCouponApplied(false)
+      setCouponMessage('Mã giảm giá không hợp lệ.')
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center px-4 py-12">
+        <div className="max-w-xl w-full text-center">
+          <div className="animate-pulse h-24 w-24 rounded-3xl bg-[#0f1117] border border-[#1e2535] mx-auto mb-6" />
+          <div className="h-8 bg-slate-800 rounded-xl mx-auto mb-3 w-48" />
+          <div className="h-4 bg-slate-800 rounded-xl mx-auto mb-4 w-64" />
+          <div className="grid gap-3 mt-8">
+            <div className="h-20 bg-slate-800 rounded-3xl" />
+            <div className="h-20 bg-slate-800 rounded-3xl" />
+            <div className="h-20 bg-slate-800 rounded-3xl" />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error && items.length === 0) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center px-4 py-12">
+        <div className="max-w-xl w-full text-center">
+          <div className="w-24 h-24 rounded-3xl bg-[#0f1117] border border-[#1e2535] mx-auto mb-6 flex items-center justify-center">
+            <ShoppingCart className="w-10 h-10 text-slate-500" />
+          </div>
+          <h2 className="text-3xl font-bold mb-3">Không thể tải giỏ hàng</h2>
+          <p className="text-slate-400 mb-8">{error}</p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link href="/products" className="w-full sm:w-auto px-5 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-white font-semibold transition">
+              Quay lại sản phẩm
+            </Link>
+            <Link href="/builder" className="w-full sm:w-auto px-5 py-3 border border-[#1e2535] rounded-xl text-slate-200 hover:border-indigo-500 transition flex items-center justify-center gap-2">
+              <Wrench className="w-4 h-4" /> PC Builder
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      {/* Header */}
-      <header className="border-b border-slate-800 bg-slate-900/95 backdrop-blur sticky top-0 z-50">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="text-2xl font-bold gaming-text-gradient">⚙️ PC BUILDER</div>
-            </Link>
-            <div className="flex items-center gap-6">
-              <Link href="/products" className="text-slate-300 hover:text-blue-400 transition">Sản phẩm</Link>
-              <Link href="/" className="text-blue-400 font-semibold">Trang chủ</Link>
-              <Link href="/builder" className="gaming-gradient px-4 py-2 rounded-lg font-semibold hover:scale-105 transition">
-                ⚙️ PC Builder
-              </Link>
+      <div className="bg-[#0a0b10] border-b border-[#1e2535] py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">Giỏ hàng</h1>
+            <p className="text-slate-400 text-sm mt-1">{totalItems} sản phẩm trong giỏ của bạn</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 text-slate-400 text-sm">
+              <span className="text-indigo-400">Giỏ hàng</span>
+              <ChevronRight className="w-4 h-4" />
+              <span>Thanh toán</span>
             </div>
           </div>
-        </nav>
-      </header>
+        </div>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-slate-400 mb-6">
-          <Link href="/" className="hover:text-blue-400 transition">Trang chủ</Link>
-          <ArrowLeft className="w-4 h-4 rotate-180" />
-          <span className="text-white">Giỏ hàng</span>
-        </nav>
+        {error ? (
+          <div className="rounded-3xl border border-red-500/20 bg-red-500/10 p-4 text-red-200 mb-6">
+            {error}
+          </div>
+        ) : null}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Cart Items */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold text-white">Giỏ hàng của bạn</h1>
-              <Badge variant="secondary" className="bg-blue-500/20 text-blue-400 border-blue-500/30">
-                {cartItems.length} sản phẩm
-              </Badge>
+            <div className="grid gap-4">
+              {items.map((item) => (
+                <div key={item.id} className="bg-[#0f1117] border border-[#1e2535] rounded-3xl p-5 flex flex-col md:flex-row gap-4 items-start md:items-center">
+                  <Link href={`/products/${item.sanPham.slug}`} className="w-full md:w-28 h-28 rounded-3xl bg-[#141827] flex items-center justify-center overflow-hidden">
+                    {item.sanPham.hinhAnh ? (
+                      <Image
+                        src={item.sanPham.hinhAnh}
+                        alt={item.sanPham.tenSanPham}
+                        width={112}
+                        height={112}
+                        className="object-contain"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center w-full h-full text-slate-500">Ảnh</div>
+                    )}
+                  </Link>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-xs uppercase text-indigo-400 tracking-[0.18em] mb-2">
+                          {item.sanPham.danhMuc?.tenDanhMuc ?? 'Phụ kiện'}
+                        </p>
+                        <Link href={`/products/${item.sanPham.slug}`} className="text-lg font-semibold text-white line-clamp-2 hover:text-indigo-300 transition">
+                          {item.sanPham.tenSanPham}
+                        </Link>
+                        <p className="text-slate-500 text-sm mt-2">ID: {item.sanPham.id}</p>
+                      </div>
+                      <button
+                        onClick={() => removeItem(item.id)}
+                        disabled={processing}
+                        className="text-slate-500 hover:text-red-400 transition disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    <div className="mt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <div className="flex items-center gap-2 rounded-full border border-[#2a3045] bg-[#141827] p-1">
+                        <button
+                          onClick={() => updateQuantity(item.id, item.soLuong - 1)}
+                          disabled={processing || item.soLuong <= 1}
+                          className="w-10 h-10 rounded-full bg-[#1a1d26] flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#252b3b] transition disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </button>
+                        <span className="w-12 text-center text-white font-medium">{item.soLuong}</span>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.soLuong + 1)}
+                          disabled={processing}
+                          className="w-10 h-10 rounded-full bg-[#1a1d26] flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#252b3b] transition disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-indigo-300 font-semibold">{formatPrice(item.sanPham.gia * item.soLuong)}</p>
+                        <p className="text-slate-500 text-xs">{formatPrice(item.sanPham.gia)} / cái</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            {cartItems.length === 0 ? (
-              <Card className="bg-slate-900/50 border-slate-800">
-                <CardContent className="p-12 text-center">
-                  <ShoppingBag className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-white mb-2">Giỏ hàng trống</h3>
-                  <p className="text-slate-400 mb-6">Hãy thêm một số sản phẩm vào giỏ hàng của bạn</p>
-                  <Button asChild className="gaming-gradient">
-                    <Link href="/products">Tiếp tục mua sắm</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="space-y-4">
-                {cartItems.map((item) => (
-                  <Card key={item.id} className="bg-slate-900/50 border-slate-800">
-                    <CardContent className="p-6">
-                      <div className="flex gap-4">
-                        {/* Product Image */}
-                        <div className="w-24 h-24 bg-slate-800 rounded-lg flex items-center justify-center shrink-0">
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            width={80}
-                            height={80}
-                            className="object-contain"
-                          />
-                        </div>
-
-                        {/* Product Details */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between mb-2">
-                            <div>
-                              <Badge variant="outline" className="mb-2 border-slate-700 text-slate-300">
-                                {item.category}
-                              </Badge>
-                              <h3 className="text-lg font-semibold text-white line-clamp-2">
-                                {item.name}
-                              </h3>
-                              <p className="text-slate-400 text-sm">{item.brand}</p>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => removeItem(item.id)}
-                              className="text-slate-400 hover:text-red-400 hover:bg-red-500/10"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-
-                          {/* Rating */}
-                          <div className="flex items-center gap-1 mb-3">
-                            <div className="flex">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <Star key={star} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                              ))}
-                            </div>
-                            <span className="text-xs text-slate-400 ml-1">4.8</span>
-                          </div>
-
-                          {/* Quantity and Price */}
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                                className="w-8 h-8 p-0 border-slate-700 hover:bg-slate-800"
-                              >
-                                <Minus className="w-3 h-3" />
-                              </Button>
-                              <span className="w-8 text-center text-white">{item.quantity}</span>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                className="w-8 h-8 p-0 border-slate-700 hover:bg-slate-800"
-                              >
-                                <Plus className="w-3 h-3" />
-                              </Button>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-lg font-bold gaming-text-gradient">
-                                {(item.price * item.quantity).toLocaleString('vi-VN')} ₫
-                              </p>
-                              {item.quantity > 1 && (
-                                <p className="text-xs text-slate-400">
-                                  {item.price.toLocaleString('vi-VN')} ₫ / cái
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-
-            {/* Continue Shopping */}
-            <div className="flex justify-between items-center pt-4">
-              <Button variant="outline" asChild className="border-slate-700 hover:bg-slate-800">
-                <Link href="/products">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Tiếp tục mua sắm
-                </Link>
-              </Button>
-              <Button variant="outline" className="border-slate-700 hover:bg-slate-800">
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Cập nhật giỏ hàng
-              </Button>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+              <Link href="/products" className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-[#141827] border border-[#1e2535] text-slate-300 hover:text-white transition">
+                <ArrowRight className="w-4 h-4 rotate-180" /> Tiếp tục mua sắm
+              </Link>
+              <button
+                onClick={clearCart}
+                disabled={processing}
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl border border-red-500/20 text-red-400 hover:bg-red-500/10 transition disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <X className="w-4 h-4" /> Xóa tất cả
+              </button>
             </div>
           </div>
 
-          {/* Order Summary */}
-          <div className="space-y-6">
-            {/* Order Summary Card */}
-            <Card className="bg-slate-900/50 border-slate-800 sticky top-24">
-              <CardHeader>
-                <CardTitle>Tóm tắt đơn hàng</CardTitle>
-                <CardDescription>
-                  {cartItems.reduce((sum, item) => sum + item.quantity, 0)} sản phẩm
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">Tạm tính</span>
-                    <span className="text-white">{subtotal.toLocaleString('vi-VN')} ₫</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">Phí vận chuyển</span>
-                    <span className="text-white">{shipping.toLocaleString('vi-VN')} ₫</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">Thuế VAT (8%)</span>
-                    <span className="text-white">{tax.toLocaleString('vi-VN')} ₫</span>
-                  </div>
-                  <Separator className="bg-slate-800" />
-                  <div className="flex justify-between text-lg font-bold">
-                    <span className="gaming-text-gradient">Tổng cộng</span>
-                    <span className="gaming-text-gradient">{total.toLocaleString('vi-VN')} ₫</span>
-                  </div>
+          <div className="space-y-4">
+            <div className="bg-[#0f1117] border border-[#1e2535] rounded-3xl overflow-hidden sticky top-6">
+              <div className="p-6 border-b border-[#1e2535]">
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-500 mb-2">Tóm tắt đơn hàng</p>
+                <h2 className="text-2xl font-semibold text-white">Thanh toán nhanh</h2>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="flex justify-between text-sm text-slate-400">
+                  <span>Tạm tính</span>
+                  <span>{formatPrice(subtotal)}</span>
                 </div>
-
-                <Button size="lg" className="w-full gaming-gradient hover:scale-105 transition">
-                  <CreditCard className="w-5 h-5 mr-2" />
-                  Tiến hành thanh toán
+                <div className="flex justify-between text-sm text-slate-400">
+                  <span>Phí vận chuyển</span>
+                  <span className={shippingCost === 0 ? 'text-emerald-400' : 'text-slate-300'}>{shippingCost === 0 ? 'Miễn phí' : formatPrice(shippingCost)}</span>
+                </div>
+                {couponApplied && (
+                  <div className="flex justify-between text-sm text-emerald-400">
+                    <span>Giảm giá COREBUILD5</span>
+                    <span>-{formatPrice(discount)}</span>
+                  </div>
+                )}
+                <Separator className="bg-[#1e2535]" />
+                <div className="flex justify-between items-baseline gap-4">
+                  <span className="text-slate-300 font-semibold">Tổng</span>
+                  <span className="text-3xl font-bold text-indigo-400">{formatPrice(totalPrice)}</span>
+                </div>
+                <p className="text-xs text-slate-500">Mua thêm {formatPrice(Math.max(0, SHIPPING_FREE_THRESHOLD - subtotal))} để được miễn phí vận chuyển</p>
+                <Button size="lg" className="w-full gaming-gradient" disabled={processing || items.length === 0}>
+                  <CreditCard className="w-5 h-5 mr-2" /> Xác nhận thanh toán
                 </Button>
+              </div>
+            </div>
 
-                <div className="text-xs text-slate-400 text-center">
-                  Bảo mật thanh toán với SSL 256-bit
+            <div className="bg-[#0f1117] border border-[#1e2535] rounded-3xl p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-slate-400 text-sm">Mã giảm giá</p>
+                  <p className="text-xs text-slate-500">Dùng COREBUILD5 để giảm 5%</p>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Shipping Options */}
-            <Card className="bg-slate-900/50 border-slate-800">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Truck className="w-5 h-5" />
-                  Phương thức giao hàng
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {shippingOptions.map((option) => (
-                  <div
-                    key={option.id}
-                    className="flex items-center justify-between p-3 rounded-lg border border-slate-700 hover:border-blue-500/50 transition cursor-pointer"
-                  >
-                    <div>
-                      <p className="text-white font-medium">{option.name}</p>
-                      <p className="text-xs text-slate-400">{option.days}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-white font-medium">
-                        {option.price === 0 ? 'Miễn phí' : `${option.price.toLocaleString('vi-VN')} ₫`}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Trust Badges */}
-            <Card className="bg-slate-900/50 border-slate-800">
-              <CardContent className="p-6">
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div className="flex flex-col items-center">
-                    <Shield className="w-8 h-8 text-green-400 mb-2" />
-                    <span className="text-xs text-slate-400">Bảo hành chính hãng</span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <Truck className="w-8 h-8 text-blue-400 mb-2" />
-                    <span className="text-xs text-slate-400">Giao hàng tận nơi</span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <RefreshCw className="w-8 h-8 text-purple-400 mb-2" />
-                    <span className="text-xs text-slate-400">Đổi trả dễ dàng</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Promo Code */}
-            <Card className="bg-slate-900/50 border-slate-800">
-              <CardHeader>
-                <CardTitle>Mã giảm giá</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-2">
+              </div>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Tag className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4" />
                   <input
-                    type="text"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    className="w-full rounded-2xl border border-[#2a3045] bg-[#141827] py-3 pl-11 pr-4 text-sm text-white placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none"
                     placeholder="Nhập mã giảm giá"
-                    className="flex-1 px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
                   />
-                  <Button variant="outline" className="border-slate-700 hover:bg-slate-800">
-                    Áp dụng
-                  </Button>
                 </div>
-                <p className="text-xs text-slate-400 mt-2">
-                  Nhập WELCOME để được giảm 5% cho đơn hàng đầu tiên
-                </p>
-              </CardContent>
-            </Card>
+                <button
+                  onClick={handleCoupon}
+                  className="px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white transition"
+                >
+                  Áp dụng
+                </button>
+              </div>
+              {couponMessage ? (
+                <p className={`text-sm ${couponApplied ? 'text-emerald-400' : 'text-rose-400'}`}>{couponMessage}</p>
+              ) : null}
+            </div>
+
+            <div className="bg-[#0f1117] border border-[#1e2535] rounded-3xl p-6 space-y-4">
+              <div className="flex items-center gap-3 text-slate-300">
+                <Shield className="w-5 h-5 text-emerald-400" />
+                <span>Bảo mật thanh toán và giao dịch nhanh chóng.</span>
+              </div>
+              <div className="grid gap-3">
+                <div className="flex items-center gap-3 text-slate-400 text-sm">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>Chính sách đổi trả 30 ngày</span>
+                </div>
+                <div className="flex items-center gap-3 text-slate-400 text-sm">
+                  <Truck className="w-4 h-4 text-slate-400" />
+                  <span>Vận chuyển nhanh và theo dõi đơn hàng miễn phí</span>
+                </div>
+                <div className="flex items-center gap-3 text-slate-400 text-sm">
+                  <Banknote className="w-4 h-4 text-slate-400" />
+                  <span>Thanh toán khi nhận hàng hoặc chuyển khoản</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

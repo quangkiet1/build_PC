@@ -10,17 +10,32 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator'
 import { Cpu, Monitor, Database, HardDrive, Zap, CircuitBoard, Fan, Sparkles, ShieldCheck, ShoppingCart, ArrowRight } from 'lucide-react'
 
-// Mock component data
-const componentCategories = [
+type ComponentOption = {
+  id: string
+  name: string
+  price: number
+  socket?: string
+  wattage?: number
+  speed?: string
+}
+
+type ComponentCategory = {
+  id: string
+  name: string
+  icon: typeof Cpu
+  required: boolean
+  options: ComponentOption[]
+}
+
+const componentCategories: ComponentCategory[] = [
   {
     id: 'cpu',
     name: 'CPU',
     icon: Cpu,
     required: true,
-    components: [
+    options: [
       { id: 'intel-i7-13700k', name: 'Intel Core i7-13700K', price: 18500000, socket: 'LGA1700', wattage: 125 },
-      { id: 'amd-7800x3d', name: 'AMD Ryzen 7 7800X3D', price: 16500000, socket: 'AM5', wattage: 120 },
-      { id: 'intel-i9-13900k', name: 'Intel Core i9-13900K', price: 22500000, socket: 'LGA1700', wattage: 125 }
+      { id: 'amd-7800x3d', name: 'AMD Ryzen 7 7800X3D', price: 16500000, socket: 'AM5', wattage: 120 }
     ]
   },
   {
@@ -28,21 +43,19 @@ const componentCategories = [
     name: 'Mainboard',
     icon: CircuitBoard,
     required: true,
-    components: [
-      { id: 'asus-z790-e', name: 'ASUS ROG Strix Z790-E', price: 8500000, socket: 'LGA1700', chipset: 'Z790' },
-      { id: 'msi-b650-tomahawk', name: 'MSI B650 Tomahawk', price: 6500000, socket: 'AM5', chipset: 'B650' },
-      { id: 'gigabyte-z690-aorus', name: 'Gigabyte Z690 Aorus Elite', price: 7200000, socket: 'LGA1700', chipset: 'Z690' }
+    options: [
+      { id: 'asus-z790-e', name: 'ASUS ROG Strix Z790-E', price: 8500000, socket: 'LGA1700' },
+      { id: 'msi-b650-tomahawk', name: 'MSI B650 Tomahawk', price: 6500000, socket: 'AM5' }
     ]
   },
   {
     id: 'gpu',
-    name: 'Card đồ họa',
+    name: 'GPU',
     icon: Monitor,
     required: false,
-    components: [
-      { id: 'rtx-4070-ti', name: 'ASUS RTX 4070 Ti ROG Strix', price: 28500000, wattage: 285 },
-      { id: 'rx-7900-xtx', name: 'AMD RX 7900 XTX', price: 26500000, wattage: 355 },
-      { id: 'rtx-4080', name: 'NVIDIA RTX 4080', price: 32500000, wattage: 320 }
+    options: [
+      { id: 'rtx-4070-ti', name: 'ASUS RTX 4070 Ti', price: 28500000, wattage: 285 },
+      { id: 'rx-7900-xtx', name: 'AMD RX 7900 XTX', price: 26500000, wattage: 355 }
     ]
   },
   {
@@ -50,21 +63,19 @@ const componentCategories = [
     name: 'RAM',
     icon: Database,
     required: true,
-    components: [
-      { id: 'corsair-ddr5-32gb', name: 'Corsair Vengeance DDR5 32GB', price: 4500000, type: 'DDR5', speed: '6400MHz' },
-      { id: 'gskill-ddr5-32gb', name: 'G.Skill Trident Z5 DDR5 32GB', price: 4800000, type: 'DDR5', speed: '6000MHz' },
-      { id: 'kingston-ddr5-16gb', name: 'Kingston Fury DDR5 16GB', price: 2200000, type: 'DDR5', speed: '5600MHz' }
+    options: [
+      { id: 'corsair-ddr5-32gb', name: 'Corsair Vengeance DDR5 32GB', price: 4500000, speed: '6400MHz' },
+      { id: 'gskill-ddr5-32gb', name: 'G.Skill Trident Z5 DDR5 32GB', price: 4800000, speed: '6000MHz' }
     ]
   },
   {
     id: 'storage',
-    name: 'Ổ cứng',
+    name: 'Storage',
     icon: HardDrive,
     required: true,
-    components: [
-      { id: 'samsung-990-pro-1tb', name: 'Samsung 990 PRO 1TB', price: 4800000, type: 'NVMe SSD', interface: 'PCIe 4.0' },
-      { id: 'wd-black-sn850-1tb', name: 'WD Black SN850 1TB', price: 4200000, type: 'NVMe SSD', interface: 'PCIe 4.0' },
-      { id: 'seagate-barracuda-2tb', name: 'Seagate Barracuda 2TB', price: 1800000, type: 'HDD', interface: 'SATA' }
+    options: [
+      { id: 'samsung-990-pro-1tb', name: 'Samsung 990 PRO 1TB', price: 4800000 },
+      { id: 'wd-black-sn850-1tb', name: 'WD Black SN850 1TB', price: 4200000 }
     ]
   },
   {
@@ -72,397 +83,226 @@ const componentCategories = [
     name: 'Nguồn',
     icon: Zap,
     required: true,
-    components: [
-      { id: 'corsair-rm850x', name: 'Corsair RM850x', price: 3200000, wattage: 850, efficiency: '80+ Gold' },
-      { id: 'seasonic-focus-750', name: 'Seasonic Focus GX-750', price: 3800000, wattage: 750, efficiency: '80+ Gold' },
-      { id: 'be-quiet-700', name: 'be quiet! Straight Power 11 700W', price: 3500000, wattage: 700, efficiency: '80+ Platinum' }
+    options: [
+      { id: 'corsair-rm850x', name: 'Corsair RM850x 850W', price: 3200000, wattage: 850 },
+      { id: 'seasonic-focus-750', name: 'Seasonic Focus GX-750', price: 3800000, wattage: 750 }
     ]
   },
   {
-    id: 'case',
-    name: 'Case',
-    icon: Package,
-    required: true,
-    components: [
-      { id: 'lian-li-pc-o11', name: 'Lian Li PC-O11 Dynamic', price: 4800000, formFactor: 'Mid Tower' },
-      { id: 'fractal-meshify-c', name: 'Fractal Design Meshify C', price: 3200000, formFactor: 'Mid Tower' },
-      { id: 'corsair-4000d', name: 'Corsair 4000D Airflow', price: 2200000, formFactor: 'Mid Tower' }
-    ]
-  },
-  {
-    id: 'cooler',
+    id: 'cooling',
     name: 'Tản nhiệt',
     icon: Fan,
     required: false,
-    components: [
-      { id: 'noctua-nh-d15', name: 'Noctua NH-D15', price: 2800000, type: 'Air Cooler' },
-      { id: 'corsair-h100i', name: 'Corsair H100i Elite Capellix', price: 3200000, type: 'AIO Liquid' },
-      { id: 'arctic-liquid-freezer', name: 'Arctic Liquid Freezer II 280', price: 2600000, type: 'AIO Liquid' }
+    options: [
+      { id: 'noctua-nh-d15', name: 'Noctua NH-D15', price: 2800000 },
+      { id: 'corsair-h100i', name: 'Corsair H100i Elite Capellix', price: 3200000 }
     ]
   }
 ]
 
-interface SelectedComponent {
-  categoryId: string
-  component: any
-}
+export default function BuilderPage() {
+  const [selectedCategory, setSelectedCategory] = useState<string>('cpu')
+  const [chosenOptions, setChosenOptions] = useState<Record<string, ComponentOption>>({})
+  const [budget, setBudget] = useState('25000000')
 
-export default function PCBuilderPage() {
-  const [selectedComponents, setSelectedComponents] = useState<SelectedComponent[]>([])
-  const [compatibilityIssues, setCompatibilityIssues] = useState<string[]>([])
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [buildName, setBuildName] = useState('')
+  const activeCategory = componentCategories.find((category) => category.id === selectedCategory)
+  const selectedOption = activeCategory ? chosenOptions[activeCategory.id] : undefined
 
-  // Calculate total price
-  const totalPrice = selectedComponents.reduce((sum, item) => sum + item.component.price, 0)
+  const totalPrice = Object.values(chosenOptions).reduce((acc, option) => acc + option.price, 0)
 
-  // Check compatibility
-  useEffect(() => {
-    const issues: string[] = []
+  const availableOptions = activeCategory?.options ?? []
 
-    // Check CPU-Motherboard socket compatibility
-    const cpu = selectedComponents.find(c => c.categoryId === 'cpu')?.component
-    const motherboard = selectedComponents.find(c => c.categoryId === 'motherboard')?.component
+  const handleSelectOption = (option: ComponentOption) => {
+    setChosenOptions((prev) => ({ ...prev, [selectedCategory]: option }))
+  }
 
-    if (cpu && motherboard && cpu.socket !== motherboard.socket) {
-      issues.push(`CPU ${cpu.name} không tương thích với Mainboard ${motherboard.name} (${cpu.socket} ≠ ${motherboard.socket})`)
+  const isComplete = componentCategories.filter((category) => category.required).every((category) => chosenOptions[category.id])
+
+  const warningText = (() => {
+    const cpu = chosenOptions['cpu']
+    const motherboard = chosenOptions['motherboard']
+    const psu = chosenOptions['psu']
+    const gpu = chosenOptions['gpu']
+
+    if (cpu && motherboard && cpu.socket && motherboard.socket && cpu.socket !== motherboard.socket) {
+      return `Cảnh báo: CPU và Mainboard không tương thích (${cpu.socket} ≠ ${motherboard.socket})`
     }
 
-    // Check PSU wattage
-    const gpu = selectedComponents.find(c => c.categoryId === 'gpu')?.component
-    const psu = selectedComponents.find(c => c.categoryId === 'psu')?.component
-
-    if (gpu && psu) {
-      const totalWattage = (cpu?.wattage || 0) + (gpu?.wattage || 0) + 100 // +100W for other components
-      if (totalWattage > psu.wattage) {
-        issues.push(`Nguồn ${psu.wattage}W không đủ cho cấu hình (cần ít nhất ${totalWattage}W)`)
-      }
+    if (gpu && psu && gpu.wattage && psu.wattage && gpu.wattage + 150 > psu.wattage) {
+      return `Cảnh báo: PSU có thể không đủ cho GPU ${gpu.wattage}W`
     }
 
-    setCompatibilityIssues(issues)
-  }, [selectedComponents])
-
-  const addComponent = (categoryId: string, component: any) => {
-    const existingIndex = selectedComponents.findIndex(c => c.categoryId === categoryId)
-
-    if (existingIndex >= 0) {
-      // Replace existing component
-      const newComponents = [...selectedComponents]
-      newComponents[existingIndex] = { categoryId, component }
-      setSelectedComponents(newComponents)
-    } else {
-      // Add new component
-      setSelectedComponents([...selectedComponents, { categoryId, component }])
-    }
-
-    setSelectedCategory(null)
-  }
-
-  const removeComponent = (categoryId: string) => {
-    setSelectedComponents(selectedComponents.filter(c => c.categoryId !== categoryId))
-  }
-
-  const getSelectedComponent = (categoryId: string) => {
-    return selectedComponents.find(c => c.categoryId === categoryId)?.component
-  }
-
-  const isComplete = () => {
-    const requiredCategories = componentCategories.filter(cat => cat.required).map(cat => cat.id)
-    return requiredCategories.every(catId => selectedComponents.some(c => c.categoryId === catId))
-  }
-
-  const saveBuild = () => {
-    // In real app, this would save to database
-    alert('Cấu hình đã được lưu!')
-  }
+    return ''
+  })()
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      {/* Header */}
       <header className="border-b border-slate-800 bg-slate-900/95 backdrop-blur sticky top-0 z-50">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="text-3xl font-bold gaming-text-gradient">⚙️ PC BUILDER</div>
-            </Link>
-            <div className="flex items-center gap-6">
-              <Link href="/products" className="text-slate-300 hover:text-blue-400 transition">Sản phẩm</Link>
-              <Link href="/" className="text-slate-300 hover:text-blue-400 transition">Trang chủ</Link>
-              <Link href="/builder" className="gaming-gradient px-4 py-2 rounded-lg font-semibold">PC Builder</Link>
-              <Link href="/cart" className="text-slate-300 hover:text-blue-400 transition flex items-center gap-1">
-                <ShoppingCart className="w-4 h-4" />
-                Giỏ hàng
-              </Link>
-              <Button variant="outline" className="border-slate-700 hover:bg-slate-800">
-                <HeadphonesIcon className="w-4 h-4 mr-2" />
-                Hỗ trợ
-              </Button>
-            </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Build PC</p>
+            <h1 className="mt-2 text-4xl font-bold text-white">Tạo cấu hình PC theo nhu cầu</h1>
           </div>
-        </nav>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link href="/products" className="text-slate-200 hover:text-blue-400 transition">Xem sản phẩm</Link>
+            <Link href="/" className="gaming-gradient rounded-3xl px-5 py-3 text-sm font-semibold">Về trang chủ</Link>
+          </div>
+        </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4">
-            ⚙️ PC Builder <span className="gaming-text-gradient">Thông minh</span>
-          </h1>
-          <p className="text-xl text-slate-300">
-            Xây dựng cấu hình PC hoàn hảo với kiểm tra tương thích tự động và gợi ý tối ưu
-          </p>
-        </div>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+        <section className="grid gap-6 lg:grid-cols-[1.8fr_1fr]">
+          <div className="rounded-[2rem] border border-slate-800 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/20">
+            <div className="flex items-center justify-between gap-4 mb-8">
+              <div>
+                <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">Cấu hình linh kiện</p>
+                <h2 className="mt-2 text-3xl font-bold text-white">Chọn linh kiện cho hệ thống</h2>
+              </div>
+              <Badge className="bg-blue-500/10 text-blue-300 border border-blue-500/20">Giá ước tính</Badge>
+            </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Component Categories */}
-          <div className="lg:col-span-2 space-y-6">
-            {componentCategories.map((category) => {
-              const Icon = category.icon
-              const selectedComponent = getSelectedComponent(category.id)
+            <div className="flex flex-wrap gap-4 mb-8">
+              {componentCategories.map((category) => {
+                const Icon = category.icon
+                const active = selectedCategory === category.id
+                const filled = !!chosenOptions[category.id]
 
-              return (
-                <Card key={category.id} className="bg-slate-900/50 border-slate-800">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                          selectedComponent ? 'bg-green-500/20' : 'bg-slate-800'
-                        }`}>
-                          <Icon className={`w-5 h-5 ${
-                            selectedComponent ? 'text-green-400' : 'text-slate-400'
-                          }`} />
-                        </div>
-                        <div>
-                          <CardTitle className="text-white flex items-center gap-2">
-                            {category.name}
-                            {category.required && (
-                              <Badge variant="outline" className="border-red-500/30 text-red-400 text-xs">
-                                Bắt buộc
-                              </Badge>
-                            )}
-                          </CardTitle>
-                          {selectedComponent && (
-                            <p className="text-sm text-slate-400">{selectedComponent.name}</p>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        {selectedComponent && (
-                          <div className="text-right mr-4">
-                            <div className="text-lg font-bold gaming-text-gradient">
-                              {selectedComponent.price.toLocaleString()} ₫
-                            </div>
-                          </div>
-                        )}
-
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="border-slate-700 hover:bg-slate-800"
-                              onClick={() => setSelectedCategory(category.id)}
-                            >
-                              {selectedComponent ? 'Thay đổi' : <Plus className="w-4 h-4" />}
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-4xl bg-slate-900 border-slate-800">
-                            <DialogHeader>
-                              <DialogTitle className="text-white flex items-center gap-2">
-                                <Icon className="w-5 h-5 text-blue-400" />
-                                Chọn {category.name}
-                              </DialogTitle>
-                            </DialogHeader>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
-                              {category.components.map((component) => (
-                                <Card
-                                  key={component.id}
-                                  className="bg-slate-800/50 border-slate-700 hover:border-blue-500/50 cursor-pointer transition"
-                                  onClick={() => addComponent(category.id, component)}
-                                >
-                                  <CardContent className="p-4">
-                                    <div className="flex justify-between items-start mb-2">
-                                      <h4 className="font-semibold text-white">{component.name}</h4>
-                                      <div className="text-right">
-                                        <div className="text-lg font-bold gaming-text-gradient">
-                                          {component.price.toLocaleString()} ₫
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="space-y-1 text-sm text-slate-400">
-                                      {Object.entries(component).map(([key, value]) => {
-                                        if (key !== 'id' && key !== 'name' && key !== 'price') {
-                                          return (
-                                            <div key={key} className="flex justify-between">
-                                              <span className="capitalize">{key}:</span>
-                                              <span>{String(value)}</span>
-                                            </div>
-                                          )
-                                        }
-                                        return null
-                                      })}
-                                    </div>
-                                  </CardContent>
-                                </Card>
-                              ))}
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-
-                        {selectedComponent && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="border-red-500/30 text-red-400 hover:bg-red-500/10"
-                            onClick={() => removeComponent(category.id)}
-                          >
-                            <X className="w-4 h-4" />
-                          </Button>
-                        )}
-                      </div>
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`flex items-center gap-3 rounded-3xl border px-4 py-3 text-left transition ${active ? 'border-blue-400 bg-blue-500/10 text-white' : 'border-slate-800 bg-slate-950/80 text-slate-200 hover:border-blue-500/40'}`}>
+                    <div className={`rounded-2xl p-2 ${active ? 'bg-blue-500/20 text-blue-400' : 'bg-slate-800 text-slate-400'}`}>
+                      <Icon className="h-5 w-5" />
                     </div>
-                  </CardHeader>
-                </Card>
-              )
-            })}
-          </div>
+                    <div>
+                      <p className="font-semibold">{category.name}</p>
+                      <p className="text-xs text-slate-400">{filled ? 'Đã chọn' : 'Chưa chọn'}</p>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
 
-          {/* Build Summary */}
-          <div className="space-y-6">
-            {/* Build Info */}
-            <Card className="bg-slate-900/50 border-slate-800">
-              <CardHeader>
-                <CardTitle className="text-white">Thông tin cấu hình</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <div className="rounded-[2rem] border border-slate-800 bg-slate-950/80 p-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Tên cấu hình
-                  </label>
-                  <input
-                    type="text"
-                    value={buildName}
-                    onChange={(e) => setBuildName(e.target.value)}
-                    placeholder="Gaming Beast, Work Station..."
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none"
+                  <p className="text-sm text-slate-400">Ngân sách mục tiêu</p>
+                  <p className="mt-2 text-3xl font-bold text-white">{Number(budget).toLocaleString('vi-VN')} ₫</p>
+                </div>
+                <div className="w-full sm:w-auto">
+                  <Input
+                    type="number"
+                    value={budget}
+                    onChange={(event) => setBudget(event.target.value)}
+                    className="bg-slate-950 border-slate-800 text-white"
+                    placeholder="Nhập ngân sách"
                   />
                 </div>
+              </div>
+            </div>
 
-                <div className="flex gap-2">
-                  <Button onClick={saveBuild} variant="outline" size="sm" className="flex-1 border-slate-700 hover:bg-slate-800">
-                    <Save className="w-4 h-4 mr-2" />
-                    Lưu
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex-1 border-slate-700 hover:bg-slate-800">
-                    <Share className="w-4 h-4 mr-2" />
-                    Chia sẻ
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Compatibility Check */}
-            {compatibilityIssues.length > 0 && (
-              <Card className="bg-red-500/10 border-red-500/30">
-                <CardHeader>
-                  <CardTitle className="text-red-400 flex items-center gap-2">
-                    <AlertTriangle className="w-5 h-5" />
-                    Vấn đề tương thích
-                  </CardTitle>
+            <div className="mt-8 space-y-6">
+              <div className="rounded-[2rem] border border-slate-800 bg-slate-900/80 p-6">
+                <CardHeader className="p-0">
+                  <CardTitle className="text-xl font-semibold text-white">{activeCategory?.name}</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {compatibilityIssues.map((issue, index) => (
-                      <li key={index} className="text-sm text-red-300 flex items-start gap-2">
-                        <X className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                        {issue}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Build Status */}
-            <Card className="bg-slate-900/50 border-slate-800">
-              <CardHeader>
-                <CardTitle className="text-white">Trạng thái cấu hình</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  {componentCategories.filter(cat => cat.required).map((category) => {
-                    const hasComponent = selectedComponents.some(c => c.categoryId === category.id)
-                    return (
-                      <div key={category.id} className="flex items-center justify-between">
-                        <span className="text-sm text-slate-300">{category.name}</span>
-                        {hasComponent ? (
-                          <CheckCircle className="w-4 h-4 text-green-400" />
-                        ) : (
-                          <X className="w-4 h-4 text-red-400" />
-                        )}
+                <div className="mt-5 grid gap-4 md:grid-cols-2">
+                  {availableOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={() => handleSelectOption(option)}
+                      className={`rounded-3xl border p-5 text-left transition ${selectedOption?.id === option.id ? 'border-blue-500 bg-blue-500/10' : 'border-slate-800 bg-slate-950/90 hover:border-blue-500/40'}`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-semibold text-white">{option.name}</p>
+                        <span className="text-slate-400">{option.price.toLocaleString('vi-VN')} ₫</span>
                       </div>
-                    )
-                  })}
+                      {option.socket && <p className="mt-2 text-sm text-slate-400">Socket: {option.socket}</p>}
+                      {option.wattage && <p className="mt-1 text-sm text-slate-400">Wattage: {option.wattage}W</p>}
+                      {option.speed && <p className="mt-1 text-sm text-slate-400">Tốc độ: {option.speed}</p>}
+                    </button>
+                  ))}
                 </div>
+              </div>
 
-                <Separator className="bg-slate-700" />
-
-                <div className="text-center">
-                  {isComplete() && compatibilityIssues.length === 0 ? (
-                    <div className="text-green-400 flex items-center justify-center gap-2 mb-4">
-                      <CheckCircle className="w-5 h-5" />
-                      Cấu hình hoàn chỉnh!
-                    </div>
-                  ) : (
-                    <div className="text-yellow-400 flex items-center justify-center gap-2 mb-4">
-                      <AlertTriangle className="w-5 h-5" />
-                      Cần hoàn thiện
-                    </div>
-                  )}
+              {warningText ? (
+                <div className="rounded-3xl border border-amber-500/20 bg-amber-500/10 p-5 text-amber-100">
+                  <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.3em] text-amber-200">
+                    <ShieldCheck className="h-4 w-4" />
+                    Cảnh báo tương thích
+                  </div>
+                  <p className="mt-3 text-slate-200">{warningText}</p>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Total Price */}
-            <Card className="bg-slate-900/50 border-slate-800">
-              <CardHeader>
-                <CardTitle className="text-white">Tổng cộng</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold gaming-text-gradient mb-4">
-                  {totalPrice.toLocaleString()} ₫
+              ) : (
+                <div className="rounded-3xl border border-slate-800 bg-slate-950/80 p-5 text-slate-300">
+                  <p className="text-sm">Không có lỗi tương thích được phát hiện.</p>
                 </div>
-
-                <div className="space-y-2">
-                  <Button
-                    className="w-full gaming-gradient hover:scale-105 transition"
-                    disabled={!isComplete() || compatibilityIssues.length > 0}
-                  >
-                    <ShoppingCart className="w-4 h-4 mr-2" />
-                    Thêm vào giỏ hàng
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    className="w-full border-slate-700 hover:bg-slate-800"
-                    asChild
-                  >
-                    <Link href="/checkout">
-                      Thanh toán ngay
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Link>
-                  </Button>
-                </div>
-
-                <div className="mt-4 text-xs text-slate-400 text-center">
-                  Giá đã bao gồm VAT • Bảo hành chính hãng
-                </div>
-              </CardContent>
-            </Card>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
+
+          <aside className="space-y-6">
+            <div className="rounded-[2rem] border border-slate-800 bg-slate-900/85 p-6 shadow-2xl shadow-slate-950/20">
+              <div className="flex items-center justify-between gap-3 mb-5">
+                <div>
+                  <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">Tóm tắt cấu hình</p>
+                  <h2 className="mt-2 text-2xl font-bold text-white">Giỏ linh kiện</h2>
+                </div>
+                <Badge className="bg-blue-500/10 text-blue-300 border border-blue-500/20">{isComplete ? 'Đầy đủ' : 'Thiếu'}</Badge>
+              </div>
+
+              <div className="space-y-4">
+                {componentCategories.map((category) => {
+                  const selected = chosenOptions[category.id]
+                  return (
+                    <div key={category.id} className="rounded-3xl border border-slate-800 bg-slate-950/90 p-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-sm text-slate-400">{category.name}</p>
+                          <p className="mt-1 text-white">{selected ? selected.name : 'Chưa chọn'}</p>
+                        </div>
+                        {selected ? (
+                          <Button variant="outline" size="sm" className="rounded-full border-slate-700 text-slate-200" onClick={() => setChosenOptions((prev) => {
+                            const copy = { ...prev }
+                            delete copy[category.id]
+                            return copy
+                          })}>
+                            X
+                          </Button>
+                        ) : null}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              <Separator className="my-6 border-slate-800" />
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between text-slate-400">
+                  <span>Tổng giá</span>
+                  <span className="text-white font-semibold">{totalPrice.toLocaleString('vi-VN')} ₫</span>
+                </div>
+                <Button className="w-full rounded-3xl bg-blue-500 hover:bg-blue-400" disabled={!isComplete}>
+                  {isComplete ? 'Lưu cấu hình và đặt hàng' : 'Hoàn thành cấu hình để lưu'}
+                </Button>
+                <Button variant="outline" className="w-full rounded-3xl border-slate-700 text-slate-200">
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Mua ngay
+                </Button>
+              </div>
+            </div>
+
+            <div className="rounded-[2rem] border border-slate-800 bg-slate-950/90 p-6">
+              <div className="flex items-center gap-3 text-slate-300">
+                <Sparkles className="h-5 w-5 text-cyan-300" />
+                <p className="text-sm uppercase tracking-[0.3em]">Gợi ý tối ưu</p>
+              </div>
+              <p className="mt-3 text-slate-300">Duy trì cân bằng giữa CPU, GPU và nguồn để có hiệu năng tốt nhất với hệ thống ổn định.</p>
+            </div>
+          </aside>
+        </section>
+      </main>
     </div>
   )
 }
