@@ -64,8 +64,47 @@ model SanPham {
   chiTietDonHangs ChiTietDonHang[]
   buildItems      BuildItem[]
   gioHangItems    GioHangItem[]
+  khuyenMaiSanPhams KhuyenMaiSanPham[]
 
   @@map("san_pham")
+}
+
+// ====================== KHUYẾN MÃI ======================
+model KhuyenMai {
+  id            String   @id @default(cuid())
+  maKhuyenMai   String   @unique
+  tenKhuyenMai  String
+  moTa          String?
+  phanTramGiam  Int      // Phần trăm giảm (1-100)
+  ngayBatDau    DateTime
+  ngayKetThuc   DateTime
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Quan hệ
+  khuyenMaiSanPhams KhuyenMaiSanPham[]
+
+  @@map("khuyen_mai")
+}
+
+model KhuyenMaiSanPham {
+  id              String   @id @default(cuid())
+  phanTramGiam    Int      // Phần trăm giảm riêng cho sản phẩm này (1-100)
+  ngayBatDau      DateTime
+  ngayKetThuc     DateTime
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  khuyenMaiId     String?
+  khuyenMai       KhuyenMai?  @relation(fields: [khuyenMaiId], references: [id])
+
+  sanPhamId       String
+  sanPham         SanPham    @relation(fields: [sanPhamId], references: [id])
+
+  @@unique([khuyenMaiId, sanPhamId])
+  @@map("khuyen_mai_san_pham")
 }
 
 // ====================== BUILD PC ======================

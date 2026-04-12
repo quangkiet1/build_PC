@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import { ToastProvider } from "./providers/toast-provider";
 import { CartProvider } from "./providers/cart-provider";
 import { ToastContainer } from "@/components/toast-container";
 import { Header } from "@/components/header";
+import { AuthModal } from "@/components/auth-modal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +37,9 @@ export default function RootLayout({
         <ToastProvider>
           <CartProvider>
             <Header />
+            <Suspense fallback={null}>
+              <AuthModal />
+            </Suspense>
             <ToastContainer />
             {children}
           </CartProvider>

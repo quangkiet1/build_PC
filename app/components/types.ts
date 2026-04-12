@@ -1,3 +1,5 @@
+import { Prisma } from '@prisma/client'
+
 export interface Product {
   id: string
   tenSanPham: string
@@ -7,7 +9,7 @@ export interface Product {
   hinhAnhs?: string[]
   moTa?: string | null
   soLuongTon: number
-  thongSoKyThuat?: any
+  thongSoKyThuat?: Prisma.JsonValue | null
   danhMuc?: {
     id: string
     tenDanhMuc: string

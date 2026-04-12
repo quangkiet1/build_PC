@@ -1,40 +1,57 @@
-﻿import { prisma } from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
-import { authenticateRequest } from '@/lib/auth'
+import { authorizeRoles } from '@/lib/auth'
+import { Prisma } from '@prisma/client'
+
+function buildWhere(search: string, category: string): Prisma.SanPhamWhereInput {
+  return {
+    ...(search
+      ? {
+          OR: [
+            { tenSanPham: { contains: search, mode: 'insensitive' } },
+            { moTa: { contains: search, mode: 'insensitive' } }
+          ]
+        }
+      : {}),
+    ...(category && category.toLowerCase() !== 'all'
+      ? {
+          danhMuc: { tenDanhMuc: { equals: category, mode: 'insensitive' } }
+        }
+      : {})
+  }
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  const page = parseInt(searchParams.get('page') || '1')
-  const limit = parseInt(searchParams.get('limit') || '12')
-  const skip = (page - 1) * limit
+  const page = Number(searchParams.get('page') || '1')
+  const limit = Number(searchParams.get('limit') || '12')
   const search = searchParams.get('search') || ''
   const category = searchParams.get('category') || ''
+  const sort = searchParams.get('sort') || 'newest'
+  const skip = (page - 1) * limit
 
-  const where: any = {}
-  if (search) {
-    where.OR = [
-      { tenSanPham: { contains: search, mode: 'insensitive' } },
-      { moTa: { contains: search, mode: 'insensitive' } }
-    ]
-  }
+  const where = buildWhere(search, category)
+  const orderBy =
+    sort === 'price-asc'
+      ? ({ gia: 'asc' } as const)
+      : sort === 'price-desc'
+        ? ({ gia: 'desc' } as const)
+        : ({ createdAt: 'desc' } as const)
 
-  if (category && category.toLowerCase() !== 'all') {
-    where.danhMuc = { tenDanhMuc: { equals: category, mode: 'insensitive' } }
-  }
-
-  const data = await prisma.sanPham.findMany({
-    where,
-    include: {
-      danhMuc: {
-        select: { id: true, tenDanhMuc: true }
-      }
-    },
-    orderBy: { createdAt: 'desc' },
-    skip,
-    take: limit
-  })
-
-  const total = await prisma.sanPham.count({ where })
+  const [data, total] = await Promise.all([
+    prisma.sanPham.findMany({
+      where,
+      include: {
+        danhMuc: {
+          select: { id: true, tenDanhMuc: true }
+        }
+      },
+      orderBy,
+      skip,
+      take: limit
+    }),
+    prisma.sanPham.count({ where })
+  ])
 
   return NextResponse.json({
     success: true,
@@ -49,16 +66,16 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: NextRequest) {
-  const user = await authenticateRequest(request)
-  if (!user || user.vaiTro !== 'QUAN_TRI_VIEN') {
-    return NextResponse.json({ error: 'Chỉ admin mới có quyền tạo sản phẩm' }, { status: 403 })
+  const auth = await authorizeRoles(request, ['QUAN_TRI_VIEN'])
+  if (!auth.user) {
+    return NextResponse.json({ error: 'Chi admin moi co quyen tao san pham' }, { status: 403 })
   }
 
   const body = await request.json()
   const { tenSanPham, slug, gia, moTa, danhMucId, thongSoKyThuat, hinhAnh, hinhAnhs, soLuongTon } = body
 
   if (!tenSanPham || !slug || !gia || !danhMucId) {
-    return NextResponse.json({ error: 'Thiếu thông tin sản phẩm' }, { status: 400 })
+    return NextResponse.json({ error: 'Thieu thong tin san pham' }, { status: 400 })
   }
 
   const product = await prisma.sanPham.create({
@@ -72,8 +89,9 @@ export async function POST(request: NextRequest) {
       hinhAnh: hinhAnh || null,
       hinhAnhs: hinhAnhs || [],
       soLuongTon: Number(soLuongTon || 0)
-    }
+    },
+    include: { danhMuc: true }
   })
 
-  return NextResponse.json({ success: true, product })
+  return NextResponse.json({ success: true, product }, { status: 201 })
 }

@@ -22,8 +22,8 @@ export function ProductFilters({
   initialSort
 }: ProductFiltersProps) {
   const [search, setSearch] = useState(initialSearch)
-  const [category, setCategory] = useState(initialCategory)
-  const [sort, setSort] = useState(initialSort)
+  const [category] = useState(initialCategory)
+  const [sort] = useState(initialSort)
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

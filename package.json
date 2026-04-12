@@ -10,7 +10,8 @@
     "prisma:push": "prisma db push",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "prisma db seed",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "users:seed": "ts-node scripts/create-default-users.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.7.0",

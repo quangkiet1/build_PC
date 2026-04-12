@@ -10,18 +10,18 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   const user = await authenticateRequest(request)
   if (!user || user.vaiTro !== 'QUAN_TRI_VIEN') {
-    return NextResponse.json({ error: 'Chỉ admin mới có quyền tạo danh mục' }, { status: 403 })
+    return NextResponse.json({ error: 'Chi admin moi co quyen tao danh muc' }, { status: 403 })
   }
 
   const body = await request.json()
   const { tenDanhMuc, moTa } = body
   if (!tenDanhMuc) {
-    return NextResponse.json({ error: 'Tên danh mục là bắt buộc' }, { status: 400 })
+    return NextResponse.json({ error: 'Ten danh muc la bat buoc' }, { status: 400 })
   }
 
   const category = await prisma.danhMuc.create({
     data: { tenDanhMuc, moTa: moTa || null }
   })
 
-  return NextResponse.json({ category })
+  return NextResponse.json({ category }, { status: 201 })
 }

@@ -1,9 +1,10 @@
 'use client'
 
+import type { Product } from './types'
 import { ProductDetail } from './ProductDetail'
 
 interface ProductDetailClientProps {
-  product: any
+  product: Product
 }
 
 export function ProductDetailClient({ product }: ProductDetailClientProps) {

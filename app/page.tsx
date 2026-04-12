@@ -1,247 +1,281 @@
-﻿'use client'
-
-import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import {
-  Cpu,
-  Monitor,
-  Database,
-  HardDrive,
-  Zap,
-  Package,
-  Wind,
-  LayoutGrid,
   ArrowRight,
-  Star,
-  TrendingUp,
-  Shield,
-  Truck,
   Award,
   ChevronRight,
-  Wrench,
+  Clock,
+  Cpu,
+  Database,
   Flame,
-  Clock
+  HardDrive,
+  LayoutGrid,
+  Monitor,
+  Package,
+  Shield,
+  TrendingUp,
+  Wind,
+  Wrench,
+  Zap
 } from 'lucide-react'
 import { ProductCard } from './components/ProductCard'
+import { getStorefrontData, normalizeCategoryName } from '@/lib/catalog'
 
 const HERO_IMG = 'https://images.unsplash.com/photo-1707312900236-12d6fefd2bbb?w=1400&q=85'
 const GPU_IMG = 'https://images.unsplash.com/photo-1621164071312-67bb68821b3f?w=800&q=80'
 const PC_IMG = 'https://images.unsplash.com/photo-1634003309303-442c7518f9e9?w=800&q=80'
 
 const categoryCards = [
-  { id: 'cpu', label: 'CPU', sub: 'Intel & AMD', icon: Cpu, color: 'from-blue-500/20 to-blue-600/5', border: 'border-blue-500/20', iconColor: 'text-blue-400' },
-  { id: 'gpu', label: 'GPU', sub: 'RTX & RX Series', icon: Monitor, color: 'from-purple-500/20 to-purple-600/5', border: 'border-purple-500/20', iconColor: 'text-purple-400' },
-  { id: 'ram', label: 'RAM', sub: 'DDR4 & DDR5', icon: Database, color: 'from-emerald-500/20 to-emerald-600/5', border: 'border-emerald-500/20', iconColor: 'text-emerald-400' },
-  { id: 'mainboard', label: 'Mainboard', sub: 'Intel & AMD', icon: LayoutGrid, color: 'from-amber-500/20 to-amber-600/5', border: 'border-amber-500/20', iconColor: 'text-amber-400' },
-  { id: 'storage', label: 'Ổ cứng', sub: 'SSD & HDD', icon: HardDrive, color: 'from-cyan-500/20 to-cyan-600/5', border: 'border-cyan-500/20', iconColor: 'text-cyan-400' },
-  { id: 'psu', label: 'Nguồn', sub: 'Gold & Platinum', icon: Zap, color: 'from-yellow-500/20 to-yellow-600/5', border: 'border-yellow-500/20', iconColor: 'text-yellow-400' },
-  { id: 'case', label: 'Case', sub: 'ATX & ITX', icon: Package, color: 'from-rose-500/20 to-rose-600/5', border: 'border-rose-500/20', iconColor: 'text-rose-400' },
-  { id: 'cooling', label: 'Tản nhiệt', sub: 'Air & AIO', icon: Wind, color: 'from-indigo-500/20 to-indigo-600/5', border: 'border-indigo-500/20', iconColor: 'text-indigo-400' }
-]
+  {
+    id: 'cpu',
+    label: 'CPU',
+    sub: 'Intel va AMD',
+    icon: Cpu,
+    color: 'from-blue-500/20 to-blue-600/5',
+    border: 'border-blue-500/20',
+    iconColor: 'text-blue-400'
+  },
+  {
+    id: 'gpu',
+    label: 'GPU',
+    sub: 'RTX va RX Series',
+    icon: Monitor,
+    color: 'from-fuchsia-500/20 to-purple-600/5',
+    border: 'border-fuchsia-500/20',
+    iconColor: 'text-fuchsia-400'
+  },
+  {
+    id: 'ram',
+    label: 'RAM',
+    sub: 'DDR4 va DDR5',
+    icon: Database,
+    color: 'from-emerald-500/20 to-emerald-600/5',
+    border: 'border-emerald-500/20',
+    iconColor: 'text-emerald-400'
+  },
+  {
+    id: 'mainboard',
+    label: 'Mainboard',
+    sub: 'Intel va AMD',
+    icon: LayoutGrid,
+    color: 'from-amber-500/20 to-amber-600/5',
+    border: 'border-amber-500/20',
+    iconColor: 'text-amber-400'
+  },
+  {
+    id: 'storage',
+    label: 'O cung',
+    sub: 'SSD va HDD',
+    icon: HardDrive,
+    color: 'from-cyan-500/20 to-cyan-600/5',
+    border: 'border-cyan-500/20',
+    iconColor: 'text-cyan-400'
+  },
+  {
+    id: 'psu',
+    label: 'PSU',
+    sub: 'Gold va Platinum',
+    icon: Zap,
+    color: 'from-yellow-500/20 to-yellow-600/5',
+    border: 'border-yellow-500/20',
+    iconColor: 'text-yellow-400'
+  },
+  {
+    id: 'case',
+    label: 'Case',
+    sub: 'ATX va ITX',
+    icon: Package,
+    color: 'from-rose-500/20 to-rose-600/5',
+    border: 'border-rose-500/20',
+    iconColor: 'text-rose-400'
+  },
+  {
+    id: 'cooling',
+    label: 'Tan nhiet',
+    sub: 'Air va AIO',
+    icon: Wind,
+    color: 'from-indigo-500/20 to-indigo-600/5',
+    border: 'border-indigo-500/20',
+    iconColor: 'text-indigo-400'
+  }
+] as const
 
 const builderSteps = [
-  { step: '01', title: 'Chọn mục đích sử dụng', desc: 'Gaming, làm việc, hay đồ họa chuyên nghiệp?' },
-  { step: '02', title: 'Chọn linh kiện phù hợp', desc: 'Hệ thống tự động kiểm tra tương thích' },
-  { step: '03', title: 'Thêm vào giỏ & thanh toán', desc: 'Giao hàng và lắp ráp tận nơi' }
-]
-
-const products = [
   {
-    id: 'intel-i9-14900k',
-    slug: 'intel-i9-14900k',
-    tenSanPham: 'Intel Core i9-14900K',
-    gia: 24500000,
-    moTa: 'Hiệu năng cao cho gaming và sáng tạo nội dung.',
-    hinhAnh: 'https://images.unsplash.com/photo-1611078485960-63a780c1332a?w=800&q=80',
-    soLuongTon: 35,
-    isSale: false,
-    isNew: true,
-    isFeatured: true,
-    danhMuc: { id: 'cpu', tenDanhMuc: 'CPU' },
-    thongSoKyThuat: { cores: '24', threads: '32', socket: 'LGA1700' }
+    step: '01',
+    title: 'Chon muc dich su dung',
+    desc: 'Gaming, workstation, streaming hoac do hoa chuyen nghiep.'
   },
   {
-    id: 'asus-rog-rtx-4090',
-    slug: 'asus-rog-rtx-4090',
-    tenSanPham: 'ASUS ROG Strix RTX 4090',
-    gia: 58000000,
-    moTa: 'Ray Tracing, DLSS và hiệu năng 4K đỉnh cao.',
-    hinhAnh: 'https://images.unsplash.com/photo-1606813906634-35f0c1157ce0?w=800&q=80',
-    soLuongTon: 18,
-    isSale: true,
-    isNew: false,
-    isFeatured: true,
-    danhMuc: { id: 'gpu', tenDanhMuc: 'GPU' },
-    thongSoKyThuat: { memory: '24GB', tdp: '450W' }
+    step: '02',
+    title: 'Chon linh kien phu hop',
+    desc: 'He thong doi chieu socket, RAM type va cong suat PSU.'
   },
   {
-    id: 'corsair-ddr5-64gb',
-    slug: 'corsair-ddr5-64gb',
-    tenSanPham: 'Corsair Vengeance DDR5 64GB',
-    gia: 7200000,
-    moTa: 'Đa nhiệm mạnh mẽ với tốc độ 7200MHz.',
-    hinhAnh: 'https://images.unsplash.com/photo-1618225814288-5beed3df42c0?w=800&q=80',
-    soLuongTon: 60,
-    isSale: false,
-    isNew: true,
-    isFeatured: true,
-    danhMuc: { id: 'ram', tenDanhMuc: 'RAM' },
-    thongSoKyThuat: { speed: '7200MHz', capacity: '64GB' }
-  },
-  {
-    id: 'samsung-990-pro-2tb',
-    slug: 'samsung-990-pro-2tb',
-    tenSanPham: 'Samsung 990 PRO 2TB',
-    gia: 8500000,
-    moTa: 'SSD NVMe chuẩn Gen4 cho tốc độ đọc cực nhanh.',
-    hinhAnh: 'https://images.unsplash.com/photo-1621522427564-6ac1fd4ba2f1?w=800&q=80',
-    soLuongTon: 45,
-    isSale: true,
-    isNew: false,
-    isFeatured: true,
-    danhMuc: { id: 'storage', tenDanhMuc: 'Storage' },
-    thongSoKyThuat: { capacity: '2TB', interface: 'PCIe 4.0' }
-  },
-  {
-    id: 'corsair-rm850x',
-    slug: 'corsair-rm850x',
-    tenSanPham: 'Corsair RM850x 850W',
-    gia: 3200000,
-    moTa: 'Nguồn công suất mạnh mẽ và êm ái.',
-    hinhAnh: 'https://images.unsplash.com/photo-1589561084283-930aa7b1f5d5?w=800&q=80',
-    soLuongTon: 22,
-    isSale: false,
-    isNew: false,
-    isFeatured: false,
-    danhMuc: { id: 'psu', tenDanhMuc: 'PSU' },
-    thongSoKyThuat: { watt: '850W', certification: '80+ Gold' }
+    step: '03',
+    title: 'Luu build va dat hang',
+    desc: 'Them vao gio, thanh toan va theo doi don hang tren cung mot he thong.'
   }
 ]
 
-function getFeaturedProducts() {
-  return products.filter(product => product.isFeatured)
-}
+const trustedBrands = ['Intel', 'AMD', 'ASUS', 'MSI', 'Gigabyte', 'Corsair', 'Samsung', 'Kingston']
 
-function ImageWithFallback({ src, alt, className }: { src: string; alt: string; className?: string }) {
-  const [hasError, setHasError] = useState(false)
+export default async function HomePage() {
+  const { categories, featuredProducts, latestProducts } = await getStorefrontData()
+
+  const featured = featuredProducts.slice(0, 8)
+  const spotlightProducts = featuredProducts.slice(0, 4)
+  const newProducts = latestProducts.slice(0, 4)
+
+  const resolvedCategories = categoryCards.map((card) => ({
+    ...card,
+    data: categories.find((category) => normalizeCategoryName(category.tenDanhMuc) === card.id)
+  }))
 
   return (
-    <div className={className}>
-      {!hasError ? (
-        <img
-          src={src}
-          alt={alt}
-          className="w-full h-full object-cover"
-          onError={() => setHasError(true)}
+    <div className="bg-[#07080d] text-white">
+      <section className="relative isolate overflow-hidden border-b border-white/10">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-25"
+          style={{ backgroundImage: `url(${HERO_IMG})` }}
         />
-      ) : (
-        <div className="w-full h-full bg-slate-900 flex items-center justify-center text-slate-500">
-          <span>Ảnh không tải được</span>
-        </div>
-      )}
-    </div>
-  )
-}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#07080d] via-[#07080d]/85 to-[#07080d]/50" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.22),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(236,72,153,0.14),_transparent_30%)]" />
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/20 blur-3xl" />
 
-export default function Home() {
-  const featured = getFeaturedProducts().slice(0, 8)
-  const saleProducts = products.filter(p => p.isSale).slice(0, 4)
-  const newProducts = products.filter(p => p.isNew).slice(0, 4)
-  const router = useRouter()
-
-  return (
-    <div className="text-white">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden min-h-[580px] flex items-center">
-        <div className="absolute inset-0">
-          <ImageWithFallback
-            src={HERO_IMG}
-            alt="Gaming PC Setup"
-            className="w-full h-full object-cover opacity-25"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#07080d] via-[#07080d]/80 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#07080d] via-transparent to-transparent" />
-        </div>
-
-        {/* Animated glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="max-w-2xl">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="flex items-center gap-1.5 px-3 py-1 bg-indigo-500/20 border border-indigo-500/30 rounded-full text-indigo-400 text-xs">
-                <Flame className="w-3.5 h-3.5" /> PC Builder 2026 đã ra mắt
+        <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="max-w-3xl">
+              <span className="inline-flex items-center gap-2 rounded-full border border-indigo-400/20 bg-indigo-500/10 px-4 py-2 text-xs font-medium uppercase tracking-[0.25em] text-indigo-300">
+                <Flame className="h-3.5 w-3.5" />
+                PC Builder 2026
               </span>
-            </div>
-            <h1 className="text-5xl sm:text-6xl font-bold leading-tight mb-4" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-              Build PC của bạn<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-400">
-                theo cách của bạn
-              </span>
-            </h1>
-            <p className="text-slate-400 text-lg mb-8 leading-relaxed">
-              Công cụ build PC thông minh nhất Việt Nam. Kiểm tra tương thích tự động, gợi ý linh kiện phù hợp và đặt hàng chỉ trong vài phút.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/builder"
-                className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium transition-all hover:shadow-lg hover:shadow-indigo-500/30"
-              >
-                <Wrench className="w-5 h-5" />
-                Bắt đầu Build PC
-              </Link>
-              <Link
-                href="/products"
-                className="flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/15 border border-white/20 text-white rounded-xl font-medium transition-all"
-              >
-                Xem tất cả sản phẩm
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <h1 className="mt-6 text-5xl font-bold leading-[1.05] sm:text-6xl">
+                Build PC cua ban
+                <br />
+                <span className="bg-gradient-to-r from-indigo-400 via-sky-300 to-fuchsia-400 bg-clip-text text-transparent">
+                  theo cach thong minh hon
+                </span>
+              </h1>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300">
+                Cong cu build PC thong minh, giao dien ecommerce ro rang va he thong kiem tra tuong thich linh kien
+                ngay tren website. Chon cau hinh, luu build, dat hang va nhan AI tu van trong cung mot trai nghiem.
+              </p>
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link
+                  href="/builder"
+                  className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white transition-all hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/30"
+                >
+                  <Wrench className="h-5 w-5" />
+                  Bat dau Build PC
+                </Link>
+                <Link
+                  href="/products"
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-6 py-3 font-semibold text-white transition hover:bg-white/15"
+                >
+                  Xem tat ca san pham
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+
+              <div className="mt-10 grid max-w-2xl grid-cols-3 gap-4">
+                {[
+                  { value: `${categories.length}+`, label: 'Danh muc' },
+                  { value: `${featured.length}+`, label: 'San pham noi bat' },
+                  { value: '24/7', label: 'Ho tro build' }
+                ].map((stat) => (
+                  <div key={stat.label} className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                    <p className="text-xl font-bold text-white sm:text-2xl">{stat.value}</p>
+                    <p className="mt-1 text-sm text-slate-400">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="flex items-center gap-6 mt-8">
-              {[
-                { value: '50,000+', label: 'Đơn hàng' },
-                { value: '4.9', label: 'Đánh giá' },
-                { value: '100%', label: 'Chính hãng' }
-              ].map((stat) => (
-                <div key={stat.label}>
-                  <p className="text-white font-bold">{stat.value}</p>
-                  <p className="text-slate-500 text-sm">{stat.label}</p>
+            <div className="relative">
+              <div className="relative overflow-hidden rounded-[28px] border border-indigo-400/20 bg-[#0f1117]/90 p-5 shadow-2xl shadow-indigo-950/30">
+                <div className="grid gap-4 sm:grid-cols-[1fr_1.1fr]">
+                  <div className="rounded-3xl border border-white/10 bg-slate-950/80 p-4">
+                    <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Builder status</p>
+                    <div className="mt-4 flex items-center gap-2 text-emerald-400">
+                      <Shield className="h-5 w-5" />
+                      <span className="font-medium">Tuong thich tot</span>
+                    </div>
+                    <div className="mt-5 space-y-2">
+                      {['CPU / Mainboard', 'RAM / Mainboard', 'GPU / PSU'].map((item) => (
+                        <div key={item} className="flex items-center justify-between rounded-xl border border-white/5 bg-white/5 px-3 py-2 text-sm">
+                          <span className="text-slate-300">{item}</span>
+                          <span className="text-emerald-400">OK</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div
+                    className="relative min-h-[280px] overflow-hidden rounded-3xl border border-white/10 bg-cover bg-center"
+                    style={{ backgroundImage: `url(${PC_IMG})` }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f1117] via-[#0f1117]/40 to-transparent" />
+                    <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-white/10 bg-[#0f1117]/88 p-4 backdrop-blur">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs uppercase tracking-[0.18em] text-slate-500">Tong gia cau hinh</span>
+                        <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400">
+                          <Shield className="h-3.5 w-3.5" />
+                          Checked
+                        </span>
+                      </div>
+                      <p className="mt-3 text-3xl font-bold text-indigo-300">25.480.000 VND</p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {['CPU', 'GPU', 'RAM', 'MB', 'SSD', 'PSU'].map((part) => (
+                          <span
+                            key={part}
+                            className="rounded-lg bg-indigo-500/15 px-2 py-1 text-xs font-medium text-indigo-300"
+                          >
+                            {part}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Category Grid */}
-      <section className="py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-6">
+      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mb-6 flex items-center justify-between gap-4">
           <div>
-            <h2 className="text-white font-bold" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Danh mục linh kiện</h2>
-            <p className="text-slate-500 text-sm mt-0.5">Chọn linh kiện theo từng loại</p>
+            <h2 className="text-2xl font-bold">Danh muc linh kien</h2>
+            <p className="mt-1 text-sm text-slate-500">Chon linh kien theo tung nhom de build nhanh hon.</p>
           </div>
-          <Link href="/products" className="flex items-center gap-1 text-indigo-400 hover:text-indigo-300 text-sm transition-colors">
-            Xem tất cả <ChevronRight className="w-4 h-4" />
+          <Link
+            href="/products"
+            className="inline-flex items-center gap-1 text-sm font-medium text-indigo-300 transition hover:text-indigo-200"
+          >
+            Xem tat ca
+            <ChevronRight className="h-4 w-4" />
           </Link>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-          {categoryCards.map(cat => {
-            const Icon = cat.icon
+
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
+          {resolvedCategories.map((card) => {
+            const Icon = card.icon
             return (
               <Link
-                key={cat.id}
-                href={`/products?category=${cat.id}`}
-                className={`group flex flex-col items-center gap-2.5 p-4 rounded-xl bg-gradient-to-b ${cat.color} border ${cat.border} hover:scale-105 transition-all duration-200`}
+                key={card.id}
+                href={`/products?category=${encodeURIComponent(card.data?.tenDanhMuc || card.label)}`}
+                className={`group rounded-2xl border bg-gradient-to-b p-4 transition-all duration-200 hover:-translate-y-1 hover:scale-[1.02] ${card.color} ${card.border}`}
               >
-                <div className={`w-10 h-10 rounded-xl bg-[#0f1117] flex items-center justify-center ${cat.iconColor} group-hover:scale-110 transition-transform`}>
-                  <Icon className="w-5 h-5" />
+                <div
+                  className={`flex h-11 w-11 items-center justify-center rounded-xl bg-[#0f1117] transition-transform group-hover:scale-110 ${card.iconColor}`}
+                >
+                  <Icon className="h-5 w-5" />
                 </div>
-                <div className="text-center">
-                  <p className="text-white text-sm font-medium">{cat.label}</p>
-                  <p className="text-slate-500 text-xs">{cat.sub}</p>
+                <div className="mt-3">
+                  <p className="text-sm font-semibold text-white">{card.data?.tenDanhMuc || card.label}</p>
+                  <p className="mt-1 text-xs text-slate-500">{card.data?.moTa || card.sub}</p>
                 </div>
               </Link>
             )
@@ -249,57 +283,63 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Products */}
-      <section className="py-10 bg-[#0a0b10]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
+      <section className="border-y border-white/5 bg-[#0a0b10] py-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-6 flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-white font-bold flex items-center gap-2" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-                <TrendingUp className="w-5 h-5 text-indigo-400" />
-                Sản phẩm nổi bật
+              <h2 className="flex items-center gap-2 text-2xl font-bold">
+                <TrendingUp className="h-5 w-5 text-indigo-400" />
+                San pham noi bat
               </h2>
-              <p className="text-slate-500 text-sm mt-0.5">Được mua nhiều nhất tháng này</p>
+              <p className="mt-1 text-sm text-slate-500">Nhung linh kien dang duoc quan tam nhieu trong he thong.</p>
             </div>
-            <Link href="/products" className="flex items-center gap-1 text-indigo-400 hover:text-indigo-300 text-sm transition-colors">
-              Xem tất cả <ChevronRight className="w-4 h-4" />
+            <Link
+              href="/products"
+              className="inline-flex items-center gap-1 text-sm font-medium text-indigo-300 transition hover:text-indigo-200"
+            >
+              Xem tat ca
+              <ChevronRight className="h-4 w-4" />
             </Link>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
-            {featured.map(product => (
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {featured.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* PC Builder CTA */}
-      <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-2xl overflow-hidden relative bg-gradient-to-br from-indigo-950 via-[#0f1117] to-[#0f1117] border border-indigo-500/20">
-          <div className="absolute top-0 left-1/4 w-64 h-64 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-violet-600/20 rounded-full blur-3xl pointer-events-none" />
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="relative overflow-hidden rounded-[32px] border border-indigo-500/20 bg-gradient-to-br from-indigo-950 via-[#0f1117] to-[#0f1117]">
+          <div className="pointer-events-none absolute left-1/4 top-0 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl" />
+          <div className="pointer-events-none absolute bottom-0 right-1/4 h-56 w-56 rounded-full bg-fuchsia-500/15 blur-3xl" />
 
-          <div className="relative grid lg:grid-cols-2 gap-0 items-center">
+          <div className="relative grid items-center gap-8 lg:grid-cols-[1fr_0.9fr]">
             <div className="p-8 lg:p-12">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-500/20 border border-indigo-500/30 rounded-full text-indigo-400 text-xs mb-4">
-                <Wrench className="w-3.5 h-3.5" /> PC Builder Tool
+              <span className="inline-flex items-center gap-2 rounded-full border border-indigo-400/20 bg-indigo-500/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.25em] text-indigo-300">
+                <Wrench className="h-3.5 w-3.5" />
+                PC Builder Tool
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold mb-4 leading-tight" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-                Build PC hoàn hảo<br />
-                <span className="text-indigo-400">chỉ trong 5 phút</span>
+
+              <h2 className="mt-5 text-3xl font-bold leading-tight sm:text-4xl">
+                Build PC hoan hao
+                <br />
+                <span className="text-indigo-300">chi trong 5 phut</span>
               </h2>
-              <p className="text-slate-400 mb-6 leading-relaxed">
-                Công cụ build PC thông minh với kiểm tra tương thích tự động, gợi ý linh kiện theo ngân sách và mục đích sử dụng.
+              <p className="mt-4 max-w-xl leading-relaxed text-slate-300">
+                Cong cu build PC la trung tam cua he thong: chon linh kien theo nhu cau, kiem tra tuong thich tu dong
+                va luu cau hinh de mua ngay khi san sang.
               </p>
 
-              <div className="space-y-3 mb-8">
-                {builderSteps.map((s) => (
-                  <div key={s.step} className="flex items-start gap-3">
-                    <span className="w-8 h-8 rounded-lg bg-indigo-600/30 border border-indigo-500/30 text-indigo-400 text-sm font-bold flex items-center justify-center shrink-0">
-                      {s.step}
+              <div className="mt-8 space-y-3">
+                {builderSteps.map((step) => (
+                  <div key={step.step} className="flex items-start gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-indigo-400/20 bg-indigo-500/20 text-sm font-bold text-indigo-300">
+                      {step.step}
                     </span>
                     <div>
-                      <p className="text-slate-200 text-sm font-medium">{s.title}</p>
-                      <p className="text-slate-500 text-xs">{s.desc}</p>
+                      <p className="text-sm font-medium text-slate-100">{step.title}</p>
+                      <p className="mt-1 text-sm text-slate-500">{step.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -307,36 +347,41 @@ export default function Home() {
 
               <Link
                 href="/builder"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium transition-all hover:shadow-lg hover:shadow-indigo-500/30"
+                className="mt-8 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white transition-all hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/30"
               >
-                <Wrench className="w-5 h-5" />
-                Thử ngay PC Builder
-                <ArrowRight className="w-4 h-4" />
+                <Wrench className="h-5 w-5" />
+                Thu ngay PC Builder
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
 
-            <div className="relative h-64 lg:h-full lg:min-h-[320px] overflow-hidden">
-              <ImageWithFallback
-                src={PC_IMG}
-                alt="Gaming PC Build"
-                className="absolute inset-0 w-full h-full"
-              />
-              <div className="absolute inset-0 bg-gradient-to-l from-transparent to-[#0a0e1a]/60" />
-
-              <div className="absolute bottom-4 left-4 right-4 bg-[#0f1117]/90 backdrop-blur border border-[#1e2535] rounded-xl p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-slate-400">Tổng giá cấu hình</span>
-                  <span className="text-xs text-emerald-400 flex items-center gap-1">
-                    <Shield className="w-3 h-3" /> Tương thích
-                  </span>
-                </div>
-                <p className="text-indigo-400 font-bold">25.480.000</p>
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {['CPU', 'GPU', 'RAM', 'MB', 'SSD', 'PSU'].map(c => (
-                    <span key={c} className="px-1.5 py-0.5 bg-indigo-500/20 text-indigo-400 text-xs rounded">
-                      {c} 
-                    </span>
-                  ))}
+            <div className="p-6 lg:p-8">
+              <div className="overflow-hidden rounded-[28px] border border-white/10 bg-[#0c1020]">
+                <div
+                  className="relative min-h-[360px] bg-cover bg-center"
+                  style={{ backgroundImage: `url(${PC_IMG})` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0c1020] via-[#0c1020]/25 to-transparent" />
+                  <div className="absolute bottom-5 left-5 right-5 rounded-2xl border border-white/10 bg-[#0f1117]/85 p-4 backdrop-blur">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Build preview</p>
+                        <p className="mt-2 text-2xl font-bold text-white">Gaming 2K / Creator</p>
+                      </div>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400">
+                        <Shield className="h-3.5 w-3.5" />
+                        Compatible
+                      </span>
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {['CPU', 'GPU', 'RAM', 'Mainboard', 'Storage', 'PSU'].map((item) => (
+                        <span key={item} className="rounded-lg bg-white/5 px-2.5 py-1 text-xs text-slate-300">
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="mt-4 text-3xl font-bold text-indigo-300">25.480.000 VND</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -344,101 +389,102 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Flash Sale */}
-      <section className="py-10 bg-[#0a0b10]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
+      <section className="border-y border-white/5 bg-[#0a0b10] py-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-6 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <h2 className="text-white font-bold flex items-center gap-2" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-                <Flame className="w-5 h-5 text-red-400" />
-                Flash Sale
+              <h2 className="flex items-center gap-2 text-2xl font-bold">
+                <Flame className="h-5 w-5 text-rose-400" />
+                Spotlight Picks
               </h2>
-              <div className="flex items-center gap-1.5 px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-lg">
-                <Clock className="w-3.5 h-3.5 text-red-400" />
-                <span className="text-red-400 text-sm font-medium">Kết thúc: 05:23:17</span>
+              <div className="inline-flex items-center gap-1.5 rounded-lg border border-rose-500/20 bg-rose-500/10 px-3 py-1">
+                <Clock className="h-3.5 w-3.5 text-rose-400" />
+                <span className="text-sm font-medium text-rose-400">Update lien tuc</span>
               </div>
             </div>
-            <Link href="/products?filter=sale" className="flex items-center gap-1 text-indigo-400 hover:text-indigo-300 text-sm transition-colors">
-              Xem tất cả <ChevronRight className="w-4 h-4" />
+            <Link
+              href="/products"
+              className="inline-flex items-center gap-1 text-sm font-medium text-indigo-300 transition hover:text-indigo-200"
+            >
+              Xem them
+              <ChevronRight className="h-4 w-4" />
             </Link>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {saleProducts.map(product => (
+
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+            {spotlightProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* New Arrivals */}
-      <section className="py-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-white font-bold flex items-center gap-2" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-                <Award className="w-5 h-5 text-emerald-400" />
-                Sản phẩm mới nhất
-              </h2>
-              <p className="text-slate-500 text-sm mt-0.5">Cập nhật linh kiện thế hệ mới nhất</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {newProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mb-6">
+          <h2 className="flex items-center gap-2 text-2xl font-bold">
+            <Award className="h-5 w-5 text-emerald-400" />
+            Moi cap nhat
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">Nhung san pham vua duoc them de cap nhat cau hinh moi nhat.</p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+          {newProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </div>
       </section>
 
-      {/* GPU Banner */}
-      <section className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div
-            className="relative overflow-hidden rounded-2xl h-48 bg-[#0f1117] border border-[#1e2535] group cursor-pointer"
-            onClick={() => router.push('/products?category=gpu')}
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Link
+            href="/products?category=GPU"
+            className="group relative h-56 overflow-hidden rounded-3xl border border-[#1e2535] bg-[#0f1117]"
           >
-            <ImageWithFallback
-              src={GPU_IMG}
-              alt="GPU"
-              className="absolute inset-0 w-full h-full"
+            <div
+              className="absolute inset-0 bg-cover bg-center opacity-40 transition duration-500 group-hover:scale-105 group-hover:opacity-50"
+              style={{ backgroundImage: `url(${GPU_IMG})` }}
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-900/60 to-transparent" />
-            <div className="relative p-6 h-full flex flex-col justify-end">
-              <p className="text-purple-400 text-sm font-medium mb-1">Card đồ họa mới nhất</p>
-              <h3 className="text-white font-bold text-xl mb-2">RTX 40 Series</h3>
-              <span className="inline-flex items-center gap-1 text-slate-300 text-sm hover:text-white">
-                Khám phá ngay <ArrowRight className="w-4 h-4" />
+            <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-950/70 to-transparent" />
+            <div className="relative flex h-full flex-col justify-end p-6">
+              <p className="text-sm font-medium text-fuchsia-300">Card do hoa moi nhat</p>
+              <h3 className="mt-1 text-2xl font-bold text-white">RTX va Radeon cao cap</h3>
+              <span className="mt-2 inline-flex items-center gap-2 text-sm text-slate-200">
+                Kham pha ngay
+                <ArrowRight className="h-4 w-4" />
               </span>
             </div>
-          </div>
-          <div
-            className="relative overflow-hidden rounded-2xl h-48 bg-[#0f1117] border border-[#1e2535] group cursor-pointer"
-            onClick={() => router.push('/builder')}
+          </Link>
+
+          <Link
+            href="/builder"
+            className="group relative h-56 overflow-hidden rounded-3xl border border-[#1e2535] bg-[#0f1117]"
           >
-            <ImageWithFallback
-              src={PC_IMG}
-              alt="PC Build"
-              className="absolute inset-0 w-full h-full"
+            <div
+              className="absolute inset-0 bg-cover bg-center opacity-40 transition duration-500 group-hover:scale-105 group-hover:opacity-50"
+              style={{ backgroundImage: `url(${PC_IMG})` }}
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/60 to-transparent" />
-            <div className="relative p-6 h-full flex flex-col justify-end">
-              <p className="text-indigo-400 text-sm font-medium mb-1">Tư vấn cấu hình</p>
-              <h3 className="text-white font-bold text-xl mb-2">Build PC theo ngân sách</h3>
-              <span className="inline-flex items-center gap-1 text-slate-300 text-sm hover:text-white">
-                Build ngay <ArrowRight className="w-4 h-4" />
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-950/70 to-transparent" />
+            <div className="relative flex h-full flex-col justify-end p-6">
+              <p className="text-sm font-medium text-indigo-300">Tu van cau hinh</p>
+              <h3 className="mt-1 text-2xl font-bold text-white">Build PC theo ngan sach</h3>
+              <span className="mt-2 inline-flex items-center gap-2 text-sm text-slate-200">
+                Mo Builder
+                <ArrowRight className="h-4 w-4" />
               </span>
             </div>
-          </div>
+          </Link>
         </div>
       </section>
 
-      {/* Brands */}
-      <section className="py-10 bg-[#0a0b10]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-slate-500 text-sm mb-6">Thương hiệu đối tác chính thức</p>
+      <section className="border-t border-white/5 bg-[#0a0b10] py-10">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <p className="mb-6 text-center text-sm text-slate-500">Thuong hieu doi tac duoc nhieu builder lua chon</p>
           <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
-            {['Intel', 'AMD', 'ASUS', 'MSI', 'Gigabyte', 'Corsair', 'Samsung', 'Kingston'].map(brand => (
-              <span key={brand} className="text-slate-600 hover:text-slate-400 font-semibold text-sm sm:text-base transition-colors cursor-pointer" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+            {trustedBrands.map((brand) => (
+              <span
+                key={brand}
+                className="cursor-default text-sm font-semibold text-slate-600 transition hover:text-slate-400 sm:text-base"
+              >
                 {brand}
               </span>
             ))}
