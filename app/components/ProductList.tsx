@@ -2,8 +2,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { ProductCard } from './ProductCard'
 import { useCart } from '@/app/providers/cart-provider'
+import { Skeleton } from '@/components/Skeleton'
 import type { Product } from './types'
 
 interface ProductListProps {
@@ -18,6 +20,7 @@ export function ProductList({ limit = 12, showPagination = false }: ProductListP
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const { addItem } = useCart()
+  const t = useTranslations('productList')
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -30,10 +33,10 @@ export function ProductList({ limit = 12, showPagination = false }: ProductListP
           setProducts(data.data)
           setTotalPages(data.pagination.totalPages)
         } else {
-          setError(data.error || 'Lỗi khi lấy sản phẩm')
+          setError(data.error || t('fetchError'))
         }
       } catch (err) {
-        setError('Không thể kết nối đến server')
+        setError(t('networkError'))
         console.error('Error fetching products:', err)
       } finally {
         setLoading(false)
@@ -51,10 +54,12 @@ export function ProductList({ limit = 12, showPagination = false }: ProductListP
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[...Array(4)].map((_, i) => (
-          <div
-            key={i}
-            className="bg-slate-800/50 border border-slate-700 rounded-xl h-80 animate-pulse"
-          />
+          <div key={i} className="space-y-4 rounded-xl border border-slate-700 bg-slate-800/30 p-4">
+            <Skeleton className="h-44 w-full" />
+            <Skeleton className="h-5 w-3/4" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
         ))}
       </div>
     )
@@ -71,7 +76,7 @@ export function ProductList({ limit = 12, showPagination = false }: ProductListP
   if (products.length === 0) {
     return (
       <div className="text-center py-12 text-slate-400">
-        <p className="text-lg">Không có sản phẩm</p>
+        <p className="text-lg">{t('empty')}</p>
       </div>
     )
   }
@@ -97,17 +102,17 @@ export function ProductList({ limit = 12, showPagination = false }: ProductListP
             disabled={page === 1}
             className="px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 disabled:opacity-50 transition"
           >
-            ← Trước
+            {t('previous')}
           </button>
           <div className="text-slate-300">
-            Trang {page} / {totalPages}
+            {t('page', { page, totalPages })}
           </div>
           <button
             onClick={() => setPage(Math.min(totalPages, page + 1))}
             disabled={page === totalPages}
             className="px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 disabled:opacity-50 transition"
           >
-            Sau →
+            {t('next')}
           </button>
         </div>
       )}

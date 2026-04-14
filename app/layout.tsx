@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
+import { NextIntlClientProvider } from 'next-intl'
+import { Toaster } from 'react-hot-toast'
 import "./globals.css";
 import { ToastProvider } from "./providers/toast-provider";
 import { CartProvider } from "./providers/cart-provider";
 import { ToastContainer } from "@/components/toast-container";
 import { Header } from "@/components/header";
-import { AuthModal } from "@/components/auth-modal";
+import { AuthModal } from "@/components/AuthModal";
+import { AuthProvider } from '@/context/AuthContext'
+import { getI18nServer } from '@/i18n/server'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,27 +27,34 @@ export const metadata: Metadata = {
   description: "Nền tảng bán PC và xây dựng cấu hình PC trực tuyến với AI tư vấn cấu hình thông minh, kiểm tra tương thích linh kiện",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { locale, messages } = await getI18nServer()
+
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <ToastProvider>
-          <CartProvider>
-            <Header />
-            <Suspense fallback={null}>
-              <AuthModal />
-            </Suspense>
-            <ToastContainer />
-            {children}
-          </CartProvider>
-        </ToastProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <ToastProvider>
+            <AuthProvider>
+              <CartProvider>
+                <Header />
+                <Suspense fallback={null}>
+                  <AuthModal />
+                </Suspense>
+                <ToastContainer />
+                <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+                {children}
+              </CartProvider>
+            </AuthProvider>
+          </ToastProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

@@ -103,6 +103,13 @@ export function mapProductToBuilder(product: {
 export async function getStorefrontData() {
   const [categories, featuredProducts, latestProducts] = await Promise.all([
     prisma.danhMuc.findMany({
+      include: {
+        _count: {
+          select: {
+            sanPhams: true,
+          },
+        },
+      },
       orderBy: { tenDanhMuc: 'asc' }
     }),
     prisma.sanPham.findMany({

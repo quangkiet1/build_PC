@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { hashPassword, createAccessToken, createAuthCookie, getJwtSecret } from '@/lib/auth'
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 export async function POST(request: NextRequest) {
   try {
     getJwtSecret()
@@ -15,6 +17,10 @@ export async function POST(request: NextRequest) {
 
     if (!name || !email || !password) {
       return NextResponse.json({ error: 'Tên, email và mật khẩu là bắt buộc' }, { status: 400 })
+    }
+
+    if (!EMAIL_REGEX.test(email)) {
+      return NextResponse.json({ error: 'Email không đúng định dạng' }, { status: 400 })
     }
 
     if (password.length < 6) {
@@ -48,7 +54,10 @@ export async function POST(request: NextRequest) {
     })
 
     const token = createAccessToken({ id: user.id, email: user.email, vaiTro: user.vaiTro })
-    const response = NextResponse.json({ user: { id: user.id, name: user.hoTen, email: user.email, role: user.vaiTro } })
+    const response = NextResponse.json({
+      user: { id: user.id, name: user.hoTen, email: user.email, role: user.vaiTro },
+      message: 'Đăng ký thành công'
+    })
     response.headers.set('Set-Cookie', createAuthCookie(token))
 
     return response

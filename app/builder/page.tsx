@@ -1,9 +1,16 @@
+import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { mapProductToBuilder } from '@/lib/catalog'
 import { PCBuilder } from '@/app/components/PCBuilder'
 import type { Product } from '@/app/types/builder'
+import { getCurrentUser } from '@/lib/server-user'
 
 export default async function BuilderPage() {
+  const user = await getCurrentUser()
+  if (!user) {
+    redirect('/?auth=required&next=/builder')
+  }
+
   const products = await prisma.sanPham.findMany({
     include: { danhMuc: true },
     orderBy: [{ gia: 'asc' }]

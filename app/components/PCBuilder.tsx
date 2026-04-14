@@ -1,584 +1,619 @@
-'use client';
+'use client'
 
-import { useState, useMemo } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react'
+import Link from 'next/link'
+import { useLocale, useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
 import {
-  Cpu, Monitor, Database, HardDrive, Zap, Package, Wind, LayoutGrid,
-  Plus, X, CheckCircle2, AlertTriangle, AlertCircle, ShoppingCart,
-  ChevronRight, Search, Info, Lightbulb, Wrench, Star
-} from 'lucide-react';
-import { Product, Category } from '@/app/types/builder';
-import { Build, formatPrice, checkCompatibility, isProductCompatibleWithBuild } from '@/app/lib/builder-utils';
-import { useToast } from '@/app/providers/toast-provider';
-import { useCart } from '@/app/providers/cart-provider';
+  AlertCircle,
+  AlertTriangle,
+  CheckCircle2,
+  ChevronRight,
+  Cpu,
+  Database,
+  HardDrive,
+  Info,
+  LayoutGrid,
+  Lightbulb,
+  Monitor,
+  Package,
+  Plus,
+  Search,
+  ShoppingCart,
+  Star,
+  Wind,
+  Wrench,
+  X,
+  Zap,
+} from 'lucide-react'
+import type { AppLocale } from '@/i18n/config'
+import type { Product, Category } from '@/app/types/builder'
+import { checkCompatibility, formatPrice, isProductCompatibleWithBuild } from '@/app/lib/builder-utils'
+import { useCart } from '@/app/providers/cart-provider'
+import { useAuth } from '@/context/AuthContext'
+import { BuilderCompare } from '@/components/BuilderCompare'
+import { useBuilderStore } from '@/store/useBuilderStore'
 
 interface BuildSlot {
-  category: Category;
-  label: string;
-  icon: React.ElementType;
-  required: boolean;
-  description: string;
+  category: Category
+  labelKey: string
+  descriptionKey: string
+  icon: React.ElementType
+  required: boolean
 }
 
 const buildSlots: BuildSlot[] = [
-  { category: 'cpu', label: 'CPU / Bộ vi xử lý', icon: Cpu, required: true, description: 'Bộ não của máy tính' },
-  { category: 'mainboard', label: 'Mainboard / Bo mạch chủ', icon: LayoutGrid, required: true, description: 'Kết nối tất cả linh kiện' },
-  { category: 'ram', label: 'RAM / Bộ nhớ', icon: Database, required: true, description: 'Bộ nhớ tạm thời cho hệ thống' },
-  { category: 'gpu', label: 'GPU / Card đồ họa', icon: Monitor, required: false, description: 'Xử lý đồ họa và gaming' },
-  { category: 'storage', label: 'Ổ cứng / Lưu trữ', icon: HardDrive, required: true, description: 'Lưu trữ dữ liệu' },
-  { category: 'psu', label: 'PSU / Nguồn máy tính', icon: Zap, required: true, description: 'Cung cấp điện cho hệ thống' },
-  { category: 'case', label: 'Case / Vỏ máy tính', icon: Package, required: false, description: 'Bao vỏ và bảo vệ linh kiện' },
-  { category: 'cooling', label: 'Tản nhiệt', icon: Wind, required: false, description: 'Làm mát CPU và hệ thống' },
-];
+  { category: 'cpu', labelKey: 'slots.cpu', icon: Cpu, required: true, descriptionKey: 'descriptions.cpu' },
+  { category: 'mainboard', labelKey: 'slots.mainboard', icon: LayoutGrid, required: true, descriptionKey: 'descriptions.mainboard' },
+  { category: 'ram', labelKey: 'slots.ram', icon: Database, required: true, descriptionKey: 'descriptions.ram' },
+  { category: 'gpu', labelKey: 'slots.gpu', icon: Monitor, required: false, descriptionKey: 'descriptions.gpu' },
+  { category: 'storage', labelKey: 'slots.storage', icon: HardDrive, required: true, descriptionKey: 'descriptions.storage' },
+  { category: 'psu', labelKey: 'slots.psu', icon: Zap, required: true, descriptionKey: 'descriptions.psu' },
+  { category: 'case', labelKey: 'slots.case', icon: Package, required: false, descriptionKey: 'descriptions.case' },
+  { category: 'cooling', labelKey: 'slots.cooling', icon: Wind, required: false, descriptionKey: 'descriptions.cooling' },
+]
+
+const budgetPresets = [
+  { key: 'gaming15', budget: 15000000, color: 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' },
+  { key: 'gaming25', budget: 25000000, color: 'text-blue-400 border-blue-500/30 bg-blue-500/10' },
+  { key: 'workstation50', budget: 50000000, color: 'text-purple-400 border-purple-500/30 bg-purple-500/10' },
+] as const
 
 interface PCBuilderProps {
-  products: Product[];
+  products: Product[]
 }
 
 export function PCBuilder({ products }: PCBuilderProps) {
-  const [build, setBuild] = useState<Build>({});
-  const [activeSlot, setActiveSlot] = useState<Category | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [budgetLimit, setBudgetLimit] = useState<number | null>(null);
-  const { addToast } = useToast();
-  const { addItem } = useCart();
-  const router = useRouter();
+  const locale = useLocale() as AppLocale
+  const t = useTranslations('builder')
+  const router = useRouter()
+  const { addItem } = useCart()
+  const { requireAuth } = useAuth()
+  const [buildName, setBuildName] = useState('')
 
-  const issues = useMemo(() => checkCompatibility(build), [build]);
-  const errors = issues.filter(i => i.type === 'error');
-  const warnings = issues.filter(i => i.type === 'warning');
-  const infos = issues.filter(i => i.type === 'info');
+  const {
+    build,
+    activeSlot,
+    searchQuery,
+    budgetLimit,
+    savedBuilds,
+    compareIds,
+    setActiveSlot,
+    setSearchQuery,
+    setBudgetLimit,
+    setProduct,
+    removeProduct,
+    resetBuild,
+    saveCurrentBuild,
+    loadSavedBuild,
+    deleteSavedBuild,
+    toggleCompare,
+  } = useBuilderStore()
 
-  const compatibilityStatus: 'good' | 'warning' | 'error' | 'empty' =
-    Object.keys(build).length === 0 ? 'empty' :
-    errors.length > 0 ? 'error' :
-    warnings.length > 0 ? 'warning' : 'good';
+  const compatibilityT = (key: string, values?: Record<string, string | number>) => t(`compatibility.${key}`, values)
+  const issues = useMemo(() => checkCompatibility(build, compatibilityT), [build, t])
+  const errors = issues.filter((issue) => issue.type === 'error')
+  const warnings = issues.filter((issue) => issue.type === 'warning')
 
-  const totalPrice = Object.values(build).reduce((sum, p) => sum + (p?.price || 0), 0);
+  const selectedProducts = useMemo(
+    () => Object.values(build).filter((item): item is Product => Boolean(item)),
+    [build]
+  )
+  const totalPrice = selectedProducts.reduce((sum, item) => sum + item.price, 0)
+  const filledSlots = buildSlots.filter((slot) => build[slot.category])
+  const progress = (filledSlots.length / buildSlots.length) * 100
 
   const slotProducts = useMemo(() => {
-    if (!activeSlot) return [];
-    let filtered = products.filter(p => p.category === activeSlot);
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      filtered = filtered.filter(p =>
-        p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q)
-      );
-    }
-    return filtered;
-  }, [activeSlot, searchQuery, products]);
+    if (!activeSlot) return []
 
-  const addToBuildAndClose = (product: Product) => {
-    setBuild(prev => ({ ...prev, [product.category]: product }));
-    setActiveSlot(null);
-    setSearchQuery('');
-  };
+    const query = searchQuery.toLowerCase().trim()
+    return products.filter((product) => {
+      if (product.category !== activeSlot) {
+        return false
+      }
+
+      if (!query) {
+        return true
+      }
+
+      return product.name.toLowerCase().includes(query) || product.brand.toLowerCase().includes(query)
+    })
+  }, [activeSlot, products, searchQuery])
+
+  const comparedBuilds = savedBuilds.filter((item) => compareIds.includes(item.id))
+
+  const handleSaveBuild = () => {
+    if (!buildName.trim()) {
+      toast.error(t('saveMissingName'))
+      return
+    }
+
+    const savedBuild = saveCurrentBuild(buildName, totalPrice)
+
+    if (!savedBuild) {
+      toast.error(t('saveEmpty'))
+      return
+    }
+
+    setBuildName('')
+    toast.success(t('saveSuccess'))
+  }
 
   const handleAddAllToCart = async () => {
-    const selectedProducts = Object.values(build).filter((product): product is Product => Boolean(product));
-    if (selectedProducts.length === 0) return;
+    if (selectedProducts.length === 0) return
 
     try {
-      await Promise.all(selectedProducts.map((product) => addItem(product.id, 1)));
-      addToast('Da them toan bo cau hinh vao gio hang', 'success');
-      router.push('/cart');
+      await requireAuth(async () => {
+        await Promise.all(selectedProducts.map((product) => addItem(product.id, 1)))
+        toast.success(t('addAllSuccess'))
+        router.push('/cart')
+      }, { nextUrl: '/builder', reason: 'required' })
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Khong the them cau hinh vao gio hang';
-      addToast(message, 'error');
-      if (message.toLowerCase().includes('dang nhap')) {
-        router.push('/?auth=required');
-      }
+      const message = error instanceof Error ? error.message : t('addAllFailed')
+      toast.error(message)
     }
-  };
-
-  const filledSlots = buildSlots.filter(s => build[s.category]);
-  const progress = (filledSlots.length / buildSlots.length) * 100;
-
-  const budgetPresets = [
-    { label: 'Gaming 15 triệu', budget: 15000000, color: 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' },
-    { label: 'Gaming 25 triệu', budget: 25000000, color: 'text-blue-400 border-blue-500/30 bg-blue-500/10' },
-    { label: 'Workstation 50 triệu', budget: 50000000, color: 'text-purple-400 border-purple-500/30 bg-purple-500/10' },
-  ];
+  }
 
   return (
-    <div className="min-h-screen bg-[#050609] text-white" style={{ fontFamily: 'Space Grotesk, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
-      {/* Header */}
-      <div className="bg-[#0a0b10]/95 border-b border-indigo-500/10 py-6 sticky top-0 z-40 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-                <Link href="/" className="hover:text-indigo-400 transition-colors">Trang chủ</Link>
-                <ChevronRight className="w-3.5 h-3.5" />
-                <span className="text-slate-300">PC Builder</span>
+    <div className="min-h-screen bg-[#050609] text-white">
+      <div className="sticky top-0 z-30 border-b border-indigo-500/10 bg-[#0a0b10]/95 py-6 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+          <div>
+            <div className="mb-2 flex items-center gap-2 text-sm text-slate-500">
+              <Link href="/" className="transition-colors hover:text-indigo-400">{t('breadcrumbHome')}</Link>
+              <ChevronRight className="h-3.5 w-3.5" />
+              <span className="text-slate-300">{t('title')}</span>
+            </div>
+            <h1 className="flex items-center gap-3 text-3xl font-bold text-white">
+              <div className="rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 p-2.5">
+                <Wrench className="h-6 w-6" />
               </div>
-              <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-                <div className="p-2.5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl">
-                  <Wrench className="w-6 h-6" />
-                </div>
-                PC Builder
-              </h1>
-            </div>
+              {t('title')}
+            </h1>
+          </div>
 
-            <div className="hidden sm:flex items-center gap-2">
-              {budgetPresets.map(preset => (
-                <button
-                  key={preset.label}
-                  onClick={() => setBudgetLimit(budgetLimit === preset.budget ? null : preset.budget)}
-                  className={`px-4 py-2 border rounded-lg text-xs font-medium transition-all hover:scale-105 ${preset.color} ${budgetLimit === preset.budget ? 'ring-2 ring-offset-2 ring-offset-[#0a0b10]' : ''}`}
-                >
-                  {budgetLimit === preset.budget ? '✓ ' : ''}{preset.label}
-                </button>
-              ))}
-              {budgetLimit && (
-                <button
-                  onClick={() => setBudgetLimit(null)}
-                  className="px-3 py-2 text-xs text-slate-400 hover:text-white transition-colors hover:bg-slate-800/50 rounded-lg"
-                >
-                  ✕ Bỏ
-                </button>
-              )}
-            </div>
+          <div className="hidden items-center gap-2 lg:flex">
+            {budgetPresets.map((preset) => (
+              <button
+                key={preset.key}
+                onClick={() => setBudgetLimit(budgetLimit === preset.budget ? null : preset.budget)}
+                className={`rounded-lg border px-4 py-2 text-xs font-medium transition-all hover:scale-105 ${preset.color} ${budgetLimit === preset.budget ? 'ring-2 ring-offset-2 ring-offset-[#0a0b10]' : ''}`}
+              >
+                {budgetLimit === preset.budget ? '✓ ' : ''}
+                {t(`budgets.${preset.key}`)}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* LEFT: Build Slots */}
-          <div className="lg:col-span-2">
-            {/* Progress */}
-            <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-2xl p-6 mb-6 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-slate-300 text-sm font-medium">Tiến độ build: {filledSlots.length}/{buildSlots.length} linh kiện</span>
-                <span className="text-indigo-400 text-lg font-bold">{Math.round(progress)}%</span>
-              </div>
-              <div className="h-3 bg-slate-800/50 rounded-full overflow-hidden border border-indigo-500/20">
-                <div
-                  className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 rounded-full transition-all duration-700 shadow-lg shadow-indigo-500/50"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-            </div>
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-6 rounded-2xl border border-indigo-500/20 bg-linear-to-br from-indigo-500/10 to-purple-500/10 p-6 backdrop-blur-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-sm font-medium text-slate-300">
+              {t('progress', { filled: filledSlots.length, total: buildSlots.length })}
+            </span>
+            <span className="text-lg font-bold text-indigo-400">{Math.round(progress)}%</span>
+          </div>
+          <div className="h-3 overflow-hidden rounded-full border border-indigo-500/20 bg-slate-800/50">
+            <div className="h-full rounded-full bg-linear-to-r from-indigo-500 via-purple-500 to-indigo-600 transition-all duration-700" style={{ width: `${progress}%` }} />
+          </div>
+        </div>
 
-            {/* Slot Cards */}
-            <div className="space-y-3">
-              {buildSlots.map(slot => {
-                const selected = build[slot.category];
-                const isActive = activeSlot === slot.category;
+        <div className="grid gap-8 lg:grid-cols-3">
+          <div className="space-y-3 lg:col-span-2">
+            {buildSlots.map((slot) => {
+              const selected = build[slot.category]
+              const isActive = activeSlot === slot.category
 
-                return (
-                  <div key={slot.category}>
-                    <div
-                      className={`group bg-[#0f1117] border rounded-2xl p-5 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl ${
-                        isActive
-                          ? 'border-indigo-500 ring-2 ring-indigo-500/20 bg-indigo-500/5'
-                          : selected
+              return (
+                <div key={slot.category}>
+                  <div
+                    className={`group cursor-pointer rounded-2xl border bg-[#0f1117] p-5 shadow-lg transition-all duration-300 hover:shadow-xl ${
+                      isActive
+                        ? 'border-indigo-500 ring-2 ring-indigo-500/20 bg-indigo-500/5'
+                        : selected
                           ? 'border-slate-700 hover:border-indigo-500/60 hover:bg-indigo-500/5'
-                          : 'border-slate-800 hover:border-indigo-500/40 border-dashed hover:bg-indigo-500/5'
-                      }`}
-                      onClick={() => {
-                        if (!selected) {
-                          setActiveSlot(isActive ? null : slot.category);
-                          setSearchQuery('');
-                        }
-                      }}
-                    >
-                      <div className="flex items-center gap-4">
-                        {/* Icon */}
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                          selected ? 'bg-indigo-500/30 text-indigo-300 shadow-lg shadow-indigo-500/20' : 'bg-slate-800/50 text-slate-600 group-hover:bg-indigo-500/20 group-hover:text-indigo-400'
-                        }`}>
-                          <slot.icon className="w-6 h-6" />
-                        </div>
+                          : 'border-dashed border-slate-800 hover:border-indigo-500/40 hover:bg-indigo-500/5'
+                    }`}
+                    onClick={() => {
+                      if (!selected) {
+                        setActiveSlot(isActive ? null : slot.category)
+                        setSearchQuery('')
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-all ${
+                        selected ? 'bg-indigo-500/30 text-indigo-300 shadow-lg shadow-indigo-500/20' : 'bg-slate-800/50 text-slate-600 group-hover:bg-indigo-500/20 group-hover:text-indigo-400'
+                      }`}>
+                        <slot.icon className="h-6 w-6" />
+                      </div>
 
-                        {/* Content */}
-                        {selected ? (
-                          <div className="flex-1 min-w-0 flex items-center gap-4">
-                            <img
-                              src={selected.image}
-                              alt={selected.name}
-                              className="w-12 h-12 rounded-lg object-cover shrink-0 border border-indigo-500/20"
-                              onError={(e) => {
-                                e.currentTarget.src = '/images/cpu-i7.svg';
-                              }}
-                            />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs text-indigo-400 mb-1 font-semibold">{selected.brand}</p>
-                              <p className="text-slate-100 text-sm font-bold truncate">{selected.name}</p>
-                              <div className="flex items-center gap-2 mt-1">
-                                {selected.socket && (
-                                  <span className="text-xs text-slate-500 bg-slate-800/50 px-2 py-1 rounded">{selected.socket}</span>
-                                )}
-                                {selected.ramType && (
-                                  <span className="text-xs text-slate-500 bg-slate-800/50 px-2 py-1 rounded">{selected.ramType}</span>
-                                )}
-                                {selected.wattage && (
-                                  <span className="text-xs text-slate-500 bg-slate-800/50 px-2 py-1 rounded">{selected.wattage}W</span>
-                                )}
-                              </div>
-                            </div>
-                            <div className="text-right shrink-0">
-                              <p className="text-indigo-400 font-bold text-base">{formatPrice(selected.price)}</p>
-                              {selected.originalPrice && (
-                                <p className="text-slate-600 text-xs line-through">{formatPrice(selected.originalPrice)}</p>
-                              )}
+                      {selected ? (
+                        <div className="flex min-w-0 flex-1 items-center gap-4">
+                          <img src={selected.image} alt={selected.name} className="h-12 w-12 shrink-0 rounded-lg border border-indigo-500/20 object-cover" />
+                          <div className="min-w-0 flex-1">
+                            <p className="mb-1 text-xs font-semibold text-indigo-400">{selected.brand}</p>
+                            <p className="truncate text-sm font-bold text-slate-100">{selected.name}</p>
+                            <div className="mt-1 flex flex-wrap items-center gap-2">
+                              {selected.socket && <span className="rounded bg-slate-800/50 px-2 py-1 text-xs text-slate-500">{selected.socket}</span>}
+                              {selected.ramType && <span className="rounded bg-slate-800/50 px-2 py-1 text-xs text-slate-500">{selected.ramType}</span>}
+                              {selected.wattage && <span className="rounded bg-slate-800/50 px-2 py-1 text-xs text-slate-500">{selected.wattage}W</span>}
                             </div>
                           </div>
+                          <p className="shrink-0 text-base font-bold text-indigo-400">{formatPrice(selected.price, locale)}</p>
+                        </div>
+                      ) : (
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold text-slate-200">{t(slot.labelKey)}</p>
+                          <p className="mt-1 text-xs text-slate-500">{t(slot.descriptionKey)}</p>
+                        </div>
+                      )}
+
+                      <div className="flex shrink-0 items-center gap-2">
+                        {slot.required && !selected && (
+                          <span className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-500">{t('required')}</span>
+                        )}
+                        {selected ? (
+                          <>
+                            <button
+                              onClick={(event) => {
+                                event.stopPropagation()
+                                setActiveSlot(slot.category)
+                                setSearchQuery('')
+                              }}
+                              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-medium text-slate-300 transition-all hover:bg-slate-700 hover:text-white"
+                            >
+                              {t('change')}
+                            </button>
+                            <button
+                              onClick={(event) => {
+                                event.stopPropagation()
+                                removeProduct(slot.category)
+                              }}
+                              className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-red-500/10 hover:text-red-400"
+                            >
+                              <X className="h-5 w-5" />
+                            </button>
+                          </>
                         ) : (
-                          <div className="flex-1">
-                            <p className="text-slate-200 text-sm font-semibold">{slot.label}</p>
-                            <p className="text-slate-500 text-xs mt-1">{slot.description}</p>
+                          <div className={`flex h-10 w-10 items-center justify-center rounded-lg transition-all ${
+                            isActive ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/50' : 'bg-slate-800 text-slate-500 group-hover:bg-indigo-500/30 group-hover:text-indigo-400'
+                          }`}>
+                            <Plus className="h-5 w-5" />
                           </div>
                         )}
-
-                        {/* Actions */}
-                        <div className="flex items-center gap-2 shrink-0">
-                          {slot.required && !selected && (
-                            <span className="text-xs text-amber-500 border border-amber-500/40 bg-amber-500/10 px-2.5 py-1 rounded-lg font-medium">Bắt buộc</span>
-                          )}
-                          {selected ? (
-                            <>
-                              <button
-                                onClick={e => { e.stopPropagation(); setActiveSlot(slot.category); setSearchQuery(''); }}
-                                className="px-3 py-2 text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 hover:text-white transition-all font-medium"
-                              >
-                                Đổi
-                              </button>
-                              <button
-                                onClick={e => { e.stopPropagation(); setBuild(prev => { const n = {...prev}; delete n[slot.category]; return n; }); }}
-                                className="p-2 text-slate-500 hover:text-red-400 transition-colors hover:bg-red-500/10 rounded-lg"
-                              >
-                                <X className="w-5 h-5" />
-                              </button>
-                            </>
-                          ) : (
-                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
-                              isActive ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/50' : 'bg-slate-800 text-slate-500 group-hover:bg-indigo-500/30 group-hover:text-indigo-400'
-                            }`}>
-                              <Plus className="w-5 h-5" />
-                            </div>
-                          )}
-                        </div>
                       </div>
                     </div>
+                  </div>
 
-                    {/* Product Picker - Inline */}
-                    {isActive && (
-                      <div className="mt-3 bg-[#0f1117] border border-indigo-500/30 rounded-2xl overflow-hidden shadow-xl animate-in fade-in slide-in-from-top-2 duration-300">
-                        <div className="p-4 border-b border-slate-800/50 bg-gradient-to-r from-indigo-500/10 to-purple-500/10">
-                          <div className="flex items-center gap-2">
-                            <div className="relative flex-1">
-                              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-                              <input
-                                type="text"
-                                placeholder={`Tìm ${slot.label}...`}
-                                value={searchQuery}
-                                onChange={e => setSearchQuery(e.target.value)}
-                                autoFocus
-                                className="w-full bg-slate-800/50 border border-indigo-500/20 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-400 focus:bg-slate-800 transition-all"
-                              />
-                            </div>
-                            <button
-                              onClick={() => { setActiveSlot(null); setSearchQuery(''); }}
-                              className="p-2 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-lg transition-colors"
-                            >
-                              <X className="w-5 h-5" />
-                            </button>
+                  {isActive && (
+                    <div className="mt-3 overflow-hidden rounded-2xl border border-indigo-500/30 bg-[#0f1117] shadow-xl animate-in fade-in slide-in-from-top-2 duration-300">
+                      <div className="border-b border-slate-800/50 bg-linear-to-r from-indigo-500/10 to-purple-500/10 p-4">
+                        <div className="flex items-center gap-2">
+                          <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                            <input
+                              type="text"
+                              placeholder={t('searchPlaceholder', { label: t(slot.labelKey) })}
+                              value={searchQuery}
+                              onChange={(event) => setSearchQuery(event.target.value)}
+                              autoFocus
+                              className="w-full rounded-lg border border-indigo-500/20 bg-slate-800/50 py-2.5 pl-10 pr-4 text-sm text-slate-200 transition-all placeholder:text-slate-600 focus:border-indigo-400 focus:bg-slate-800 focus:outline-none"
+                            />
                           </div>
-                        </div>
-
-                        <div className="max-h-[28rem] overflow-y-auto">
-                          {slotProducts.length === 0 ? (
-                            <p className="text-center text-slate-500 text-sm py-8">Không tìm thấy sản phẩm</p>
-                          ) : (
-                            slotProducts.map((product, idx) => {
-                              const compat = isProductCompatibleWithBuild(product, build);
-                              const exceedsBudget = budgetLimit && totalPrice + product.price > budgetLimit;
-                              return (
-                                <div
-                                  key={product.id}
-                                  className={`flex items-center gap-4 p-4 border-b border-slate-800/30 last:border-0 cursor-pointer transition-all ${
-                                    compat.compatible && !exceedsBudget
-                                      ? 'hover:bg-indigo-500/10'
-                                      : exceedsBudget
-                                      ? 'opacity-60 hover:bg-amber-500/5'
-                                      : 'opacity-50 hover:bg-red-500/5'
-                                  }`}
-                                  onClick={() => compat.compatible && !exceedsBudget && addToBuildAndClose(product)}
-                                >
-                                  <img
-                                    src={product.image}
-                                    alt={product.name}
-                                    className="w-12 h-12 rounded-lg object-cover shrink-0 border border-indigo-500/20"
-                                  />
-                                  <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2 mb-1">
-                                      <p className="text-xs text-indigo-400 font-semibold">{product.brand}</p>
-                                      {!compat.compatible && (
-                                        <span className="text-xs text-red-400 bg-red-500/15 border border-red-500/30 px-2 py-1 rounded flex items-center gap-1 font-medium">
-                                          <AlertCircle className="w-3 h-3" /> Không tương thích
-                                        </span>
-                                      )}
-                                      {compat.compatible && Object.keys(build).length > 0 && (
-                                        <span className="text-xs text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-1 rounded flex items-center gap-1 font-medium">
-                                          <CheckCircle2 className="w-3 h-3" /> Tương thích
-                                        </span>
-                                      )}
-                                      {exceedsBudget && (
-                                        <span className="text-xs text-amber-400 bg-amber-500/15 border border-amber-500/30 px-2 py-1 rounded font-medium">
-                                          Vượt ngân sách
-                                        </span>
-                                      )}
-                                    </div>
-                                    <p className="text-slate-200 text-sm font-medium truncate">{product.name}</p>
-                                    {compat.reason && (
-                                      <p className="text-red-400 text-xs mt-1">{compat.reason}</p>
-                                    )}
-                                    <div className="flex items-center gap-2 mt-2 flex-wrap">
-                                      {product.socket && <span className="text-slate-500 text-xs bg-slate-800/50 px-2 py-1 rounded">{product.socket}</span>}
-                                      {product.ramType && <span className="text-slate-500 text-xs bg-slate-800/50 px-2 py-1 rounded">{product.ramType}</span>}
-                                      {product.wattage && <span className="text-slate-500 text-xs bg-slate-800/50 px-2 py-1 rounded">{product.wattage}W</span>}
-                                      {product.tdp && <span className="text-slate-500 text-xs bg-slate-800/50 px-2 py-1 rounded">TDP: {product.tdp}W</span>}
-                                    </div>
-                                  </div>
-                                  <div className="text-right shrink-0">
-                                    <p className="text-indigo-400 font-bold text-sm">{formatPrice(product.price)}</p>
-                                    <div className="flex items-center gap-1 justify-end mt-1">
-                                      <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                                      <span className="text-slate-500 text-xs font-medium">{product.rating}</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              );
-                            })
-                          )}
+                          <button
+                            onClick={() => {
+                              setActiveSlot(null)
+                              setSearchQuery('')
+                            }}
+                            className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800/50 hover:text-white"
+                          >
+                            <X className="h-5 w-5" />
+                          </button>
                         </div>
                       </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+
+                      <div className="max-h-112 overflow-y-auto">
+                        {slotProducts.length === 0 ? (
+                          <p className="py-8 text-center text-sm text-slate-500">{t('notFound')}</p>
+                        ) : (
+                          slotProducts.map((product) => {
+                            const compat = isProductCompatibleWithBuild(product, build, compatibilityT)
+                            const exceedsBudget = Boolean(budgetLimit && totalPrice + product.price > budgetLimit)
+
+                            return (
+                              <div
+                                key={product.id}
+                                className={`flex cursor-pointer items-center gap-4 border-b border-slate-800/30 p-4 transition-all last:border-0 ${
+                                  compat.compatible && !exceedsBudget
+                                    ? 'hover:bg-indigo-500/10'
+                                    : exceedsBudget
+                                      ? 'opacity-60 hover:bg-amber-500/5'
+                                      : 'opacity-50 hover:bg-red-500/5'
+                                }`}
+                                onClick={() => compat.compatible && !exceedsBudget && setProduct(product)}
+                              >
+                                <img src={product.image} alt={product.name} className="h-12 w-12 shrink-0 rounded-lg border border-indigo-500/20 object-cover" />
+                                <div className="min-w-0 flex-1">
+                                  <div className="mb-1 flex flex-wrap items-center gap-2">
+                                    <p className="text-xs font-semibold text-indigo-400">{product.brand}</p>
+                                    {!compat.compatible && (
+                                      <span className="flex items-center gap-1 rounded border border-red-500/30 bg-red-500/15 px-2 py-1 text-xs font-medium text-red-400">
+                                        <AlertCircle className="h-3 w-3" /> {t('notCompatible')}
+                                      </span>
+                                    )}
+                                    {compat.compatible && Object.keys(build).length > 0 && (
+                                      <span className="flex items-center gap-1 rounded border border-emerald-500/30 bg-emerald-500/15 px-2 py-1 text-xs font-medium text-emerald-400">
+                                        <CheckCircle2 className="h-3 w-3" /> {t('compatible')}
+                                      </span>
+                                    )}
+                                    {exceedsBudget && (
+                                      <span className="rounded border border-amber-500/30 bg-amber-500/15 px-2 py-1 text-xs font-medium text-amber-400">{t('overBudget')}</span>
+                                    )}
+                                  </div>
+                                  <p className="truncate text-sm font-medium text-slate-200">{product.name}</p>
+                                  {compat.reason && <p className="mt-1 text-xs text-red-400">{compat.reason}</p>}
+                                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                                    {product.socket && <span className="rounded bg-slate-800/50 px-2 py-1 text-xs text-slate-500">{product.socket}</span>}
+                                    {product.ramType && <span className="rounded bg-slate-800/50 px-2 py-1 text-xs text-slate-500">{product.ramType}</span>}
+                                    {product.wattage && <span className="rounded bg-slate-800/50 px-2 py-1 text-xs text-slate-500">{product.wattage}W</span>}
+                                    {product.tdp && <span className="rounded bg-slate-800/50 px-2 py-1 text-xs text-slate-500">TDP: {product.tdp}W</span>}
+                                  </div>
+                                </div>
+                                <div className="shrink-0 text-right">
+                                  <p className="text-sm font-bold text-indigo-400">{formatPrice(product.price, locale)}</p>
+                                  <div className="mt-1 flex items-center justify-end gap-1">
+                                    <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                                    <span className="text-xs font-medium text-slate-500">{product.rating}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          })
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+
+            <section className="rounded-2xl border border-slate-800 bg-[#0f1117] p-6 shadow-xl">
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold text-white">{t('savedTitle')}</h3>
+                <p className="mt-1 text-sm text-slate-400">{t('savedDescription')}</p>
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+                <input
+                  type="text"
+                  value={buildName}
+                  onChange={(event) => setBuildName(event.target.value)}
+                  placeholder={t('savePlaceholder')}
+                  className="rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20"
+                />
+                <button
+                  type="button"
+                  onClick={handleSaveBuild}
+                  className="rounded-xl bg-linear-to-r from-indigo-600 to-sky-500 px-5 py-3 text-sm font-semibold text-white transition hover:opacity-95"
+                >
+                  {t('saveButton')}
+                </button>
+              </div>
+
+              <div className="mt-4 grid gap-3">
+                {savedBuilds.length === 0 ? (
+                  <div className="rounded-2xl border border-dashed border-slate-800 bg-slate-900/30 p-4 text-sm text-slate-500">{t('emptySaved')}</div>
+                ) : (
+                  savedBuilds.map((item) => {
+                    const isCompared = compareIds.includes(item.id)
+
+                    return (
+                      <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4">
+                        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                          <div>
+                            <p className="font-semibold text-white">{item.name}</p>
+                            <p className="mt-1 text-sm text-slate-400">{t('savedAt', { date: new Date(item.savedAt).toLocaleString(locale === 'vi' ? 'vi-VN' : 'en-US') })}</p>
+                            <p className="mt-2 text-sm font-semibold text-sky-300">{formatPrice(item.totalPrice, locale)}</p>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            <button onClick={() => loadSavedBuild(item.id)} className="rounded-xl border border-indigo-500/30 px-3 py-2 text-sm text-indigo-300 transition hover:bg-indigo-500/10">{t('loadBuild')}</button>
+                            <button onClick={() => toggleCompare(item.id)} className={`rounded-xl border px-3 py-2 text-sm transition ${isCompared ? 'border-sky-500/40 bg-sky-500/10 text-sky-300' : 'border-slate-700 text-slate-300 hover:bg-white/5'}`}>{t('compareBuild')}</button>
+                            <button onClick={() => deleteSavedBuild(item.id)} className="rounded-xl border border-rose-500/30 px-3 py-2 text-sm text-rose-300 transition hover:bg-rose-500/10">{t('deleteBuild')}</button>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })
+                )}
+              </div>
+            </section>
+
+            <BuilderCompare builds={comparedBuilds} />
           </div>
 
-          {/* RIGHT: Build Summary */}
           <div className="space-y-6">
-            {/* Compatibility Status */}
-            <div className={`rounded-2xl p-6 border backdrop-blur-sm ${
-              compatibilityStatus === 'good' ? 'bg-emerald-500/15 border-emerald-500/30 shadow-lg shadow-emerald-500/10' :
-              compatibilityStatus === 'error' ? 'bg-red-500/15 border-red-500/30 shadow-lg shadow-red-500/10' :
-              compatibilityStatus === 'warning' ? 'bg-amber-500/15 border-amber-500/30 shadow-lg shadow-amber-500/10' :
-              'bg-slate-800/30 border-slate-700/50'
+            <div className={`rounded-2xl border p-6 backdrop-blur-sm ${
+              errors.length === 0 && warnings.length === 0 && selectedProducts.length > 0
+                ? 'border-emerald-500/30 bg-emerald-500/15 shadow-lg shadow-emerald-500/10'
+                : errors.length > 0
+                  ? 'border-red-500/30 bg-red-500/15 shadow-lg shadow-red-500/10'
+                  : warnings.length > 0
+                    ? 'border-amber-500/30 bg-amber-500/15 shadow-lg shadow-amber-500/10'
+                    : 'border-slate-700/50 bg-slate-800/30'
             }`}>
-              <div className="flex items-center gap-3 mb-4">
-                {compatibilityStatus === 'good' && <CheckCircle2 className="w-6 h-6 text-emerald-400" />}
-                {compatibilityStatus === 'error' && <AlertCircle className="w-6 h-6 text-red-400" />}
-                {compatibilityStatus === 'warning' && <AlertTriangle className="w-6 h-6 text-amber-400" />}
-                {compatibilityStatus === 'empty' && <Info className="w-6 h-6 text-slate-500" />}
-                <h3 className={`font-bold text-base ${
-                  compatibilityStatus === 'good' ? 'text-emerald-400' :
-                  compatibilityStatus === 'error' ? 'text-red-400' :
-                  compatibilityStatus === 'warning' ? 'text-amber-400' : 'text-slate-400'
+              <div className="mb-4 flex items-center gap-3">
+                {errors.length === 0 && warnings.length === 0 && selectedProducts.length > 0 && <CheckCircle2 className="h-6 w-6 text-emerald-400" />}
+                {errors.length > 0 && <AlertCircle className="h-6 w-6 text-red-400" />}
+                {warnings.length > 0 && errors.length === 0 && <AlertTriangle className="h-6 w-6 text-amber-400" />}
+                {selectedProducts.length === 0 && <Info className="h-6 w-6 text-slate-500" />}
+                <h3 className={`text-base font-bold ${
+                  errors.length === 0 && warnings.length === 0 && selectedProducts.length > 0
+                    ? 'text-emerald-400'
+                    : errors.length > 0
+                      ? 'text-red-400'
+                      : warnings.length > 0
+                        ? 'text-amber-400'
+                        : 'text-slate-400'
                 }`}>
-                  {compatibilityStatus === 'good' ? 'Tương thích hoàn hảo' :
-                   compatibilityStatus === 'error' ? `${errors.length} lỗi tương thích` :
-                   compatibilityStatus === 'warning' ? `${warnings.length} cảnh báo` :
-                   'Chưa có linh kiện nào'}
+                  {errors.length === 0 && warnings.length === 0 && selectedProducts.length > 0
+                    ? t('statusGood')
+                    : errors.length > 0
+                      ? t('statusError', { count: errors.length })
+                      : warnings.length > 0
+                        ? t('statusWarning', { count: warnings.length })
+                        : t('statusEmpty')}
                 </h3>
               </div>
 
               <div className="space-y-3">
-                {errors.map((issue, i) => (
-                  <div key={i} className="flex gap-3 p-3 bg-red-500/20 rounded-lg border border-red-500/20">
-                    <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+                {issues.map((issue, index) => (
+                  <div key={`${issue.type}-${index}`} className={`flex gap-3 rounded-lg border p-3 ${
+                    issue.type === 'error'
+                      ? 'border-red-500/20 bg-red-500/20'
+                      : issue.type === 'warning'
+                        ? 'border-amber-500/20 bg-amber-500/20'
+                        : 'border-blue-500/20 bg-blue-500/20'
+                  }`}>
+                    {issue.type === 'error' && <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />}
+                    {issue.type === 'warning' && <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" />}
+                    {issue.type === 'info' && <Info className="mt-0.5 h-5 w-5 shrink-0 text-blue-400" />}
                     <div>
-                      <p className="text-red-300 text-xs font-medium">{issue.message}</p>
+                      <p className={`text-xs font-medium ${issue.type === 'error' ? 'text-red-300' : issue.type === 'warning' ? 'text-amber-300' : 'text-blue-300'}`}>{issue.message}</p>
                       {issue.suggestion && (
-                        <p className="text-slate-400 text-xs mt-1.5 flex items-center gap-1.5">
-                          <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
+                        <p className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-300/80">
+                          <Lightbulb className="h-3.5 w-3.5 text-amber-400" />
                           {issue.suggestion}
                         </p>
                       )}
                     </div>
-                  </div>
-                ))}
-                {warnings.map((issue, i) => (
-                  <div key={i} className="flex gap-3 p-3 bg-amber-500/20 rounded-lg border border-amber-500/20">
-                    <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-amber-300 text-xs font-medium">{issue.message}</p>
-                      {issue.suggestion && (
-                        <p className="text-slate-400 text-xs mt-1.5 flex items-center gap-1.5">
-                          <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
-                          {issue.suggestion}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-                {infos.map((issue, i) => (
-                  <div key={i} className="flex gap-3 p-3 bg-blue-500/20 rounded-lg border border-blue-500/20">
-                    <Info className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-                    <p className="text-blue-300 text-xs font-medium">{issue.message}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Build Summary */}
-            <div className="bg-[#0f1117] border border-indigo-500/20 rounded-2xl overflow-hidden sticky top-24 shadow-xl">
-              <div className="p-6 border-b border-slate-800/50 bg-gradient-to-r from-indigo-500/10 to-purple-500/10">
-                <h3 className="text-white font-bold text-base">Cấu hình đã chọn</h3>
+            <div className="sticky top-24 overflow-hidden rounded-2xl border border-indigo-500/20 bg-[#0f1117] shadow-xl">
+              <div className="border-b border-slate-800/50 bg-linear-to-r from-indigo-500/10 to-purple-500/10 p-6">
+                <h3 className="text-base font-bold text-white">{t('selectedConfig')}</h3>
               </div>
 
-              <div className="divide-y divide-slate-800/30 max-h-72 overflow-y-auto">
-                {buildSlots.map(slot => {
-                  const selected = build[slot.category];
+              <div className="max-h-72 divide-y divide-slate-800/30 overflow-y-auto">
+                {buildSlots.map((slot) => {
+                  const selected = build[slot.category]
                   return (
-                    <div key={slot.category} className="flex items-center gap-3 px-6 py-4 hover:bg-indigo-500/5 transition-colors">
-                      <slot.icon className={`w-5 h-5 shrink-0 ${selected ? 'text-indigo-400' : 'text-slate-600'}`} />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-slate-500 text-xs font-medium">{slot.label.split('/')[0].trim()}</p>
+                    <div key={slot.category} className="flex items-center gap-3 px-6 py-4 transition-colors hover:bg-indigo-500/5">
+                      <slot.icon className={`h-5 w-5 shrink-0 ${selected ? 'text-indigo-400' : 'text-slate-600'}`} />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-medium text-slate-500">{t(slot.labelKey)}</p>
                         {selected ? (
-                          <p className="text-slate-200 text-xs font-medium truncate">{selected.name}</p>
+                          <p className="truncate text-xs font-medium text-slate-200">{selected.name}</p>
                         ) : (
-                          <p className="text-slate-600 text-xs italic">Chưa chọn</p>
+                          <p className="text-xs italic text-slate-600">{t('notSelected')}</p>
                         )}
                       </div>
-                      {selected && (
-                        <span className="text-indigo-400 text-xs font-bold shrink-0">
-                          {formatPrice(selected.price)}
-                        </span>
-                      )}
+                      {selected && <span className="shrink-0 text-xs font-bold text-indigo-400">{formatPrice(selected.price, locale)}</span>}
                     </div>
-                  );
+                  )
                 })}
               </div>
 
-              {/* Budget Tracker */}
               {budgetLimit && (
-                <div className="p-6 border-t border-slate-800/30 bg-slate-900/50">
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-slate-500 text-xs font-medium">Ngân sách: {formatPrice(budgetLimit)}</span>
-                      <span className={`text-xs font-bold ${totalPrice > budgetLimit ? 'text-red-400' : 'text-emerald-400'}`}>
-                        {totalPrice > budgetLimit ? `Vượt ${formatPrice(totalPrice - budgetLimit)}` : `Còn ${formatPrice(budgetLimit - totalPrice)}`}
-                      </span>
-                    </div>
-                    <div className="h-2 bg-slate-800/50 rounded-full overflow-hidden border border-indigo-500/10">
-                      <div
-                        className={`h-full rounded-full transition-all ${totalPrice > budgetLimit ? 'bg-red-500' : 'bg-emerald-500'}`}
-                        style={{ width: `${Math.min((totalPrice / budgetLimit) * 100, 100)}%` }}
-                      />
-                    </div>
+                <div className="border-t border-slate-800/30 bg-slate-900/50 p-6">
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-xs font-medium text-slate-500">{t('budget', { amount: formatPrice(budgetLimit, locale) })}</span>
+                    <span className={`text-xs font-bold ${totalPrice > budgetLimit ? 'text-red-400' : 'text-emerald-400'}`}>
+                      {totalPrice > budgetLimit ? t('budgetOver', { amount: formatPrice(totalPrice - budgetLimit, locale) }) : t('budgetRemaining', { amount: formatPrice(budgetLimit - totalPrice, locale) })}
+                    </span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full border border-indigo-500/10 bg-slate-800/50">
+                    <div className={`h-full rounded-full ${totalPrice > budgetLimit ? 'bg-red-500' : 'bg-emerald-500'}`} style={{ width: `${Math.min((totalPrice / budgetLimit) * 100, 100)}%` }} />
                   </div>
                 </div>
               )}
 
-              {/* Total */}
-              <div className={`p-6 border-t border-slate-800/30 ${budgetLimit ? 'bg-slate-900/30' : 'bg-gradient-to-br from-indigo-500/15 to-purple-500/15'}`}>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-slate-400 text-sm font-medium">Tổng cấu hình</span>
-                  <span className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
-                    {formatPrice(totalPrice)}
-                  </span>
+              <div className={`border-t border-slate-800/30 p-6 ${budgetLimit ? 'bg-slate-900/30' : 'bg-linear-to-br from-indigo-500/15 to-purple-500/15'}`}>
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="text-sm font-medium text-slate-400">{t('total')}</span>
+                  <span className="bg-linear-to-r from-indigo-400 to-purple-400 bg-clip-text text-3xl font-bold text-transparent">{formatPrice(totalPrice, locale)}</span>
                 </div>
                 {totalPrice > 0 && (
-                  <p className="text-slate-500 text-xs mb-6 font-medium">
-                    {filledSlots.length} linh kiện • {errors.length === 0 ? '✓ Tất cả tương thích' : `✗ ${errors.length} lỗi cần sửa`}
+                  <p className="mb-6 text-xs font-medium text-slate-500">
+                    {errors.length === 0 ? t('summaryLineOk', { count: filledSlots.length }) : t('summaryLineError', { count: filledSlots.length, errors: errors.length })}
                   </p>
                 )}
 
                 <button
                   onClick={handleAddAllToCart}
-                  disabled={Object.keys(build).length === 0 || errors.length > 0}
-                  className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl text-sm font-bold transition-all ${
-                    Object.keys(build).length === 0 || errors.length > 0
-                      ? 'bg-slate-700/40 text-slate-500 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50'
+                  disabled={selectedProducts.length === 0 || errors.length > 0}
+                  className={`flex w-full items-center justify-center gap-2 rounded-xl py-4 text-sm font-bold transition-all ${
+                    selectedProducts.length === 0 || errors.length > 0
+                      ? 'cursor-not-allowed bg-slate-700/40 text-slate-500'
+                      : 'bg-linear-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30 hover:from-indigo-500 hover:to-purple-500 hover:shadow-indigo-500/50'
                   }`}
                 >
-                  <ShoppingCart className="w-5 h-5" />
-                  Thêm toàn bộ vào giỏ
+                  <ShoppingCart className="h-5 w-5" />
+                  {t('addAll')}
                 </button>
 
-                {errors.length > 0 && (
-                  <p className="text-red-400 text-xs text-center mt-3 font-medium">
-                    Vui lòng sửa lỗi trước khi thêm vào giỏ
-                  </p>
-                )}
+                {errors.length > 0 && <p className="mt-3 text-center text-xs font-medium text-red-400">{t('fixBeforeAdd')}</p>}
 
-                <button
-                  onClick={() => { setBuild({}); setActiveSlot(null); }}
-                  className="w-full mt-3 py-2.5 text-slate-500 hover:text-slate-300 text-xs transition-colors font-medium"
-                >
-                  ↻ Làm mới cấu hình
+                <button onClick={resetBuild} className="mt-3 w-full py-2.5 text-xs font-medium text-slate-500 transition-colors hover:text-slate-300">
+                  {t('reset')}
                 </button>
               </div>
             </div>
 
-            {/* Tips */}
-            <div className="bg-[#0f1117] border border-indigo-500/20 rounded-2xl p-6 shadow-lg">
-              <h3 className="text-slate-300 text-sm font-bold mb-4 flex items-center gap-2">
-                <div className="p-1.5 bg-amber-500/20 rounded-lg">
-                  <Lightbulb className="w-4 h-4 text-amber-400" />
+            <div className="rounded-2xl border border-indigo-500/20 bg-[#0f1117] p-6 shadow-lg">
+              <h3 className="mb-4 flex items-center gap-2 text-sm font-bold text-slate-300">
+                <div className="rounded-lg bg-amber-500/20 p-1.5">
+                  <Lightbulb className="h-4 w-4 text-amber-400" />
                 </div>
-                Mẹo build PC
+                {t('tipsTitle')}
               </h3>
-              <ul className="space-y-3 text-slate-500 text-xs">
-                <li className="flex items-start gap-2">
-                  <span className="text-indigo-400 mt-0.5 font-bold">→</span>
-                  <span>CPU và Mainboard phải cùng socket (LGA1700 hoặc AM5)</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-indigo-400 mt-0.5 font-bold">→</span>
-                  <span>RAM phải đúng loại (DDR4/DDR5) mà mainboard hỗ trợ</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-indigo-400 mt-0.5 font-bold">→</span>
-                  <span>Nguồn cần dư tối thiểu 100W so với tổng TDP</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-indigo-400 mt-0.5 font-bold">→</span>
-                  <span>RTX 4090 cần nguồn tối thiểu 850W</span>
-                </li>
+              <ul className="space-y-3 text-xs text-slate-500">
+                {['tip1', 'tip2', 'tip3', 'tip4'].map((tipKey) => (
+                  <li key={tipKey} className="flex items-start gap-2">
+                    <span className="mt-0.5 font-bold text-indigo-400">→</span>
+                    <span>{t(tipKey)}</span>
+                  </li>
+                ))}
               </ul>
             </div>
 
-            {/* Power Consumption */}
             {(build.cpu || build.gpu) && (
-              <div className="bg-[#0f1117] border border-indigo-500/20 rounded-2xl p-6 shadow-lg">
-                <h3 className="text-slate-300 text-sm font-bold mb-4 flex items-center gap-2">
-                  <div className="p-1.5 bg-yellow-500/20 rounded-lg">
-                    <Zap className="w-4 h-4 text-yellow-400" />
+              <div className="rounded-2xl border border-indigo-500/20 bg-[#0f1117] p-6 shadow-lg">
+                <h3 className="mb-4 flex items-center gap-2 text-sm font-bold text-slate-300">
+                  <div className="rounded-lg bg-yellow-500/20 p-1.5">
+                    <Zap className="h-4 w-4 text-yellow-400" />
                   </div>
-                  Ước tính tiêu thụ điện
+                  {t('powerTitle')}
                 </h3>
                 <div className="space-y-3">
                   {build.cpu && (
-                    <div className="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg">
-                      <span className="text-slate-500 text-xs font-medium">CPU TDP</span>
-                      <span className="text-slate-300 text-xs font-bold">{build.cpu.tdp || 0}W</span>
+                    <div className="flex items-center justify-between rounded-lg bg-slate-800/30 p-3">
+                      <span className="text-xs font-medium text-slate-500">{t('cpuTdp')}</span>
+                      <span className="text-xs font-bold text-slate-300">{build.cpu.tdp || 0}W</span>
                     </div>
                   )}
                   {build.gpu && (
-                    <div className="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg">
-                      <span className="text-slate-500 text-xs font-medium">GPU TDP</span>
-                      <span className="text-slate-300 text-xs font-bold">{build.gpu.tdp || 0}W</span>
+                    <div className="flex items-center justify-between rounded-lg bg-slate-800/30 p-3">
+                      <span className="text-xs font-medium text-slate-500">{t('gpuTdp')}</span>
+                      <span className="text-xs font-bold text-slate-300">{build.gpu.tdp || 0}W</span>
                     </div>
                   )}
-                  <div className="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg">
-                    <span className="text-slate-500 text-xs font-medium">Hệ thống (ước tính)</span>
-                    <span className="text-slate-300 text-xs font-bold">~50W</span>
+                  <div className="flex items-center justify-between rounded-lg bg-slate-800/30 p-3">
+                    <span className="text-xs font-medium text-slate-500">{t('systemEstimate')}</span>
+                    <span className="text-xs font-bold text-slate-300">~50W</span>
                   </div>
-                  <div className="flex justify-between items-center p-3 bg-indigo-500/15 border border-indigo-500/30 rounded-lg">
-                    <span className="text-slate-400 text-xs font-bold">Tổng TDP ước tính</span>
-                    <span className="text-indigo-400 text-sm font-bold">{(build.cpu?.tdp || 0) + (build.gpu?.tdp || 0) + 50}W</span>
+                  <div className="flex items-center justify-between rounded-lg border border-indigo-500/30 bg-indigo-500/15 p-3">
+                    <span className="text-xs font-bold text-slate-400">{t('estimatedTotalTdp')}</span>
+                    <span className="text-sm font-bold text-indigo-400">{(build.cpu?.tdp || 0) + (build.gpu?.tdp || 0) + 50}W</span>
                   </div>
-                  <p className="text-slate-600 text-xs mt-2 p-3 bg-slate-800/20 rounded-lg">
-                    Khuyến nghị nguồn: <span className="text-indigo-400 font-bold">{Math.ceil(((build.cpu?.tdp || 0) + (build.gpu?.tdp || 0) + 150) / 50) * 50}W+</span>
+                  <p className="mt-2 rounded-lg bg-slate-800/20 p-3 text-xs text-slate-600">
+                    {t('recommendedPsu', { amount: `${Math.ceil(((build.cpu?.tdp || 0) + (build.gpu?.tdp || 0) + 150) / 50) * 50}W` })}
                   </p>
                 </div>
               </div>
@@ -587,5 +622,5 @@ export function PCBuilder({ products }: PCBuilderProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

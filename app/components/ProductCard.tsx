@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useToast } from '@/app/providers/toast-provider'
 import { useCart } from '@/app/providers/cart-provider'
+import { useAuth } from '@/context/AuthContext'
 import type { Product } from './types'
 
 interface ProductCardProps {
@@ -15,27 +16,27 @@ interface ProductCardProps {
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const [isAdding, setIsAdding] = useState(false)
   const [imageError, setImageError] = useState(false)
-  const router = useRouter()
   const { addToast } = useToast()
   const { addItem } = useCart()
+  const { requireAuth } = useAuth()
+  const t = useTranslations('productCard')
 
   const handleAddToCart = async () => {
     setIsAdding(true)
 
     try {
-      if (onAddToCart) {
-        await onAddToCart(product)
-      } else {
-        await addItem(product.id, 1)
-      }
+      await requireAuth(async () => {
+        if (onAddToCart) {
+          await onAddToCart(product)
+        } else {
+          await addItem(product.id, 1)
+        }
 
-      addToast('Da them vao gio hang', 'success')
+        addToast('Da them vao gio hang', 'success')
+      })
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Them vao gio hang that bai'
+      const message = error instanceof Error ? error.message : t('failed')
       addToast(message, 'error')
-      if (message.toLowerCase().includes('dang nhap')) {
-        router.push('/?auth=required')
-      }
     } finally {
       setIsAdding(false)
     }
@@ -64,7 +65,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
             onError={() => setImageError(true)}
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-sm text-slate-500">Khong co anh</div>
+          <div className="flex h-full items-center justify-center text-sm text-slate-500">{t('noImage')}</div>
         )}
         {product.danhMuc && (
           <div className="absolute left-3 top-3 rounded-full bg-sky-500/15 px-3 py-1 text-xs font-medium text-sky-300">
@@ -78,12 +79,12 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           <Link href={`/products/${product.slug}`} className="line-clamp-2 text-lg font-semibold text-white transition hover:text-sky-300">
             {product.tenSanPham}
           </Link>
-          <p className="mt-2 line-clamp-2 text-sm text-slate-400">{product.moTa || 'San pham dang duoc cap nhat mo ta.'}</p>
+          <p className="mt-2 line-clamp-2 text-sm text-slate-400">{product.moTa || t('descriptionFallback')}</p>
         </div>
 
         <div>
           <p className="text-2xl font-bold text-sky-300">{formatPrice(product.gia)}</p>
-          <p className="mt-1 text-xs text-slate-500">Ton kho: {product.soLuongTon}</p>
+          <p className="mt-1 text-xs text-slate-500">{t('stock', { count: product.soLuongTon })}</p>
         </div>
 
         {specs.length > 0 && (
@@ -103,13 +104,13 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
             disabled={product.soLuongTon <= 0 || isAdding}
             className="rounded-xl bg-sky-500 px-4 py-3 font-semibold text-slate-950 transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
           >
-            {isAdding ? 'Dang them...' : 'Them vao gio hang'}
+            {isAdding ? t('adding') : t('add')}
           </button>
           <Link
             href={`/products/${product.slug}`}
             className="rounded-xl border border-slate-700 px-4 py-3 text-center font-semibold text-slate-200 transition hover:border-sky-400 hover:text-sky-300"
           >
-            Xem chi tiet
+            {t('details')}
           </Link>
         </div>
       </div>
