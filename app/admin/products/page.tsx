@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Plus, Edit2, Trash2, X, Boxes, ArrowLeft, Search, Package } from 'lucide-react'
+import { useToast } from '@/app/providers/toast-provider'
+import { ConfirmDialog } from '@/components/confirm-dialog'
 
 interface Product {
   id: string
@@ -22,11 +24,13 @@ interface Category {
 
 export default function AdminProducts() {
   const router = useRouter()
+  const { addToast } = useToast()
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [formData, setFormData] = useState({
     tenSanPham: '',
@@ -60,6 +64,7 @@ export default function AdminProducts() {
       setCategories(categoriesData.categories || [])
     } catch (error) {
       console.error('Error fetching data:', error)
+      addToast('Không thể tải dữ liệu sản phẩm', 'error')
     } finally {
       setLoading(false)
     }
@@ -97,7 +102,7 @@ export default function AdminProducts() {
     e.preventDefault()
 
     if (!formData.tenSanPham || !formData.danhMucId) {
-      alert('Vui lòng điền tên sản phẩm và chọn danh mục')
+      addToast('Vui lòng điền tên sản phẩm và chọn danh mục', 'error')
       return
     }
 
@@ -119,21 +124,25 @@ export default function AdminProducts() {
         return
       }
 
-      if (!response.ok) throw new Error('Failed to save product')
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to save product')
+      }
 
       await fetchData()
       closeForm()
+      addToast(selectedProduct ? 'Đã cập nhật sản phẩm' : 'Đã tạo sản phẩm mới', 'success')
     } catch (error) {
       console.error('Error saving product:', error)
-      alert('Lỗi khi lưu sản phẩm')
+      addToast(error instanceof Error ? error.message : 'Lỗi khi lưu sản phẩm', 'error')
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Bạn chắc chắn muốn xóa sản phẩm này?')) return
+  const handleDelete = async () => {
+    if (!productToDelete) return
 
     try {
-      const response = await fetch(`/api/admin/products/${id}`, {
+      const response = await fetch(`/api/admin/products/${productToDelete.id}`, {
         method: 'DELETE',
         credentials: 'include',
       })
@@ -143,11 +152,17 @@ export default function AdminProducts() {
         return
       }
 
-      if (!response.ok) throw new Error('Failed to delete product')
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete product')
+      }
+
       await fetchData()
+      addToast('Đã xóa sản phẩm', 'success')
+      setProductToDelete(null)
     } catch (error) {
       console.error('Error deleting product:', error)
-      alert('Lỗi khi xóa sản phẩm')
+      addToast(error instanceof Error ? error.message : 'Lỗi khi xóa sản phẩm', 'error')
     }
   }
 
@@ -286,7 +301,7 @@ export default function AdminProducts() {
                               <Edit2 className="h-4 w-4" />
                             </button>
                             <button
-                              onClick={() => handleDelete(product.id)}
+                              onClick={() => setProductToDelete(product)}
                               className="rounded-lg p-2 text-slate-400 transition hover:bg-rose-500/10 hover:text-rose-400"
                               title="Xóa"
                             >
@@ -406,6 +421,19 @@ export default function AdminProducts() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={Boolean(productToDelete)}
+        title="Xóa sản phẩm"
+        description={productToDelete ? `Bạn có chắc muốn xóa ${productToDelete.tenSanPham}?` : ''}
+        confirmLabel="Xóa sản phẩm"
+        onConfirm={handleDelete}
+        onOpenChange={(open) => {
+          if (!open) {
+            setProductToDelete(null)
+          }
+        }}
+      />
     </main>
   )
 }

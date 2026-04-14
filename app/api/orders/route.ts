@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { authorizeRoles } from '@/lib/auth'
+import { createOrderCode, validateOrderInput } from '@/lib/orders'
 
 const ALLOWED_PAYMENT_METHODS = ['COD', 'VNPAY', 'MOMO'] as const
 
@@ -25,15 +26,13 @@ export async function POST(request: NextRequest) {
   if (!auth.user) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const body = await request.json()
-  const shippingAddress = String(body.shippingAddress || '').trim()
-  const paymentMethod = String(body.paymentMethod || 'COD').trim().toUpperCase()
+  const validated = validateOrderInput({
+    shippingAddress: String(body.shippingAddress || ''),
+    paymentMethod: String(body.paymentMethod || 'COD')
+  })
 
-  if (shippingAddress.length < 10) {
-    return NextResponse.json({ error: 'Dia chi giao hang khong hop le' }, { status: 400 })
-  }
-
-  if (!ALLOWED_PAYMENT_METHODS.includes(paymentMethod as (typeof ALLOWED_PAYMENT_METHODS)[number])) {
-    return NextResponse.json({ error: 'Phuong thuc thanh toan khong hop le' }, { status: 400 })
+  if (!validated.ok) {
+    return NextResponse.json({ error: validated.error }, { status: 400 })
   }
 
   const cart = await prisma.gioHang.findUnique({
@@ -45,40 +44,80 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Gio hang trong' }, { status: 400 })
   }
 
-  const now = Date.now()
-  const rand = Math.floor(Math.random() * 100000)
+  const invalidItem = cart.items.find(
+    (item) => !Number.isInteger(item.soLuong) || item.soLuong < 1 || item.soLuong > item.sanPham.soLuongTon
+  )
+
+  if (invalidItem) {
+    return NextResponse.json(
+      { error: `So luong khong hop le hoac vuot ton kho cho san pham ${invalidItem.sanPham.tenSanPham}` },
+      { status: 400 }
+    )
+  }
+
   const total = cart.items.reduce((sum, item) => sum + item.soLuong * item.sanPham.gia, 0)
-  const order = await prisma.donHang.create({
-    data: {
-      maDonHang: `DH-${now}-${rand}`,
-      trangThai: 'CHO_XAC_NHAN',
-      tongTien: total,
-      diaChiGiaoHang: shippingAddress,
-      ghiChu: 'Don hang tu website PC Builder',
-      nguoiDungId: auth.user.id,
-      chiTietDonHangs: {
-        create: cart.items.map((item) => ({
-          soLuong: item.soLuong,
-          giaBanLucMua: item.sanPham.gia,
-          sanPhamId: item.sanPhamId
-        }))
-      },
-      thanhToans: {
-        create: {
-          maThanhToan: `TT-${now}-${rand}`,
-          soTien: total,
-          phuongThuc: paymentMethod,
-          trangThai: 'PENDING'
+  try {
+    const order = await prisma.$transaction(async (tx) => {
+      for (const item of cart.items) {
+        const updated = await tx.sanPham.updateMany({
+          where: {
+            id: item.sanPhamId,
+            soLuongTon: { gte: item.soLuong }
+          },
+          data: {
+            soLuongTon: { decrement: item.soLuong }
+          }
+        })
+
+        if (updated.count !== 1) {
+          throw new Error(`OUT_OF_STOCK:${item.sanPham.tenSanPham}`)
         }
       }
-    },
-    include: {
-      chiTietDonHangs: true,
-      thanhToans: true
+
+      const createdOrder = await tx.donHang.create({
+        data: {
+          maDonHang: createOrderCode('DH'),
+          trangThai: 'CHO_XAC_NHAN',
+          tongTien: total,
+          diaChiGiaoHang: validated.data.shippingAddress,
+          ghiChu: 'Don hang tu website PC Builder',
+          nguoiDungId: auth.user.id,
+          chiTietDonHangs: {
+            create: cart.items.map((item) => ({
+              soLuong: item.soLuong,
+              giaBanLucMua: item.sanPham.gia,
+              sanPhamId: item.sanPhamId
+            }))
+          },
+          thanhToans: {
+            create: {
+              maThanhToan: createOrderCode('TT'),
+              soTien: total,
+              phuongThuc: validated.data.paymentMethod,
+              trangThai: 'PENDING'
+            }
+          }
+        },
+        include: {
+          chiTietDonHangs: true,
+          thanhToans: true
+        }
+      })
+
+      await tx.gioHangItem.deleteMany({ where: { gioHangId: cart.id } })
+
+      return createdOrder
+    })
+
+    return NextResponse.json({ order }, { status: 201 })
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith('OUT_OF_STOCK:')) {
+      return NextResponse.json(
+        { error: `So luong ton kho cua san pham ${error.message.slice('OUT_OF_STOCK:'.length)} khong du` },
+        { status: 409 }
+      )
     }
-  })
 
-  await prisma.gioHangItem.deleteMany({ where: { gioHangId: cart.id } })
-
-  return NextResponse.json({ order }, { status: 201 })
+    throw error
+  }
 }

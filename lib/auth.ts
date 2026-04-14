@@ -3,9 +3,18 @@ import jwt from 'jsonwebtoken'
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'pcbuilder-secret'
-const TOKEN_NAME = 'pcbuilder_token'
+export const TOKEN_NAME = 'pcbuilder_token'
 type UserRole = 'KHACH_HANG' | 'QUAN_TRI_VIEN'
+
+export function getJwtSecret() {
+  const secret = process.env.JWT_SECRET?.trim()
+
+  if (!secret) {
+    throw new Error('JWT_SECRET must be configured')
+  }
+
+  return secret
+}
 
 export async function hashPassword(password: string) {
   return bcrypt.hash(password, 10)
@@ -22,14 +31,14 @@ export function createAccessToken(user: { id: string; email: string; vaiTro: str
       email: user.email,
       role: user.vaiTro
     },
-    JWT_SECRET,
+    getJwtSecret(),
     { expiresIn: '7d' }
   )
 }
 
 export function verifyAccessToken(token: string) {
   try {
-    return jwt.verify(token, JWT_SECRET) as { sub: string; email: string; role: string }
+    return jwt.verify(token, getJwtSecret()) as { sub: string; email: string; role: string }
   } catch {
     return null
   }
@@ -37,11 +46,13 @@ export function verifyAccessToken(token: string) {
 
 export function createAuthCookie(token: string) {
   const maxAge = 60 * 60 * 24 * 7
-  return `${TOKEN_NAME}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}`
+  const secure = process.env.NODE_ENV === 'production' ? '; Secure' : ''
+  return `${TOKEN_NAME}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure}`
 }
 
 export function clearAuthCookie() {
-  return `${TOKEN_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`
+  const secure = process.env.NODE_ENV === 'production' ? '; Secure' : ''
+  return `${TOKEN_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`
 }
 
 export function getTokenFromRequest(request: NextRequest) {

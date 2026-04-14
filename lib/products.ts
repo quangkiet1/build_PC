@@ -1,0 +1,65 @@
+export type ProductPayload = {
+  tenSanPham: string
+  gia: number
+  soLuongTon: number
+  danhMucId: string
+  moTa?: string
+}
+
+export function slugifyProductName(name: string) {
+  const normalized = name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+  return normalized || 'san-pham'
+}
+
+export async function generateUniqueProductSlug(
+  name: string,
+  isTaken: (slug: string) => Promise<boolean>
+) {
+  const baseSlug = slugifyProductName(name)
+  let slug = baseSlug
+  let suffix = 1
+
+  while (await isTaken(slug)) {
+    slug = `${baseSlug}-${suffix}`
+    suffix += 1
+  }
+
+  return slug
+}
+
+export function validateAdminProductPayload(input: Record<string, unknown>) {
+  const tenSanPham = typeof input.tenSanPham === 'string' ? input.tenSanPham.trim() : ''
+  const danhMucId = typeof input.danhMucId === 'string' ? input.danhMucId.trim() : ''
+  const moTa = typeof input.moTa === 'string' ? input.moTa.trim() : ''
+  const gia = Number(input.gia)
+  const soLuongTon = Number(input.soLuongTon)
+
+  if (!tenSanPham || !danhMucId) {
+    return { ok: false as const, error: 'Ten san pham va danh muc la bat buoc' }
+  }
+
+  if (!Number.isFinite(gia) || gia < 0) {
+    return { ok: false as const, error: 'Gia san pham khong hop le' }
+  }
+
+  if (!Number.isInteger(soLuongTon) || soLuongTon < 0) {
+    return { ok: false as const, error: 'So luong ton khong hop le' }
+  }
+
+  return {
+    ok: true as const,
+    data: {
+      tenSanPham,
+      gia,
+      soLuongTon,
+      danhMucId,
+      moTa: moTa || undefined
+    } satisfies ProductPayload
+  }
+}

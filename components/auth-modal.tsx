@@ -25,8 +25,8 @@ export function AuthModal() {
   const [activeTab, setActiveTab] = useState<AuthTab>(authReason === 'register' ? 'register' : 'login')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [loginForm, setLoginForm] = useState({ username: '', password: '' })
-  const [registerForm, setRegisterForm] = useState({ name: '', username: '', password: '' })
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' })
+  const [registerForm, setRegisterForm] = useState({ name: '', email: '', password: '' })
 
   const isOpen = useMemo(
     () => authReason === 'required' || authReason === 'login' || authReason === 'register' || authReason === 'forbidden',
@@ -51,9 +51,9 @@ export function AuthModal() {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: loginForm.username.trim(), password: loginForm.password })
+        body: JSON.stringify({ email: loginForm.email.trim(), password: loginForm.password })
       })
-      const data = await response.json()
+      const data = await response.json().catch(() => ({ error: 'Server trả về phản hồi không hợp lệ' }))
 
       if (!response.ok) {
         setError(data.error || 'Đăng nhập thất bại')
@@ -76,17 +76,27 @@ export function AuthModal() {
     setError(null)
 
     try {
+      if (!registerForm.name.trim() || !registerForm.email.trim() || !registerForm.password) {
+        setError('Vui lòng nhập đầy đủ họ tên, email và mật khẩu')
+        return
+      }
+
+      if (registerForm.password.length < 6) {
+        setError('Mật khẩu phải có ít nhất 6 ký tự')
+        return
+      }
+
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: registerForm.name.trim(),
-          email: registerForm.username.trim(),
+          email: registerForm.email.trim(),
           password: registerForm.password
         })
       })
-      const data = await response.json()
+      const data = await response.json().catch(() => ({ error: 'Server trả về phản hồi không hợp lệ' }))
 
       if (!response.ok) {
         setError(data.error || 'Đăng ký thất bại')
@@ -116,10 +126,6 @@ export function AuthModal() {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-3 text-xs text-indigo-200">
-          Tài khoản mẫu: admin_Kiet / 1 (admin), phuc / 1 (user)
-        </div>
-
         <div className="grid grid-cols-2 gap-2 rounded-lg border border-slate-700 p-1">
           <button
             type="button"
@@ -144,9 +150,10 @@ export function AuthModal() {
         {activeTab === 'login' ? (
           <form className="space-y-3" onSubmit={handleLogin}>
             <Input
-              placeholder="Tên đăng nhập"
-              value={loginForm.username}
-              onChange={(event) => setLoginForm((prev) => ({ ...prev, username: event.target.value }))}
+              type="email"
+              placeholder="Email"
+              value={loginForm.email}
+              onChange={(event) => setLoginForm((prev) => ({ ...prev, email: event.target.value }))}
               className="border-slate-700 bg-slate-900 text-slate-100"
             />
             <Input
@@ -169,9 +176,10 @@ export function AuthModal() {
               className="border-slate-700 bg-slate-900 text-slate-100"
             />
             <Input
-              placeholder="Tên đăng nhập"
-              value={registerForm.username}
-              onChange={(event) => setRegisterForm((prev) => ({ ...prev, username: event.target.value }))}
+              type="email"
+              placeholder="Email"
+              value={registerForm.email}
+              onChange={(event) => setRegisterForm((prev) => ({ ...prev, email: event.target.value }))}
               className="border-slate-700 bg-slate-900 text-slate-100"
             />
             <Input

@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Plus, Edit2, Trash2, X, ArrowLeft, Search, Percent, Calendar, Loader2 } from 'lucide-react'
+import { Plus, Edit2, Trash2, X, ArrowLeft, Search, Percent, Loader2 } from 'lucide-react'
+import { useToast } from '@/app/providers/toast-provider'
+import { ConfirmDialog } from '@/components/confirm-dialog'
 
 interface Promotion {
   id: string
@@ -17,10 +19,12 @@ interface Promotion {
 
 export default function AdminPromotions() {
   const router = useRouter()
+  const { addToast } = useToast()
   const [promotions, setPromotions] = useState<Promotion[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [promotionToDelete, setPromotionToDelete] = useState<Promotion | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [formData, setFormData] = useState({
     maKhuyenMai: '',
@@ -49,6 +53,7 @@ export default function AdminPromotions() {
       setPromotions(data.promotions || [])
     } catch (error) {
       console.error('Error fetching promotions:', error)
+      addToast('Không thể tải dữ liệu khuyến mãi', 'error')
     } finally {
       setLoading(false)
     }
@@ -89,12 +94,12 @@ export default function AdminPromotions() {
     e.preventDefault()
 
     if (!formData.maKhuyenMai || !formData.tenKhuyenMai) {
-      alert('Vui lòng điền mã và tên khuyến mãi')
+      addToast('Vui lòng điền mã và tên khuyến mãi', 'error')
       return
     }
 
     if (formData.phanTramGiam < 1 || formData.phanTramGiam > 100) {
-      alert('Phần trăm giảm phải từ 1 đến 100')
+      addToast('Phần trăm giảm phải từ 1 đến 100', 'error')
       return
     }
 
@@ -120,20 +125,22 @@ export default function AdminPromotions() {
         return
       }
 
-      if (!response.ok) throw new Error('Failed to save promotion')
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Failed to save promotion')
       await fetchData()
       closeForm()
+      addToast(selectedPromotion ? 'Đã cập nhật khuyến mãi' : 'Đã tạo khuyến mãi mới', 'success')
     } catch (error) {
       console.error('Error saving promotion:', error)
-      alert('Lỗi khi lưu khuyến mãi')
+      addToast(error instanceof Error ? error.message : 'Lỗi khi lưu khuyến mãi', 'error')
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Bạn chắc chắn muốn xóa khuyến mãi này?')) return
+  const handleDelete = async () => {
+    if (!promotionToDelete) return
 
     try {
-      const response = await fetch(`/api/admin/promotions/${id}`, {
+      const response = await fetch(`/api/admin/promotions/${promotionToDelete.id}`, {
         method: 'DELETE',
         credentials: 'include',
       })
@@ -143,11 +150,14 @@ export default function AdminPromotions() {
         return
       }
 
-      if (!response.ok) throw new Error('Failed to delete promotion')
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Failed to delete promotion')
       await fetchData()
+      addToast('Đã xóa khuyến mãi', 'success')
+      setPromotionToDelete(null)
     } catch (error) {
       console.error('Error deleting promotion:', error)
-      alert('Lỗi khi xóa khuyến mãi')
+      addToast(error instanceof Error ? error.message : 'Lỗi khi xóa khuyến mãi', 'error')
     }
   }
 
@@ -263,7 +273,7 @@ export default function AdminPromotions() {
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() => handleDelete(promo.id)}
+                            onClick={() => setPromotionToDelete(promo)}
                             className="p-2 rounded-lg text-slate-400 hover:bg-rose-500/10 hover:text-rose-400 transition"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -338,7 +348,7 @@ export default function AdminPromotions() {
                     type="datetime-local"
                     value={formData.ngayBatDau}
                     onChange={(e) => setFormData({ ...formData, ngayBatDau: e.target.value })}
-                    className="w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white focus:border-indigo-500/50 focus:outline-none [color-scheme:dark]"
+                    className="scheme-dark w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white focus:border-indigo-500/50 focus:outline-none"
                     required
                   />
                 </div>
@@ -348,7 +358,7 @@ export default function AdminPromotions() {
                     type="datetime-local"
                     value={formData.ngayKetThuc}
                     onChange={(e) => setFormData({ ...formData, ngayKetThuc: e.target.value })}
-                    className="w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white focus:border-indigo-500/50 focus:outline-none [color-scheme:dark]"
+                    className="scheme-dark w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white focus:border-indigo-500/50 focus:outline-none"
                     required
                   />
                 </div>
@@ -386,6 +396,19 @@ export default function AdminPromotions() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={Boolean(promotionToDelete)}
+        title="Xóa khuyến mãi"
+        description={promotionToDelete ? `Bạn có chắc muốn xóa mã ${promotionToDelete.maKhuyenMai}?` : ''}
+        confirmLabel="Xóa khuyến mãi"
+        onConfirm={handleDelete}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPromotionToDelete(null)
+          }
+        }}
+      />
     </div>
   )
 }
