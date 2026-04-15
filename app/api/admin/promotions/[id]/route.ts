@@ -4,10 +4,10 @@ import { authorizeRoles } from '@/lib/auth'
 
 export async function PUT(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = await context.params
+    const { id } = context.params
     const auth = await authorizeRoles(request, ['QUAN_TRI_VIEN'])
     if (!auth.user) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
@@ -46,10 +46,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = await context.params
+    const { id } = context.params
     const auth = await authorizeRoles(request, ['QUAN_TRI_VIEN'])
     if (!auth.user) return NextResponse.json({ error: auth.error }, { status: auth.status })
 

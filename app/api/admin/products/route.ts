@@ -51,6 +51,9 @@ export async function POST(request: NextRequest) {
         soLuongTon: validated.data.soLuongTon,
         danhMucId: validated.data.danhMucId,
         moTa: validated.data.moTa,
+        hinhAnhs: validated.data.hinhAnhs || [],
+        hinhAnh: validated.data.hinhAnh ?? validated.data.hinhAnhs?.[0] ?? null,
+        thongSoKyThuat: validated.data.thongSoKyThuat,
       },
     })
 

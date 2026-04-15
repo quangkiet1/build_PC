@@ -4,6 +4,9 @@ export type ProductPayload = {
   soLuongTon: number
   danhMucId: string
   moTa?: string
+  hinhAnh?: string
+  hinhAnhs?: string[]
+  thongSoKyThuat?: any
 }
 
 export function slugifyProductName(name: string) {
@@ -39,6 +42,9 @@ export function validateAdminProductPayload(input: Record<string, unknown>) {
   const moTa = typeof input.moTa === 'string' ? input.moTa.trim() : ''
   const gia = Number(input.gia)
   const soLuongTon = Number(input.soLuongTon)
+  const hinhAnh = typeof input.hinhAnh === 'string' ? input.hinhAnh.trim() : ''
+  const hinhAnhs = Array.isArray(input.hinhAnhs) ? input.hinhAnhs.filter((url): url is string => typeof url === 'string' && url.trim().length > 0) : []
+  const thongSoKyThuat = input.thongSoKyThuat
 
   if (!tenSanPham || !danhMucId) {
     return { ok: false as const, error: 'Ten san pham va danh muc la bat buoc' }
@@ -52,6 +58,10 @@ export function validateAdminProductPayload(input: Record<string, unknown>) {
     return { ok: false as const, error: 'So luong ton khong hop le' }
   }
 
+  if (hinhAnhs.length === 0 && !hinhAnh) {
+    return { ok: false as const, error: 'Vui lòng thêm ít nhất một hình ảnh sản phẩm' }
+  }
+
   return {
     ok: true as const,
     data: {
@@ -59,7 +69,10 @@ export function validateAdminProductPayload(input: Record<string, unknown>) {
       gia,
       soLuongTon,
       danhMucId,
-      moTa: moTa || undefined
+      moTa: moTa || undefined,
+      hinhAnh: hinhAnh || undefined,
+      hinhAnhs: hinhAnhs.length > 0 ? hinhAnhs : undefined,
+      thongSoKyThuat
     } satisfies ProductPayload
   }
 }

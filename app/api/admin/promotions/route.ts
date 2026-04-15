@@ -56,6 +56,21 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    try {
+      const users = await prisma.nguoiDung.findMany({ select: { id: true } })
+      if (users.length > 0) {
+        await prisma.userKhuyenMai.createMany({
+          data: users.map((user) => ({
+            nguoiDungId: user.id,
+            khuyenMaiId: promotion.id,
+          })),
+          skipDuplicates: true,
+        })
+      }
+    } catch (error) {
+      console.warn('Warning: could not assign new promotion to all users', error)
+    }
+
     return NextResponse.json({ promotion }, { status: 201 })
   } catch (error) {
     console.error('POST /api/admin/promotions:', error)

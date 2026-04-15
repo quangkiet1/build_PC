@@ -1,9 +1,29 @@
 // prisma/seed.ts
 // Chạy với: npx prisma db seed
 
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, VaiTro } from '@prisma/client'
 
 const prisma = new PrismaClient()
+
+/**
+ * Hàm thay đổi vai trò của người dùng
+ * @param email - Email của tài khoản cần thay đổi
+ * @param vaiTroMoi - Vai trò mới (KHACH_HANG hoặc QUAN_TRI_VIEN)
+ */
+async function thayDoiVaiTro(email: string, vaiTroMoi: VaiTro) {
+  try {
+    const nguoiDungCapNhat = await prisma.nguoiDung.update({
+      where: { email },
+      data: { vaiTro: vaiTroMoi },
+    })
+
+    console.log(`Thành công! Tài khoản ${email} hiện có vai trò là: ${nguoiDungCapNhat.vaiTro}`)
+    return nguoiDungCapNhat
+  } catch (error) {
+    console.error('Lỗi khi cập nhật vai trò (Có thể email không tồn tại):', error)
+    throw error
+  }
+}
 
 async function main() {
   console.log('🌱 Bắt đầu seeding database...')
@@ -638,11 +658,14 @@ async function main() {
       hoTen: 'Nguyễn Văn A',
       email: 'user@example.com',
       matKhauHash: 'hashed_password_here',
-      vaiTro: 'KHACH_HANG',
+      vaiTro: VaiTro.KHACH_HANG,
       soDienThoai: '0123456789',
       diaChi: '123 Đường ABC, TP HCM',
     },
   })
+
+  // Ví dụ sử dụng hàm thay đổi vai trò
+  // await thayDoiVaiTro('user@example.com', VaiTro.QUAN_TRI_VIEN)
 
   // Tạo giỏ hàng cho user
   await prisma.gioHang.create({
@@ -662,6 +685,8 @@ async function main() {
   console.log('   - 5 Motherboard')
   console.log('   = 45 sản phẩm')
 }
+
+await thayDoiVaiTro('huynhkietzuki@gmail.com', VaiTro.QUAN_TRI_VIEN)
 
 main()
   .catch((e) => {

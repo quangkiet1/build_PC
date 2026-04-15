@@ -1,20 +1,26 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Plus, Edit2, Trash2, X, Boxes, ArrowLeft, Search, Package } from 'lucide-react'
+import { Plus, Edit2, Trash2, X, ArrowLeft, Search, Package, Loader2, Upload, Image as ImageIcon } from 'lucide-react'
 import { useToast } from '@/app/providers/toast-provider'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 
 interface Product {
   id: string
   tenSanPham: string
+  slug: string
   gia: number
+  hinhAnh?: string | null
+  hinhAnhs: string[]
+  moTa?: string | null
   soLuongTon: number
-  danhMucId: string
-  moTa?: string
   thongSoKyThuat?: any
+  danhMuc: {
+    id: string
+    tenDanhMuc: string
+  }
 }
 
 interface Category {
@@ -22,53 +28,60 @@ interface Category {
   tenDanhMuc: string
 }
 
-export default function AdminProducts() {
+export default function AdminProductsPage() {
   const router = useRouter()
   const { addToast } = useToast()
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [productToDelete, setProductToDelete] = useState<Product | null>(null)
-  const [searchTerm, setSearchTerm] = useState('')
+  const [uploadingImages, setUploadingImages] = useState(false)
   const [formData, setFormData] = useState({
     tenSanPham: '',
     gia: 0,
-    soLuongTon: 0,
-    danhMucId: '',
+    hinhAnh: '',
+    hinhAnhs: [] as string[],
     moTa: '',
+    soLuongTon: 100,
+    thongSoKyThuat: '',
+    danhMucId: '',
   })
 
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  const fetchData = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true)
-      const [productsRes, categoriesRes] = await Promise.all([
-        fetch('/api/admin/products', { credentials: 'include' }),
-        fetch('/api/admin/categories', { credentials: 'include' }),
-      ])
-
-      if (productsRes.status === 401) {
+      const response = await fetch('/api/admin/products', { credentials: 'include' })
+      if (response.status === 401 || response.status === 403) {
         router.push('/?auth=required&next=/admin/products')
         return
       }
-
-      const productsData = await productsRes.json()
-      const categoriesData = await categoriesRes.json()
-
-      setProducts(productsData.products || [])
-      setCategories(categoriesData.categories || [])
+      const data = await response.json()
+      setProducts(data.products || [])
     } catch (error) {
-      console.error('Error fetching data:', error)
-      addToast('Không thể tải dữ liệu sản phẩm', 'error')
+      console.error('Error fetching products:', error)
+      addToast('Không thể tải danh sách sản phẩm', 'error')
     } finally {
       setLoading(false)
     }
-  }
+  }, [router, addToast])
+
+  const fetchCategories = useCallback(async () => {
+    try {
+      const response = await fetch('/api/admin/categories', { credentials: 'include' })
+      const data = await response.json()
+      setCategories(data.categories || [])
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchProducts()
+    fetchCategories()
+  }, [fetchProducts, fetchCategories])
 
   const openForm = (product?: Product) => {
     if (product) {
@@ -76,18 +89,24 @@ export default function AdminProducts() {
       setFormData({
         tenSanPham: product.tenSanPham,
         gia: product.gia,
-        soLuongTon: product.soLuongTon,
-        danhMucId: product.danhMucId,
+        hinhAnh: product.hinhAnh || '',
+        hinhAnhs: product.hinhAnhs || [],
         moTa: product.moTa || '',
+        soLuongTon: product.soLuongTon,
+        thongSoKyThuat: product.thongSoKyThuat ? JSON.stringify(product.thongSoKyThuat, null, 2) : '',
+        danhMucId: product.danhMuc.id,
       })
     } else {
       setSelectedProduct(null)
       setFormData({
         tenSanPham: '',
         gia: 0,
-        soLuongTon: 0,
-        danhMucId: categories[0]?.id || '',
+        hinhAnh: '',
+        hinhAnhs: [],
         moTa: '',
+        soLuongTon: 100,
+        thongSoKyThuat: '',
+        danhMucId: '',
       })
     }
     setIsFormOpen(true)
@@ -98,11 +117,63 @@ export default function AdminProducts() {
     setSelectedProduct(null)
   }
 
+  const handleImageUpload = async (files: FileList) => {
+    setUploadingImages(true)
+    try {
+      const uploadedUrls: string[] = []
+
+      for (const file of Array.from(files)) {
+        const formDataUpload = new FormData()
+        formDataUpload.append('file', file)
+
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formDataUpload,
+          credentials: 'include',
+        })
+
+        if (!response.ok) throw new Error('Upload failed')
+
+        const data = await response.json()
+        uploadedUrls.push(data.url)
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        hinhAnhs: [...prev.hinhAnhs, ...uploadedUrls]
+      }))
+
+      addToast('Tải lên hình ảnh thành công', 'success')
+    } catch (error) {
+      console.error('Error uploading images:', error)
+      addToast('Lỗi khi tải lên hình ảnh', 'error')
+    } finally {
+      setUploadingImages(false)
+    }
+  }
+
+  const removeImage = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      hinhAnhs: prev.hinhAnhs.filter((_, i) => i !== index)
+    }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!formData.tenSanPham || !formData.danhMucId) {
       addToast('Vui lòng điền tên sản phẩm và chọn danh mục', 'error')
+      return
+    }
+
+    if (formData.hinhAnhs.length === 0) {
+      addToast('Vui lòng thêm ít nhất một hình ảnh sản phẩm', 'error')
+      return
+    }
+
+    if (formData.gia <= 0) {
+      addToast('Giá sản phẩm phải lớn hơn 0', 'error')
       return
     }
 
@@ -112,33 +183,38 @@ export default function AdminProducts() {
         ? `/api/admin/products/${selectedProduct.id}`
         : '/api/admin/products'
 
+      const submitData = {
+        ...formData,
+        thongSoKyThuat: formData.thongSoKyThuat ? JSON.parse(formData.thongSoKyThuat) : null,
+      }
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submitData),
       })
 
-      if (response.status === 401) {
+      if (response.status === 401 || response.status === 403) {
         router.push('/?auth=required&next=/admin/products')
         return
       }
 
       const data = await response.json()
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to save product')
+        throw new Error(data.error || 'Lỗi khi lưu sản phẩm')
       }
 
-      await fetchData()
+      await fetchProducts()
       closeForm()
-      addToast(selectedProduct ? 'Đã cập nhật sản phẩm' : 'Đã tạo sản phẩm mới', 'success')
+      addToast(selectedProduct ? 'Cập nhật sản phẩm thành công' : 'Thêm sản phẩm thành công', 'success')
     } catch (error) {
       console.error('Error saving product:', error)
       addToast(error instanceof Error ? error.message : 'Lỗi khi lưu sản phẩm', 'error')
     }
   }
 
-  const handleDelete = async () => {
+  const deleteProduct = async () => {
     if (!productToDelete) return
 
     try {
@@ -147,18 +223,18 @@ export default function AdminProducts() {
         credentials: 'include',
       })
 
-      if (response.status === 401) {
+      if (response.status === 401 || response.status === 403) {
         router.push('/?auth=required&next=/admin/products')
         return
       }
 
       const data = await response.json()
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to delete product')
+        throw new Error(data.error || 'Lỗi khi xóa sản phẩm')
       }
 
-      await fetchData()
-      addToast('Đã xóa sản phẩm', 'success')
+      setProducts((current) => current.filter((product) => product.id !== productToDelete.id))
+      addToast('Xóa sản phẩm thành công', 'success')
       setProductToDelete(null)
     } catch (error) {
       console.error('Error deleting product:', error)
@@ -166,16 +242,17 @@ export default function AdminProducts() {
     }
   }
 
-  const filteredProducts = products.filter((p) =>
-    p.tenSanPham.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = products.filter((product) =>
+    product.tenSanPham.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.danhMuc.tenDanhMuc.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   if (loading) {
     return (
       <main className="min-h-screen bg-[#07080d] text-white flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
-          <p className="text-slate-400">Đang tải dữ liệu...</p>
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 text-indigo-400 animate-spin mx-auto mb-3" />
+          <p className="text-slate-400">Đang tải sản phẩm...</p>
         </div>
       </main>
     )
@@ -184,7 +261,6 @@ export default function AdminProducts() {
   return (
     <main className="min-h-screen bg-[#07080d] text-white px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-6">
-        {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <Link
@@ -195,123 +271,99 @@ export default function AdminProducts() {
             </Link>
             <div>
               <h1 className="flex items-center gap-2.5 text-2xl font-bold sm:text-3xl">
-                <Boxes className="h-7 w-7 text-indigo-400" />
+                <Package className="h-7 w-7 text-indigo-400" />
                 Quản lý Sản phẩm
               </h1>
-              <p className="mt-1 text-sm text-slate-400">
-                {products.length} sản phẩm &middot; {categories.length} danh mục
-              </p>
+              <p className="mt-1 text-sm text-slate-400">{products.length} sản phẩm trong kho.</p>
             </div>
           </div>
           <button
+            type="button"
             onClick={() => openForm()}
-            className="gaming-gradient inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-950/30 transition hover:brightness-110"
+            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
           >
-            <Plus className="h-4 w-4" /> Thêm sản phẩm
+            <Plus className="h-4 w-4" />
+            Thêm sản phẩm
           </button>
         </div>
 
-        {/* Search */}
         <div className="relative">
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
           <input
             type="text"
-            placeholder="Tìm kiếm sản phẩm..."
+            placeholder="Tìm theo tên sản phẩm hoặc danh mục..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(event) => setSearchTerm(event.target.value)}
             className="w-full rounded-xl border border-slate-800 bg-[#0f1117] py-3 pl-11 pr-4 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/25"
           />
         </div>
 
-        {/* Products Table */}
         <div className="overflow-hidden rounded-2xl border border-slate-800 bg-[#0f1117]">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-full">
               <thead>
                 <tr className="border-b border-slate-800">
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">
-                    Sản phẩm
-                  </th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">
-                    Giá
-                  </th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">
-                    Tồn kho
-                  </th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">
-                    Danh mục
-                  </th>
-                  <th className="px-5 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-400">
-                    Hành động
-                  </th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Sản phẩm</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Danh mục</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Giá</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Tồn kho</th>
+                  <th className="px-5 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-400">Hành động</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
                 {filteredProducts.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-5 py-16 text-center">
-                      <Package className="mx-auto h-10 w-10 text-slate-700" />
-                      <p className="mt-3 text-slate-500">
-                        {searchTerm ? 'Không tìm thấy sản phẩm phù hợp' : 'Chưa có sản phẩm nào'}
-                      </p>
+                    <td colSpan={5} className="px-5 py-16 text-center text-slate-500">
+                      Không tìm thấy sản phẩm phù hợp.
                     </td>
                   </tr>
                 ) : (
-                  filteredProducts.map((product) => {
-                    const category = categories.find((c) => c.id === product.danhMucId)
-                    return (
-                      <tr
-                        key={product.id}
-                        className="transition hover:bg-[#141a26]"
-                      >
-                        <td className="px-5 py-4">
-                          <p className="font-medium text-white">{product.tenSanPham}</p>
-                          {product.moTa && (
-                            <p className="mt-0.5 max-w-xs truncate text-xs text-slate-500">{product.moTa}</p>
+                  filteredProducts.map((product) => (
+                    <tr key={product.id} className="hover:bg-[#141a26] transition">
+                      <td className="px-5 py-4 text-sm text-white">
+                        <div className="flex items-center gap-3">
+                          {product.hinhAnhs.length > 0 ? (
+                            <img
+                              src={product.hinhAnhs[0]}
+                              alt={product.tenSanPham}
+                              className="w-10 h-10 rounded-lg object-cover"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-lg bg-slate-700 flex items-center justify-center">
+                              <ImageIcon className="w-5 h-5 text-slate-400" />
+                            </div>
                           )}
-                        </td>
-                        <td className="px-5 py-4 font-mono text-sm text-indigo-300">
-                          {product.gia.toLocaleString('vi-VN')}₫
-                        </td>
-                        <td className="px-5 py-4">
-                          <span
-                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                              product.soLuongTon > 20
-                                ? 'bg-emerald-500/10 text-emerald-400'
-                                : product.soLuongTon > 0
-                                  ? 'bg-amber-500/10 text-amber-400'
-                                  : 'bg-rose-500/10 text-rose-400'
-                            }`}
-                          >
-                            {product.soLuongTon > 0 ? product.soLuongTon : 'Hết hàng'}
-                          </span>
-                        </td>
-                        <td className="px-5 py-4">
-                          <span className="rounded-lg border border-slate-700/50 bg-slate-800/40 px-2.5 py-1 text-xs text-slate-300">
-                            {category?.tenDanhMuc || 'N/A'}
-                          </span>
-                        </td>
-                        <td className="px-5 py-4">
-                          <div className="flex items-center justify-center gap-1">
-                            <button
-                              onClick={() => openForm(product)}
-                              className="rounded-lg p-2 text-slate-400 transition hover:bg-indigo-500/10 hover:text-indigo-400"
-                              title="Sửa"
-                            >
-                              <Edit2 className="h-4 w-4" />
-                            </button>
-                            <button
-                              onClick={() => setProductToDelete(product)}
-                              className="rounded-lg p-2 text-slate-400 transition hover:bg-rose-500/10 hover:text-rose-400"
-                              title="Xóa"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
+                          <div>
+                            <p className="font-medium">{product.tenSanPham}</p>
+                            <p className="text-xs text-slate-400">{product.slug}</p>
                           </div>
-                        </td>
-                      </tr>
-                    )
-                  })
+                        </div>
+                      </td>
+                      <td className="px-5 py-4 text-sm text-slate-300">{product.danhMuc.tenDanhMuc}</td>
+                      <td className="px-5 py-4 text-sm text-white">{product.gia.toLocaleString('vi-VN')} VND</td>
+                      <td className="px-5 py-4 text-sm text-slate-300">{product.soLuongTon}</td>
+                      <td className="px-5 py-4 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => openForm(product)}
+                            className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-[#111827] px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-indigo-500/40 hover:text-white"
+                          >
+                            <Edit2 className="h-3 w-3" />
+                            Sửa
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setProductToDelete(product)}
+                            className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-[#111827] px-3 py-1.5 text-xs font-semibold text-rose-300 transition hover:border-rose-500/40 hover:text-white"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                            Xóa
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>
@@ -321,100 +373,176 @@ export default function AdminProducts() {
 
       {/* Form Modal */}
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="relative mx-4 w-full max-w-lg overflow-hidden rounded-2xl border border-slate-800 bg-[#0f1117] shadow-2xl shadow-indigo-950/20">
-            {/* Modal header */}
-            <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
-              <h2 className="text-lg font-bold text-white">
-                {selectedProduct ? 'Sửa Sản phẩm' : 'Thêm Sản phẩm mới'}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-800 bg-[#0f1117] p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-white">
+                {selectedProduct ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}
               </h2>
               <button
+                type="button"
                 onClick={closeForm}
-                className="rounded-lg p-1.5 text-slate-400 transition hover:bg-white/5 hover:text-white"
+                className="rounded-lg border border-slate-700 p-2 text-slate-400 transition hover:border-slate-600 hover:text-white"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
-            {/* Modal body */}
-            <form onSubmit={handleSubmit} className="space-y-5 px-6 py-5">
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-slate-300">Tên sản phẩm</label>
-                <input
-                  type="text"
-                  value={formData.tenSanPham}
-                  onChange={(e) => setFormData({ ...formData, tenSanPham: e.target.value })}
-                  className="w-full rounded-xl border border-slate-800 bg-[#141a26] px-4 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/25"
-                  placeholder="VD: RTX 4090 Gaming OC"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-300">Giá (VND)</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Tên sản phẩm *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.tenSanPham}
+                    onChange={(e) => setFormData(prev => ({ ...prev, tenSanPham: e.target.value }))}
+                    className="w-full rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50"
+                    placeholder="Nhập tên sản phẩm"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Danh mục *
+                  </label>
+                  <select
+                    value={formData.danhMucId}
+                    onChange={(e) => setFormData(prev => ({ ...prev, danhMucId: e.target.value }))}
+                    className="w-full rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500/50"
+                    required
+                  >
+                    <option value="">Chọn danh mục</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.tenDanhMuc}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Giá (VND) *
+                  </label>
                   <input
                     type="number"
                     value={formData.gia}
-                    onChange={(e) => setFormData({ ...formData, gia: parseFloat(e.target.value) })}
-                    className="w-full rounded-xl border border-slate-800 bg-[#141a26] px-4 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/25"
+                    onChange={(e) => setFormData(prev => ({ ...prev, gia: Number(e.target.value) }))}
+                    className="w-full rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50"
+                    placeholder="0"
+                    min="0"
                     required
                   />
                 </div>
+
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-300">Số lượng tồn</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Số lượng tồn kho
+                  </label>
                   <input
                     type="number"
                     value={formData.soLuongTon}
-                    onChange={(e) => setFormData({ ...formData, soLuongTon: parseInt(e.target.value) })}
-                    className="w-full rounded-xl border border-slate-800 bg-[#141a26] px-4 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/25"
-                    required
+                    onChange={(e) => setFormData(prev => ({ ...prev, soLuongTon: Number(e.target.value) }))}
+                    className="w-full rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50"
+                    placeholder="100"
+                    min="0"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-slate-300">Danh mục</label>
-                <select
-                  value={formData.danhMucId}
-                  onChange={(e) => setFormData({ ...formData, danhMucId: e.target.value })}
-                  className="w-full rounded-xl border border-slate-800 bg-[#141a26] px-4 py-2.5 text-sm text-white outline-none transition focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/25"
-                  required
-                >
-                  <option value="">Chọn danh mục</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.tenDanhMuc}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-slate-300">Mô tả</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Mô tả
+                </label>
                 <textarea
                   value={formData.moTa}
-                  onChange={(e) => setFormData({ ...formData, moTa: e.target.value })}
-                  className="w-full rounded-xl border border-slate-800 bg-[#141a26] px-4 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/25"
+                  onChange={(e) => setFormData(prev => ({ ...prev, moTa: e.target.value }))}
                   rows={3}
-                  placeholder="Mô tả ngắn về sản phẩm..."
+                  className="w-full rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50"
+                  placeholder="Mô tả sản phẩm..."
                 />
               </div>
 
-              {/* Modal footer */}
-              <div className="flex gap-3 border-t border-slate-800 pt-5">
-                <button
-                  type="submit"
-                  className="gaming-gradient flex-1 rounded-xl py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-950/30 transition hover:brightness-110"
-                >
-                  {selectedProduct ? 'Cập nhật' : 'Thêm sản phẩm'}
-                </button>
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Thông số kỹ thuật (JSON)
+                </label>
+                <textarea
+                  value={formData.thongSoKyThuat}
+                  onChange={(e) => setFormData(prev => ({ ...prev, thongSoKyThuat: e.target.value }))}
+                  rows={4}
+                  className="w-full rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50 font-mono"
+                  placeholder='{"socket": "AM5", "chipset": "B650", "ram_type": "DDR5"}'
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Hình ảnh sản phẩm
+                </label>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={(e) => e.target.files && handleImageUpload(e.target.files)}
+                      className="hidden"
+                      id="image-upload"
+                      disabled={uploadingImages}
+                    />
+                    <label
+                      htmlFor="image-upload"
+                      className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-slate-300 transition hover:border-indigo-500/40 hover:text-white cursor-pointer"
+                    >
+                      {uploadingImages ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Upload className="h-4 w-4" />
+                      )}
+                      {uploadingImages ? 'Đang tải lên...' : 'Chọn hình ảnh'}
+                    </label>
+                  </div>
+
+                  {formData.hinhAnhs.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                      {formData.hinhAnhs.map((url, index) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={url}
+                            alt={`Product ${index + 1}`}
+                            className="w-full h-24 rounded-lg object-cover border border-slate-700"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-600 text-white text-xs opacity-0 group-hover:opacity-100 transition"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-6 border-t border-slate-800">
                 <button
                   type="button"
                   onClick={closeForm}
-                  className="flex-1 rounded-xl border border-slate-700 bg-transparent py-2.5 text-sm font-medium text-slate-300 transition hover:border-slate-600 hover:text-white"
+                  className="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-slate-600 hover:text-white"
                 >
                   Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
+                >
+                  {selectedProduct ? 'Cập nhật' : 'Thêm sản phẩm'}
                 </button>
               </div>
             </form>
@@ -424,15 +552,13 @@ export default function AdminProducts() {
 
       <ConfirmDialog
         open={Boolean(productToDelete)}
-        title="Xóa sản phẩm"
-        description={productToDelete ? `Bạn có chắc muốn xóa ${productToDelete.tenSanPham}?` : ''}
-        confirmLabel="Xóa sản phẩm"
-        onConfirm={handleDelete}
-        onOpenChange={(open) => {
-          if (!open) {
-            setProductToDelete(null)
-          }
-        }}
+        title="Xác nhận xóa sản phẩm"
+        description="Hành động này sẽ xóa sản phẩm và không thể hoàn tác. Bạn có chắc chắn muốn tiếp tục?"
+        confirmLabel="Xóa"
+        cancelLabel="Hủy"
+        confirmVariant="destructive"
+        onConfirm={deleteProduct}
+        onOpenChange={(open) => { if (!open) setProductToDelete(null) }}
       />
     </main>
   )

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
-import { Shield, Users, ShoppingCart, Boxes, Percent, ArrowRight } from 'lucide-react'
+import { Shield, Users, ShoppingCart, Boxes, Percent, ArrowRight, Folder, ClipboardList } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/server-user'
 
@@ -45,10 +45,10 @@ export default async function AdminDashboardPage() {
 
         <section className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
           <AdminLink href="/admin/products" title="Quản lý sản phẩm" desc="Thêm, cập nhật và xóa sản phẩm." />
+          <AdminLink href="/admin/categories" title="Quản lý danh mục" desc="Tạo, sửa và xóa danh mục sản phẩm." icon={<Folder className="h-5 w-5 text-cyan-300" />} />
+          <AdminLink href="/admin/orders" title="Quản lý đơn hàng" desc="Theo dõi đơn hàng và cập nhật trạng thái." icon={<ClipboardList className="h-5 w-5 text-emerald-300" />} />
+          <AdminLink href="/admin/users" title="Quản lý người dùng" desc="Quản lý quyền và xóa tài khoản." icon={<Users className="h-5 w-5 text-amber-300" />} />
           <AdminLink href="/admin/promotions" title="Quản lý khuyến mãi" desc="Quản lý mã giảm giá và khuyến mãi." />
-          <AdminLink href="/profile" title="Thông tin tài khoản" desc="Kiểm tra profile và role hiện tại." />
-          <AdminLink href="/promotions" title="Xem khuyến mãi" desc="Xem danh sách khuyến mãi công khai." />
-          <AdminLink href="/cart" title="Giỏ hàng" desc="Xem giỏ hàng và đặt hàng." />
         </section>
       </div>
     </main>
@@ -67,11 +67,16 @@ function StatCard({ title, value, icon }: { title: string; value: number; icon: 
   )
 }
 
-function AdminLink({ href, title, desc }: { href: string; title: string; desc: string }) {
+function AdminLink({ href, title, desc, icon }: { href: string; title: string; desc: string; icon?: ReactNode }) {
   return (
     <Link href={href} className="group rounded-2xl border border-slate-800 bg-[#0f1117] p-5 transition hover:border-indigo-500/40 hover:bg-[#141a26]">
-      <p className="text-lg font-semibold text-white">{title}</p>
-      <p className="mt-1 text-sm text-slate-400">{desc}</p>
+      <div className="flex items-center gap-3">
+        {icon ?? <ArrowRight className="h-5 w-5 text-indigo-300" />}
+        <div>
+          <p className="text-lg font-semibold text-white">{title}</p>
+          <p className="mt-1 text-sm text-slate-400">{desc}</p>
+        </div>
+      </div>
       <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-indigo-300">
         Mở nhanh <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
       </span>

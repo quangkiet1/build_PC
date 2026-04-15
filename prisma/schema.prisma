@@ -25,6 +25,7 @@ model NguoiDung {
   cauHinhPCs    CauHinhPC[]
   tinNhanChats  TinNhanChat[]
   gioHangs      GioHang[]
+  userKhuyenMais UserKhuyenMai[]
 
   @@map("nguoi_dung")
 }
@@ -84,6 +85,7 @@ model KhuyenMai {
 
   // Quan hệ
   khuyenMaiSanPhams KhuyenMaiSanPham[]
+  userKhuyenMais     UserKhuyenMai[]
 
   @@map("khuyen_mai")
 }
@@ -234,3 +236,20 @@ enum VaiTroTinNhan {
   USER
   AI
 }
+
+// ====================== USER PROMOTIONS ======================
+model UserKhuyenMai {
+  id            String   @id @default(cuid())
+  nguoiDungId   String
+  khuyenMaiId   String
+  daSuDung      Boolean  @default(false)
+  ngayCap       DateTime @default(now())
+  ngaySuDung    DateTime?
+
+  nguoiDung     NguoiDung @relation(fields: [nguoiDungId], references: [id])
+  khuyenMai     KhuyenMai @relation(fields: [khuyenMaiId], references: [id])
+
+  @@unique([nguoiDungId, khuyenMaiId])
+  @@map("user_khuyen_mai")
+}
+
