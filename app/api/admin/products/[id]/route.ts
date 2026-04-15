@@ -6,14 +6,18 @@ import { generateUniqueProductSlug, validateAdminProductPayload } from '@/lib/pr
 
 export async function PUT(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = context.params
+    const { id } = await context.params
     const auth = await authorizeRoles(request, ['QUAN_TRI_VIEN'])
     if (!auth.user) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
     const body = await request.json() as Record<string, unknown>
+    // Add phanTramGiam to body if provided
+    if (body.phanTramGiam === undefined) {
+      body.phanTramGiam = null
+    }
     const validated = validateAdminProductPayload(body)
     if (!validated.ok) {
       return NextResponse.json({ error: validated.error }, { status: 400 })
@@ -40,7 +44,8 @@ export async function PUT(
         moTa: validated.data.moTa,
         hinhAnhs: validated.data.hinhAnhs || [],
         hinhAnh: validated.data.hinhAnh ?? validated.data.hinhAnhs?.[0] ?? undefined,
-        thongSoKyThuat: validated.data.thongSoKyThuat,
+        thongSoKyThuat: validated.data.thongSoKyThuat ? JSON.parse(JSON.stringify(validated.data.thongSoKyThuat)) : null,
+        phanTramGiam: body.phanTramGiam ? parseInt(String(body.phanTramGiam)) : null,
       },
     })
 
@@ -59,10 +64,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = context.params
+    const { id } = await context.params
     const auth = await authorizeRoles(request, ['QUAN_TRI_VIEN'])
     if (!auth.user) return NextResponse.json({ error: auth.error }, { status: auth.status })
 

@@ -8,10 +8,10 @@ type OrderStatus = typeof VALID_STATUSES[number]
 
 export async function PATCH(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = context.params
+    const { id } = await context.params
     const auth = await authorizeRoles(request, ['QUAN_TRI_VIEN'])
     if (!auth.user) return NextResponse.json({ error: auth.error }, { status: auth.status })
 

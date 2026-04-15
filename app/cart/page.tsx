@@ -56,6 +56,7 @@ export default function CartPage() {
   const [couponApplied, setCouponApplied] = useState(false)
   const [processing, setProcessing] = useState(false)
   const [couponMessage, setCouponMessage] = useState<string | null>(null)
+  const [appliedPromotion, setAppliedPromotion] = useState<any>(null)
 
   // Checkout state
   const [shippingAddress, setShippingAddress] = useState('')
@@ -78,7 +79,7 @@ export default function CartPage() {
   )
 
   const shippingCost = subtotal >= SHIPPING_FREE_THRESHOLD ? 0 : 50000
-  const discount = couponApplied ? Math.round(subtotal * 0.05) : 0
+  const discount = couponApplied && appliedPromotion ? Math.round(subtotal * (appliedPromotion.phanTramGiam / 100)) : 0
   const totalPrice = subtotal + shippingCost - discount
   const totalItems = useMemo(
     () => items.reduce((sum, item) => sum + item.soLuong, 0),
@@ -192,6 +193,8 @@ export default function CartPage() {
       setItems([])
       setCouponApplied(false)
       setCouponCode('')
+      setCouponMessage(null)
+      setAppliedPromotion(null)
     } catch {
       setError(t('clearFailed'))
     } finally {
@@ -199,14 +202,43 @@ export default function CartPage() {
     }
   }
 
-  const handleCoupon = () => {
+  const handleCoupon = async () => {
     const normalized = couponCode.trim().toUpperCase()
-    if (normalized === 'COREBUILD5') {
-      setCouponApplied(true)
-      setCouponMessage(t('couponApplied'))
-    } else {
+    if (!normalized) {
+      setCouponMessage(t('couponRequired'))
+      return
+    }
+
+    setProcessing(true)
+    try {
+      const productIds = items.map(i => i.sanPham.id)
+      const response = await fetch('/api/promotions/check', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          maKhuyenMai: normalized,
+          sanPhamIds: productIds
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setCouponApplied(false)
+        setCouponMessage(data.error || t('couponInvalid'))
+        setAppliedPromotion(null)
+      } else {
+        setCouponApplied(true)
+        setAppliedPromotion(data.promotion)
+        setCouponMessage(t('couponApplied'))
+      }
+    } catch {
       setCouponApplied(false)
-      setCouponMessage(t('couponInvalid'))
+      setCouponMessage(t('couponError'))
+      setAppliedPromotion(null)
+    } finally {
+      setProcessing(false)
     }
   }
 
@@ -241,6 +273,8 @@ export default function CartPage() {
       setItems([])
       setCouponApplied(false)
       setCouponCode('')
+      setCouponMessage(null)
+      setAppliedPromotion(null)
       setShippingAddress('')
     } catch {
       setError(t('createOrderNetwork'))

@@ -12,6 +12,7 @@ interface Product {
   tenSanPham: string
   slug: string
   gia: number
+  phanTramGiam?: number | null
   hinhAnh?: string | null
   hinhAnhs: string[]
   moTa?: string | null
@@ -42,6 +43,7 @@ export default function AdminProductsPage() {
   const [formData, setFormData] = useState({
     tenSanPham: '',
     gia: 0,
+    phanTramGiam: 0,
     hinhAnh: '',
     hinhAnhs: [] as string[],
     moTa: '',
@@ -89,6 +91,7 @@ export default function AdminProductsPage() {
       setFormData({
         tenSanPham: product.tenSanPham,
         gia: product.gia,
+        phanTramGiam: product.phanTramGiam || 0,
         hinhAnh: product.hinhAnh || '',
         hinhAnhs: product.hinhAnhs || [],
         moTa: product.moTa || '',
@@ -101,6 +104,7 @@ export default function AdminProductsPage() {
       setFormData({
         tenSanPham: '',
         gia: 0,
+        phanTramGiam: 0,
         hinhAnh: '',
         hinhAnhs: [],
         moTa: '',
@@ -340,7 +344,21 @@ export default function AdminProductsPage() {
                         </div>
                       </td>
                       <td className="px-5 py-4 text-sm text-slate-300">{product.danhMuc.tenDanhMuc}</td>
-                      <td className="px-5 py-4 text-sm text-white">{product.gia.toLocaleString('vi-VN')} VND</td>
+                      <td className="px-5 py-4 text-sm">
+                        <div className="flex flex-col">
+                          {product.phanTramGiam ? (
+                            <>
+                              <span className="line-through text-slate-400">{product.gia.toLocaleString('vi-VN')} VND</span>
+                              <span className="text-emerald-400 font-semibold">
+                                {(product.gia * (100 - product.phanTramGiam) / 100).toLocaleString('vi-VN')} VND
+                              </span>
+                              <span className="text-xs text-orange-400">-{product.phanTramGiam}%</span>
+                            </>
+                          ) : (
+                            <span className="text-white">{product.gia.toLocaleString('vi-VN')} VND</span>
+                          )}
+                        </div>
+                      </td>
                       <td className="px-5 py-4 text-sm text-slate-300">{product.soLuongTon}</td>
                       <td className="px-5 py-4 text-center">
                         <div className="flex items-center justify-center gap-2">
@@ -435,6 +453,21 @@ export default function AdminProductsPage() {
                     placeholder="0"
                     min="0"
                     required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Giảm giá (%)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.phanTramGiam}
+                    onChange={(e) => setFormData(prev => ({ ...prev, phanTramGiam: Number(e.target.value) }))}
+                    className="w-full rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50"
+                    placeholder="0"
+                    min="0"
+                    max="100"
                   />
                 </div>
 

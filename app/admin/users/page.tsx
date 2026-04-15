@@ -95,7 +95,8 @@ export default function AdminUsersPage() {
 
       const data = await response.json()
       if (!response.ok) {
-        throw new Error(data.error || 'Lỗi khi xóa người dùng')
+        const errorMsg = data.error || data.details || 'Lỗi khi xóa người dùng'
+        throw new Error(errorMsg)
       }
 
       setUsers((current) => current.filter((user) => user.id !== userToDelete.id))

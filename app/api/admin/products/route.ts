@@ -53,7 +53,8 @@ export async function POST(request: NextRequest) {
         moTa: validated.data.moTa,
         hinhAnhs: validated.data.hinhAnhs || [],
         hinhAnh: validated.data.hinhAnh ?? validated.data.hinhAnhs?.[0] ?? null,
-        thongSoKyThuat: validated.data.thongSoKyThuat,
+        thongSoKyThuat: validated.data.thongSoKyThuat ? JSON.parse(JSON.stringify(validated.data.thongSoKyThuat)) : null,
+        phanTramGiam: body.phanTramGiam ? parseInt(String(body.phanTramGiam)) : null,
       },
     })
 
