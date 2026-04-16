@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/context/AuthContext'
 import { ProtectedLink } from '@/components/ProtectedLink'
+import { AddressInput } from '@/components/AddressInput'
 import {
   ShoppingCart,
   Minus,
@@ -482,16 +483,16 @@ export default function CartPage() {
                 <MapPin className="w-5 h-5 text-indigo-400" />
                 {t('shippingTitle')}
               </h3>
-              <textarea
+              <AddressInput
                 value={shippingAddress}
-                onChange={(e) => setShippingAddress(e.target.value)}
-                rows={3}
-                className="w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 resize-none"
+                onChange={setShippingAddress}
                 placeholder={t('shippingPlaceholder')}
+                error={
+                  shippingAddress.trim().length > 0 && shippingAddress.trim().length < 10
+                    ? t('shippingMin')
+                    : undefined
+                }
               />
-              {shippingAddress.trim().length > 0 && shippingAddress.trim().length < 10 && (
-                <p className="mt-2 text-xs text-rose-400">{t('shippingMin')}</p>
-              )}
             </div>
 
             {/* Payment method */}

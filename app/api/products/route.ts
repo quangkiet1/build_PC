@@ -22,47 +22,55 @@ function buildWhere(search: string, category: string): Prisma.SanPhamWhereInput 
 }
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const page = Number(searchParams.get('page') || '1')
-  const limit = Number(searchParams.get('limit') || '12')
-  const search = searchParams.get('search') || ''
-  const category = searchParams.get('category') || ''
-  const sort = searchParams.get('sort') || 'newest'
-  const skip = (page - 1) * limit
+  try {
+    const { searchParams } = new URL(request.url)
+    const page = Number(searchParams.get('page') || '1')
+    const limit = Number(searchParams.get('limit') || '12')
+    const search = searchParams.get('search') || ''
+    const category = searchParams.get('category') || ''
+    const sort = searchParams.get('sort') || 'newest'
+    const skip = (page - 1) * limit
 
-  const where = buildWhere(search, category)
-  const orderBy =
-    sort === 'price-asc'
-      ? ({ gia: 'asc' } as const)
-      : sort === 'price-desc'
-        ? ({ gia: 'desc' } as const)
-        : ({ createdAt: 'desc' } as const)
+    const where = buildWhere(search, category)
+    const orderBy =
+      sort === 'price-asc'
+        ? ({ gia: 'asc' } as const)
+        : sort === 'price-desc'
+          ? ({ gia: 'desc' } as const)
+          : ({ createdAt: 'desc' } as const)
 
-  const [data, total] = await Promise.all([
-    prisma.sanPham.findMany({
-      where,
-      include: {
-        danhMuc: {
-          select: { id: true, tenDanhMuc: true }
-        }
-      },
-      orderBy,
-      skip,
-      take: limit
-    }),
-    prisma.sanPham.count({ where })
-  ])
+    const [data, total] = await Promise.all([
+      prisma.sanPham.findMany({
+        where,
+        include: {
+          danhMuc: {
+            select: { id: true, tenDanhMuc: true }
+          }
+        },
+        orderBy,
+        skip,
+        take: limit
+      }),
+      prisma.sanPham.count({ where })
+    ])
 
-  return NextResponse.json({
-    success: true,
-    data,
-    pagination: {
-      page,
-      limit,
-      total,
-      totalPages: Math.ceil(total / limit)
-    }
-  })
+    return NextResponse.json({
+      success: true,
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    })
+  } catch (error) {
+    console.error('GET /api/products error:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch products', details: error instanceof Error ? error.message : String(error) },
+      { status: 500 }
+    )
+  }
 }
 
 export async function POST(request: NextRequest) {

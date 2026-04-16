@@ -179,18 +179,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
       })
 
+      // Immediately remove auth modal params to close the modal
       if (typeof window !== 'undefined') {
         const params = new URLSearchParams(window.location.search)
         params.delete('auth')
         params.delete('next')
         const nextQuery = params.toString()
-        router.replace(nextQuery ? `${window.location.pathname}?${nextQuery}` : window.location.pathname)
+        // Use replace to close modal immediately without animation
+        window.history.replaceState(null, '', nextQuery ? `${window.location.pathname}?${nextQuery}` : window.location.pathname)
       }
 
       if (action) {
         await action()
-      } else {
-        router.push(redirectTo || '/')
+      } else if (redirectTo && redirectTo !== '/') {
+        router.push(redirectTo)
       }
 
       window.dispatchEvent(new Event('auth-changed'))
