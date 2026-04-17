@@ -1,13 +1,20 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/context/AuthContext'
 import { ProtectedLink } from '@/components/ProtectedLink'
-import { AddressInput } from '@/components/AddressInput'
+
+// Dynamic import Leaflet component to avoid server-side rendering issues
+const AddressPickerMap = dynamic(() => import('@/components/AddressPickerMap').then(mod => ({ default: mod.AddressPickerMap })), {
+  ssr: false,
+  loading: () => <div className="h-96 bg-[#141a26] rounded-xl border border-[#1e2535] flex items-center justify-center text-slate-400">Đang tải bản đồ...</div>
+})
+
 import {
   ShoppingCart,
   Minus,
@@ -483,7 +490,7 @@ export default function CartPage() {
                 <MapPin className="w-5 h-5 text-indigo-400" />
                 {t('shippingTitle')}
               </h3>
-              <AddressInput
+              <AddressPickerMap
                 value={shippingAddress}
                 onChange={setShippingAddress}
                 placeholder={t('shippingPlaceholder')}
