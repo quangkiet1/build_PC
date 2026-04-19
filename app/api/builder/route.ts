@@ -3,6 +3,10 @@ import { prisma } from '@/lib/prisma'
 import { authenticateRequest } from '@/lib/auth'
 import { buildTotal, checkBuildCompatibility, loadProductsByIds } from '@/lib/build'
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> back_end
 type BuilderRequestItem = {
   productId: string
   quantity?: number

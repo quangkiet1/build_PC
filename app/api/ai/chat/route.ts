@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { authenticateRequest } from '@/lib/auth'
@@ -121,3 +122,68 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({ message })
 }
+=======
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+// 1. Giữ lại hàm check đăng nhập của nhóm trưởng
+import { authenticateRequest } from '@/lib/auth'; 
+// 2. Gọi "Bộ Não" Gemini của anh em mình vào
+import { checkBuildCompatibility } from '@/lib/build';
+import { xuLyTinNhan } from "@/lib/chatbotController";
+
+export async function POST(request: NextRequest) {
+  // ==========================================
+  // BƯỚC 1: BẢO VỆ CỬA NGÕ (Đồ của nhóm trưởng)
+  // ==========================================
+  const user = await authenticateRequest(request);
+  if (!user) {
+    return NextResponse.json({ error: 'Cần đăng nhập để dùng AI tư vấn' }, { status: 401 });
+  }
+
+  // ==========================================
+  // BƯỚC 2: NHẬN DỮ LIỆU TỪ UI GỬI LÊN
+  // ==========================================
+  const body = await request.json();
+  const prompt = body.prompt?.trim();
+  
+  // Lấy thêm 2 món của mình (Front-end của bạn phải gửi thêm 2 cục này lên nhé)
+  const lichSuChat = body.lichSuChat || []; 
+  const keLinhKien = body.keLinhKien || {};
+
+  if (!prompt) {
+    return NextResponse.json({ error: 'Yêu cầu tư vấn không được để trống' }, { status: 400 });
+  }
+
+  try {
+    // ==========================================
+    // BƯỚC 3: GIAO CHO "BỘ NÃO" GEMINI XỬ LÝ (Đồ của mình)
+    // ==========================================
+    // Thay vì gọi OpenAI thô sơ, mình gọi Controller 2 bước siêu việt của mình
+    const ketQuaAI = await xuLyTinNhan(prompt, lichSuChat, keLinhKien);
+
+    // ==========================================
+    // BƯỚC 4: LƯU LỊCH SỬ CHAT VÀO DB (Đồ của nhóm trưởng)
+    // ==========================================
+    // Tôn trọng thiết kế của nhóm trưởng, chat xong thì lưu vào DB
+    await prisma.tinNhanChat.createMany({
+      data: [
+        { noiDung: prompt, vaiTro: 'USER', nguoiDungId: user.id },
+        { noiDung: ketQuaAI.tinNhanBot, vaiTro: 'AI', nguoiDungId: user.id }
+      ]
+    });
+
+    // ==========================================
+    // BƯỚC 5: TRẢ KẾT QUẢ VỀ CHO FRONTEND
+    // ==========================================
+    return NextResponse.json({ 
+        message: ketQuaAI.tinNhanBot,    // Chữ để in ra khung chat
+        duLieuGoiY: ketQuaAI.duLieuGoiY, // Data linh kiện để UI hiện hình ảnh/giá
+        hieuLenhUI: ketQuaAI.hieuLenhUI  // Lệnh để UI tự động thêm/bớt trên kệ
+    });
+
+  } catch (error) {
+    console.error("Lỗi hệ thống AI:", error);
+    return NextResponse.json({ error: 'Hệ thống AI đang bảo trì.' }, { status: 500 });
+  }
+}
+>>>>>>> back_end
