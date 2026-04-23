@@ -45,6 +45,7 @@ export default async function AdminDashboardPage() {
 
         <section className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
           <AdminLink href="/admin/products" title="Quản lý sản phẩm" desc="Thêm, cập nhật và xóa sản phẩm." />
+          <AdminLink href="/admin/brands" title="Quản lý thương hiệu" desc="Xem và quản lý các thương hiệu sản phẩm." icon={<Boxes className="h-5 w-5 text-purple-300" />} />
           <AdminLink href="/admin/categories" title="Quản lý danh mục" desc="Tạo, sửa và xóa danh mục sản phẩm." icon={<Folder className="h-5 w-5 text-cyan-300" />} />
           <AdminLink href="/admin/orders" title="Quản lý đơn hàng" desc="Theo dõi đơn hàng và cập nhật trạng thái." icon={<ClipboardList className="h-5 w-5 text-emerald-300" />} />
           <AdminLink href="/admin/users" title="Quản lý người dùng" desc="Quản lý quyền và xóa tài khoản." icon={<Users className="h-5 w-5 text-amber-300" />} />

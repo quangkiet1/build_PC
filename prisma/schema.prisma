@@ -55,6 +55,7 @@ model SanPham {
   hinhAnhs      String[] @default([])
   moTa          String?
   soLuongTon    Int      @default(100)
+  thuongHieu    String?  // Intel, AMD, Samsung...
   thongSoKyThuat Json?   // Lưu socket, chipset, DDR, wattage...
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -115,6 +116,8 @@ model CauHinhPC {
   id              String      @id @default(cuid())
   tenCauHinh      String?
   tongGia         Float       @default(0)
+  isCompleted     Boolean     @default(false)
+  isPublic        Boolean     @default(false)
   ngayTao         DateTime    @default(now())
 
   nguoiDungId     String

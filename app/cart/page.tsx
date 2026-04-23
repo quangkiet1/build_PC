@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/context/AuthContext'
 import { ProtectedLink } from '@/components/ProtectedLink'
+import { useCart } from '@/app/providers/cart-provider'
 
 // Dynamic import Leaflet component to avoid server-side rendering issues
 const AddressPickerMap = dynamic(() => import('@/components/AddressPickerMap').then(mod => ({ default: mod.AddressPickerMap })), {
@@ -57,6 +58,7 @@ export default function CartPage() {
   const t = useTranslations('cartPage')
   const locale = useLocale()
   const { requireAuth } = useAuth()
+  const { fetchCartCount } = useCart()
   const [items, setItems] = useState<CartItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -284,6 +286,9 @@ export default function CartPage() {
       setCouponMessage(null)
       setAppliedPromotion(null)
       setShippingAddress('')
+      
+      // Refresh cart count in header
+      await fetchCartCount()
     } catch {
       setError(t('createOrderNetwork'))
     } finally {

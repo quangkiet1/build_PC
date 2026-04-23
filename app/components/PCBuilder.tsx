@@ -32,6 +32,7 @@ import type { Product, Category } from '@/app/types/builder'
 import { checkCompatibility, formatPrice, isProductCompatibleWithBuild } from '@/app/lib/builder-utils'
 import { useCart } from '@/app/providers/cart-provider'
 import { useAuth } from '@/context/AuthContext'
+import { SaveBuildModal } from '@/app/components/SaveBuildModal'
 import { BuilderCompare } from '@/components/BuilderCompare'
 import { useBuilderStore } from '@/store/useBuilderStore'
 
@@ -71,6 +72,7 @@ export function PCBuilder({ products }: PCBuilderProps) {
   const { addItem } = useCart()
   const { requireAuth } = useAuth()
   const [buildName, setBuildName] = useState('')
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false)
 
   const {
     build,
@@ -113,31 +115,61 @@ export function PCBuilder({ products }: PCBuilderProps) {
         return false
       }
 
+      // Socket compatibility for mainboard
+      if (activeSlot === 'mainboard' && build.cpu?.socket) {
+        if (product.supportedSocket !== build.cpu.socket) {
+          return false
+        }
+      }
+
+      // RAM compatibility for RAM slot
+      if (activeSlot === 'ram' && build.mainboard?.ramType) {
+        if (product.ramType !== build.mainboard.ramType) {
+          return false
+        }
+      }
+
       if (!query) {
         return true
       }
 
       return product.name.toLowerCase().includes(query) || product.brand.toLowerCase().includes(query)
     })
-  }, [activeSlot, products, searchQuery])
+  }, [activeSlot, products, searchQuery, build.cpu?.socket, build.mainboard?.ramType])
 
   const comparedBuilds = savedBuilds.filter((item) => compareIds.includes(item.id))
 
   const handleSaveBuild = () => {
-    if (!buildName.trim()) {
-      toast.error(t('saveMissingName'))
-      return
+    setIsSaveModalOpen(true)
+  }
+
+  const handleSaveBuildConfirm = async (name: string, isCompleted: boolean, isPublic: boolean) => {
+    try {
+      const buildItems = selectedProducts.map(product => ({
+        sanPhamId: product.id,
+        soLuong: 1,
+      }))
+
+      const response = await fetch('/api/build/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          isCompleted,
+          isPublic,
+          buildItems,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to save build')
+      }
+
+      toast.success('Build đã được lưu thành công!')
+    } catch (error) {
+      console.error('Save build error:', error)
+      toast.error('Lỗi khi lưu build')
     }
-
-    const savedBuild = saveCurrentBuild(buildName, totalPrice)
-
-    if (!savedBuild) {
-      toast.error(t('saveEmpty'))
-      return
-    }
-
-    setBuildName('')
-    toast.success(t('saveSuccess'))
   }
 
   const handleAddAllToCart = async () => {
@@ -156,7 +188,8 @@ export function PCBuilder({ products }: PCBuilderProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#050609] text-white">
+    <>
+      <div className="min-h-screen bg-[#050609] text-white">
       <div className="sticky top-0 z-30 border-b border-indigo-500/10 bg-[#0a0b10]/95 py-6 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <div>
@@ -387,20 +420,13 @@ export function PCBuilder({ products }: PCBuilderProps) {
                 <p className="mt-1 text-sm text-slate-400">{t('savedDescription')}</p>
               </div>
 
-              <div className="grid gap-3 md:grid-cols-[1fr_auto]">
-                <input
-                  type="text"
-                  value={buildName}
-                  onChange={(event) => setBuildName(event.target.value)}
-                  placeholder={t('savePlaceholder')}
-                  className="rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20"
-                />
+              <div className="grid gap-3">
                 <button
                   type="button"
                   onClick={handleSaveBuild}
                   className="rounded-xl bg-linear-to-r from-indigo-600 to-sky-500 px-5 py-3 text-sm font-semibold text-white transition hover:opacity-95"
                 >
-                  {t('saveButton')}
+                  Lưu build
                 </button>
               </div>
 
@@ -621,6 +647,14 @@ export function PCBuilder({ products }: PCBuilderProps) {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+
+      <SaveBuildModal
+        isOpen={isSaveModalOpen}
+        onClose={() => setIsSaveModalOpen(false)}
+        onSave={handleSaveBuildConfirm}
+        currentBuild={build}
+      />
+    </>
   )
 }

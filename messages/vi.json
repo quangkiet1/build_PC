@@ -104,7 +104,52 @@
     "builderFeatureCompatibility": "Kiểm tra tương thích thời gian thực",
     "openBuilder": "Mở PC Builder",
     "brandsTitle": "Thương hiệu đáng tin cậy",
-    "brandsDescription": "Linh kiện từ những thương hiệu phổ biến cho gaming và công việc chuyên sâu."
+    "brandsDescription": "Linh kiện từ những thương hiệu phổ biến cho gaming và công việc chuyên sâu.",
+    "launchBadge": "PC Builder 2026 da ra mat",
+    "heroMetricOrders": "Lua chon noi bat",
+    "heroMetricRating": "Danh gia trung binh",
+    "heroMetricAuthentic": "Linh kien chinh hang",
+    "categorySubtitles": {
+      "cpu": "Intel va AMD",
+      "gpu": "RTX va RX Series",
+      "ram": "DDR4 va DDR5",
+      "mainboard": "Intel va AMD",
+      "storage": "SSD va HDD",
+      "psu": "Gold va Platinum",
+      "case": "ATX va ITX",
+      "cooling": "Air va AIO"
+    },
+    "countdownLabel": "Ket thuc: 05:23:17",
+    "builderBadge": "Cong cu PC Builder",
+    "builderHeadline": "Build PC hoan hao",
+    "builderHeadlineAccent": "chi trong 5 phut",
+    "builderDescription": "Cong cu build PC thong minh giup ban chon linh kien phu hop, can doi ngan sach va di den buoc mua hang nhanh hon.",
+    "builderSteps": {
+      "step1Title": "Chon muc dich su dung",
+      "step1Description": "Gaming, lam viec, stream hay mot cau hinh can bang hang ngay.",
+      "step2Title": "Chon linh kien phu hop",
+      "step2Description": "He thong tu dong kiem tra tuong thich va canh bao nhung ket hop rui ro.",
+      "step3Title": "Luu, so sanh va dat hang",
+      "step3Description": "Luu nhieu build, so sanh nhanh va chot cau hinh de thanh toan."
+    },
+    "mockupLabel": "Tong gia cau hinh",
+    "mockupStatus": "Tuong thich",
+    "promoCards": {
+      "gpuEyebrow": "Card do hoa moi nhat",
+      "gpuTitle": "RTX 40 Series",
+      "gpuCta": "Kham pha ngay",
+      "builderEyebrow": "Tu van theo ngan sach",
+      "builderTitle": "Build PC theo ngan sach",
+      "builderCta": "Build ngay"
+    },
+    "trust": {
+      "authenticTitle": "Linh kien chinh hang",
+      "authenticDescription": "Lua chon tu cac thuong hieu uy tin voi linh kien phu hop cho gaming va workstation.",
+      "shippingTitle": "Giao hang nhanh",
+      "shippingDescription": "Danh sach san pham san co va luong build gon giup ban chot don nhanh hon.",
+      "supportTitle": "Tu van tuong thich",
+      "supportDescription": "Kiem tra thoi gian thuc va build da luu giup ban tinh chinh cau hinh truoc khi mua."
+    }
   },
   "builder": {
     "breadcrumbHome": "Trang chủ",
@@ -266,9 +311,18 @@
   },
   "cartPage": {
     "paymentMethods": {
-      "COD": { "label": "Thanh toán khi nhận hàng", "desc": "Trả tiền mặt khi giao hàng" },
-      "VNPAY": { "label": "VNPay", "desc": "Thanh toán qua ví VNPay" },
-      "MOMO": { "label": "MoMo", "desc": "Thanh toán qua ví MoMo" }
+      "COD": {
+        "label": "Thanh toán khi nhận hàng",
+        "desc": "Trả tiền mặt khi giao hàng"
+      },
+      "VNPAY": {
+        "label": "VNPay",
+        "desc": "Thanh toán qua ví VNPay"
+      },
+      "MOMO": {
+        "label": "MoMo",
+        "desc": "Thanh toán qua ví MoMo"
+      }
     },
     "couponTitle": "Mã giảm giá",
     "couponPlaceholder": "Nhập mã giảm giá",

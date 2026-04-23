@@ -5,10 +5,12 @@ export interface Product {
   tenSanPham: string
   slug: string
   gia: number
+  phanTramGiam?: number | null
   hinhAnh?: string | null
   hinhAnhs?: string[]
   moTa?: string | null
   soLuongTon: number
+  thuongHieu?: string | null
   thongSoKyThuat?: Prisma.JsonValue | null
   danhMuc?: {
     id: string

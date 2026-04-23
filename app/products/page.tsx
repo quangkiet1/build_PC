@@ -7,6 +7,7 @@ type ProductsPageProps = {
   searchParams?: Promise<{
     search?: string
     category?: string
+    brand?: string
     sort?: string
   }>
 }
@@ -16,6 +17,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const params = (await searchParams) || {}
   const search = params.search?.trim() || ''
   const category = params.category?.trim() || ''
+  const brand = params.brand?.trim() || ''
   const sort = params.sort || 'newest'
 
   const where = {
@@ -33,6 +35,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             tenDanhMuc: { equals: category, mode: 'insensitive' as const }
           }
         }
+      : {}),
+    ...(brand
+      ? {
+          thuongHieu: { equals: brand, mode: 'insensitive' as const }
+        }
       : {})
   }
 
@@ -43,16 +50,20 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         ? ({ gia: 'desc' } as const)
         : ({ createdAt: 'desc' } as const)
 
-  const [products, categories] = await Promise.all([
+  const [products, categories, brands] = await Promise.all([
     prisma.sanPham.findMany({
       where,
       include: { danhMuc: true },
       orderBy
     }),
-    prisma.danhMuc.findMany({ orderBy: { tenDanhMuc: 'asc' } })
+    prisma.danhMuc.findMany({ orderBy: { tenDanhMuc: 'asc' } }),
+    prisma.sanPham.findMany({
+      select: { thuongHieu: true },
+      where: { thuongHieu: { not: null } },
+      distinct: ['thuongHieu'],
+      orderBy: { thuongHieu: 'asc' }
+    })
   ])
-
-  const currentCategory = category || t('all')
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -64,7 +75,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           <h1 className="mt-3 text-4xl font-bold">{t('title')}</h1>
           <p className="mt-2 text-slate-400">{t('description')}</p>
 
-          <form className="mt-6 grid gap-3 rounded-2xl border border-slate-800 bg-slate-900/50 p-4 md:grid-cols-[2fr_1fr_1fr_auto]">
+          <form className="mt-6 grid gap-3 rounded-2xl border border-slate-800 bg-slate-900/50 p-4 md:grid-cols-[2fr_1fr_1fr_1fr_auto]">
             <input
               type="text"
               name="search"
@@ -81,6 +92,18 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
               {categories.map((item) => (
                 <option key={item.id} value={item.tenDanhMuc}>
                   {item.tenDanhMuc}
+                </option>
+              ))}
+            </select>
+            <select
+              name="brand"
+              defaultValue={brand}
+              className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-400"
+            >
+              <option value="">Tất cả thương hiệu</option>
+              {brands.map((item) => (
+                <option key={item.thuongHieu} value={item.thuongHieu!}>
+                  {item.thuongHieu}
                 </option>
               ))}
             </select>
@@ -105,10 +128,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           <p className="text-sm text-slate-400">
             {t('count', {
               count: products.length,
-              suffix: category ? t('inCategory', { category: currentCategory }) : ''
+              suffix: category ? t('inCategory', { category: category }) : ''
             })}
           </p>
-          {(search || category || sort !== 'newest') && (
+          {(search || category || brand || sort !== 'newest') && (
             <Link href="/products" className="text-sm text-sky-300 transition hover:text-sky-200">
               {t('clearFilters')}
             </Link>

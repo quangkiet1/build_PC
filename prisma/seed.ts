@@ -73,6 +73,7 @@ async function main() {
       slug: 'intel-core-i9-14900ks',
       gia: 24500000,
       moTa: 'CPU flagship Intel phiên bản K Special Edition, 24 cores/32 threads',
+      thuongHieu: 'Intel',
       thongSoKyThuat: {
         cores: 24,
         threads: 32,
@@ -87,6 +88,7 @@ async function main() {
       slug: 'intel-core-i9-14900k',
       gia: 22500000,
       moTa: 'CPU cao cấp Intel thế hệ 14, 24 cores/32 threads',
+      thuongHieu: 'Intel',
       thongSoKyThuat: {
         cores: 24,
         threads: 32,
@@ -101,6 +103,7 @@ async function main() {
       slug: 'intel-core-i7-14700k',
       gia: 18500000,
       moTa: 'CPU cao cấp Intel thế hệ 14 cho gaming và xử lý đa nhiệm',
+      thuongHieu: 'Intel',
       thongSoKyThuat: {
         cores: 20,
         threads: 28,
@@ -115,6 +118,7 @@ async function main() {
       slug: 'intel-core-i7-14700',
       gia: 16000000,
       moTa: 'Intel Core i7 phiên bản tiêu chuẩn, 20 cores/28 threads',
+      thuongHieu: 'Intel',
       thongSoKyThuat: {
         cores: 20,
         threads: 28,
@@ -129,6 +133,7 @@ async function main() {
       slug: 'intel-core-i5-14600k',
       gia: 8500000,
       moTa: 'CPU mid-range Intel đa năng cho gaming và công việc',
+      thuongHieu: 'Intel',
       thongSoKyThuat: {
         cores: 14,
         threads: 20,
@@ -144,6 +149,7 @@ async function main() {
       slug: 'amd-ryzen-9-7950x3d',
       gia: 22000000,
       moTa: 'Ryzen 9 cao cấp với công nghệ 3D V-Cache, 16 cores/32 threads',
+      thuongHieu: 'AMD',
       thongSoKyThuat: {
         cores: 16,
         threads: 32,
@@ -158,6 +164,7 @@ async function main() {
       slug: 'amd-ryzen-9-7950x',
       gia: 20000000,
       moTa: 'AMD Ryzen 9 phiên bản X, 16 cores/32 threads',
+      thuongHieu: 'AMD',
       thongSoKyThuat: {
         cores: 16,
         threads: 32,
@@ -172,6 +179,7 @@ async function main() {
       slug: 'amd-ryzen-9-7900x',
       gia: 15500000,
       moTa: 'Ryzen 9 phiên bản X, 12 cores/24 threads',
+      thuongHieu: 'AMD',
       thongSoKyThuat: {
         cores: 12,
         threads: 24,
@@ -186,6 +194,7 @@ async function main() {
       slug: 'amd-ryzen-7-7700x',
       gia: 11500000,
       moTa: 'Ryzen 7 bản X cho gaming và xử lý nội dung',
+      thuongHieu: 'AMD',
       thongSoKyThuat: {
         cores: 8,
         threads: 16,
@@ -200,6 +209,7 @@ async function main() {
       slug: 'amd-ryzen-5-7500f',
       gia: 4500000,
       moTa: 'Ryzen 5 phiên bản F (không có GPU tích hợp), 6 cores/12 threads',
+      thuongHieu: 'AMD',
       thongSoKyThuat: {
         cores: 6,
         threads: 12,
@@ -229,6 +239,7 @@ async function main() {
       slug: 'nvidia-rtx-4090',
       gia: 42000000,
       moTa: 'Card đồ họa flagship NVIDIA, 24GB GDDR6X',
+      thuongHieu: 'NVIDIA',
       thongSoKyThuat: {
         memory: '24GB GDDR6X',
         memoryClock: '20 Gbps',
@@ -241,6 +252,7 @@ async function main() {
       slug: 'nvidia-rtx-4080-super',
       gia: 35000000,
       moTa: 'Card đồ họa cao cấp NVIDIA RTX 4080 Super, 16GB',
+      thuongHieu: 'NVIDIA',
       thongSoKyThuat: {
         memory: '16GB GDDR6X',
         memoryClock: '20 Gbps',
@@ -253,6 +265,7 @@ async function main() {
       slug: 'nvidia-rtx-4080',
       gia: 32000000,
       moTa: 'Card đồ họa cao cấp cho gaming 1440p+',
+      thuongHieu: 'NVIDIA',
       thongSoKyThuat: {
         memory: '16GB GDDR6X',
         memoryClock: '20 Gbps',
@@ -265,6 +278,7 @@ async function main() {
       slug: 'nvidia-rtx-4070-ti-super',
       gia: 31000000,
       moTa: 'RTX 4070 Ti phiên bản Super, 12GB GDDR6X',
+      thuongHieu: 'NVIDIA',
       thongSoKyThuat: {
         memory: '12GB GDDR6X',
         memoryClock: '21 Gbps',
@@ -277,6 +291,7 @@ async function main() {
       slug: 'nvidia-rtx-4070-ti',
       gia: 28500000,
       moTa: 'Card đồ họa mid-high end, 12GB GDDR6X',
+      thuongHieu: 'NVIDIA',
       thongSoKyThuat: {
         memory: '12GB GDDR6X',
         memoryClock: '21 Gbps',
@@ -289,6 +304,7 @@ async function main() {
       slug: 'nvidia-rtx-4070',
       gia: 21000000,
       moTa: 'Card đồ họa tầm trung cho gaming 1440p',
+      thuongHieu: 'NVIDIA',
       thongSoKyThuat: {
         memory: '12GB GDDR6',
         memoryClock: '21 Gbps',
@@ -301,6 +317,7 @@ async function main() {
       slug: 'amd-radeon-rx-7900-xtx',
       gia: 31000000,
       moTa: 'Card đồ họa AMD cao cấp, 24GB GDDR6',
+      thuongHieu: 'AMD',
       thongSoKyThuat: {
         memory: '24GB GDDR6',
         memoryClock: '20 Gbps',
@@ -313,6 +330,7 @@ async function main() {
       slug: 'amd-radeon-rx-7900-xt',
       gia: 24000000,
       moTa: 'Card đồ họa AMD Radeon RX 7900 XT',
+      thuongHieu: 'AMD',
       thongSoKyThuat: {
         memory: '20GB GDDR6',
         memoryClock: '20 Gbps',
@@ -340,6 +358,7 @@ async function main() {
       slug: 'corsair-vengeance-ddr5-64gb',
       gia: 9500000,
       moTa: 'Bộ RAM DDR5 Corsair Vengeance 64GB tốc độ cao',
+      thuongHieu: 'Corsair',
       thongSoKyThuat: {
         capacity: '64GB (2x32GB)',
         type: 'DDR5',
@@ -352,6 +371,7 @@ async function main() {
       slug: 'corsair-vengeance-ddr5-32gb',
       gia: 4500000,
       moTa: 'Bộ RAM DDR5 Corsair, 32GB tốc độ 6400MHz',
+      thuongHieu: 'Corsair',
       thongSoKyThuat: {
         capacity: '32GB (2x16GB)',
         type: 'DDR5',
@@ -364,6 +384,7 @@ async function main() {
       slug: 'kingston-fury-beast-ddr5-32gb',
       gia: 4200000,
       moTa: 'RAM Kingston Fury Beast DDR5 32GB',
+      thuongHieu: 'Kingston',
       thongSoKyThuat: {
         capacity: '32GB (2x16GB)',
         type: 'DDR5',
@@ -376,6 +397,7 @@ async function main() {
       slug: 'gskill-trident-z5-ddr5-48gb',
       gia: 7200000,
       moTa: 'RAM G.Skill Trident Z5 DDR5 48GB tốc độ siêu cao',
+      thuongHieu: 'G.Skill',
       thongSoKyThuat: {
         capacity: '48GB (2x24GB)',
         type: 'DDR5',
@@ -388,6 +410,7 @@ async function main() {
       slug: 'crucial-pro-ddr5-32gb',
       gia: 4000000,
       moTa: 'RAM Crucial Pro DDR5 32GB đáng tin cậy',
+      thuongHieu: 'Crucial',
       thongSoKyThuat: {
         capacity: '32GB (2x16GB)',
         type: 'DDR5',
@@ -400,6 +423,7 @@ async function main() {
       slug: 'rog-strix-flare-ii-ddr5-32gb',
       gia: 5500000,
       moTa: 'RAM ASUS ROG STRIX Flare II DDR5 32GB RGB',
+      thuongHieu: 'ASUS',
       thongSoKyThuat: {
         capacity: '32GB (2x16GB)',
         type: 'DDR5',
@@ -427,6 +451,7 @@ async function main() {
       slug: 'samsung-990-pro-4tb',
       gia: 16500000,
       moTa: 'SSD NVMe Samsung 990 Pro 4TB PCIe 4.0',
+      thuongHieu: 'Samsung',
       thongSoKyThuat: {
         capacity: '4TB',
         interface: 'NVMe PCIe 4.0',
@@ -439,6 +464,7 @@ async function main() {
       slug: 'samsung-990-pro-2tb',
       gia: 8500000,
       moTa: 'SSD NVMe Samsung 990 Pro 2TB PCIe 4.0',
+      thuongHieu: 'Samsung',
       thongSoKyThuat: {
         capacity: '2TB',
         interface: 'NVMe PCIe 4.0',
@@ -451,6 +477,7 @@ async function main() {
       slug: 'wd-black-sn850x-2tb',
       gia: 7200000,
       moTa: 'SSD WD Black SN850X NVMe PCIe 4.0 2TB',
+      thuongHieu: 'WD',
       thongSoKyThuat: {
         capacity: '2TB',
         interface: 'NVMe PCIe 4.0',
@@ -463,6 +490,7 @@ async function main() {
       slug: 'wd-black-sn850x-4tb',
       gia: 14000000,
       moTa: 'SSD WD Black SN850X NVMe 4TB',
+      thuongHieu: 'WD',
       thongSoKyThuat: {
         capacity: '4TB',
         interface: 'NVMe PCIe 4.0',
@@ -475,6 +503,7 @@ async function main() {
       slug: 'kingston-nv2-1tb',
       gia: 2500000,
       moTa: 'SSD Kingston NV2 NVMe 1TB giá rẻ',
+      thuongHieu: 'Kingston',
       thongSoKyThuat: {
         capacity: '1TB',
         interface: 'NVMe M.2',
@@ -487,6 +516,7 @@ async function main() {
       slug: 'seagate-barracuda-4tb',
       gia: 2800000,
       moTa: 'Ổ cứng HDD Seagate Barracuda 4TB',
+      thuongHieu: 'Seagate',
       thongSoKyThuat: {
         capacity: '4TB',
         interface: 'SATA 3.5"',
@@ -514,6 +544,7 @@ async function main() {
       slug: 'corsair-hx1200i-1200w',
       gia: 8500000,
       moTa: 'Nguồn Corsair HX1200i 1200W 80+ Platinum',
+      thuongHieu: 'Corsair',
       thongSoKyThuat: {
         wattage: '1200W',
         efficiency: '80+ Platinum',
@@ -525,6 +556,7 @@ async function main() {
       slug: 'corsair-rm850x-850w',
       gia: 3200000,
       moTa: 'Nguồn Corsair RM850x 850W 80+ Gold',
+      thuongHieu: 'Corsair',
       thongSoKyThuat: {
         wattage: '850W',
         efficiency: '80+ Gold',
@@ -536,6 +568,7 @@ async function main() {
       slug: 'evga-supernova-850-g6',
       gia: 3500000,
       moTa: 'Nguồn EVGA SuperNOVA 850 G6 850W 80+ Gold',
+      thuongHieu: 'EVGA',
       thongSoKyThuat: {
         wattage: '850W',
         efficiency: '80+ Gold',
@@ -547,6 +580,7 @@ async function main() {
       slug: 'seasonic-focus-750w',
       gia: 3000000,
       moTa: 'Nguồn Seasonic Focus 750W 80+ Gold',
+      thuongHieu: 'Seasonic',
       thongSoKyThuat: {
         wattage: '750W',
         efficiency: '80+ Gold',
@@ -558,6 +592,7 @@ async function main() {
       slug: 'msi-mag-a650gl-650w',
       gia: 2200000,
       moTa: 'Nguồn MSI MAG A650GL 650W 80+ Gold',
+      thuongHieu: 'MSI',
       thongSoKyThuat: {
         wattage: '650W',
         efficiency: '80+ Gold',
@@ -584,6 +619,7 @@ async function main() {
       slug: 'asus-rog-maximus-z890-e',
       gia: 8500000,
       moTa: 'Bo mạch chủ ASUS ROG MAXIMUS Z890-E Socket LGA 1700',
+      thuongHieu: 'ASUS',
       thongSoKyThuat: {
         socket: 'LGA 1700',
         chipset: 'Z890',
@@ -596,6 +632,7 @@ async function main() {
       slug: 'msi-mpg-z890-carbon-wifi',
       gia: 7500000,
       moTa: 'Bo mạch chủ MSI MPG Z890 Carbon WiFi LGA 1700',
+      thuongHieu: 'MSI',
       thongSoKyThuat: {
         socket: 'LGA 1700',
         chipset: 'Z890',
@@ -608,6 +645,7 @@ async function main() {
       slug: 'gigabyte-z890-master',
       gia: 6800000,
       moTa: 'Bo mạch chủ Gigabyte Z890 Master Socket LGA 1700',
+      thuongHieu: 'Gigabyte',
       thongSoKyThuat: {
         socket: 'LGA 1700',
         chipset: 'Z890',
@@ -686,7 +724,26 @@ async function main() {
   console.log('   = 45 sản phẩm')
 }
 
-await thayDoiVaiTro('huynhkietzuki@gmail.com', VaiTro.QUAN_TRI_VIEN)
+// Tạo user admin nếu chưa tồn tại, rồi cập nhật vai trò
+const adminEmail = 'huynhkietzuki@gmail.com'
+const existingAdmin = await prisma.nguoiDung.findUnique({ where: { email: adminEmail } })
+if (!existingAdmin) {
+  await prisma.nguoiDung.create({
+    data: {
+      hoTen: 'Admin User',
+      email: adminEmail,
+      matKhauHash: '$2a$10$dummyhashfortestingonly',
+      vaiTro: VaiTro.QUAN_TRI_VIEN
+    }
+  })
+  console.log(`✅ Created admin user: ${adminEmail}`)
+} else {
+  await prisma.nguoiDung.update({
+    where: { email: adminEmail },
+    data: { vaiTro: VaiTro.QUAN_TRI_VIEN }
+  })
+  console.log(`✅ Updated admin role: ${adminEmail}`)
+}
 
 main()
   .catch((e) => {
