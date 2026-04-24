@@ -16,7 +16,6 @@ export default function Chatbot() {
 
   const handleSend = async () => {
     if (!input.trim()) return;
-
     const userMsg = { role: 'user', content: input };
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
@@ -41,21 +40,12 @@ export default function Chatbot() {
           setIsLoading(false);
           return;
       }
-
-      // ========================================================
-      // 1. CHỐNG LỖI BONG BÓNG RỖNG VÀ IN TIN NHẮN
-      // ========================================================
-      // Nếu data.tinNhanBot bị hỏng hoặc rỗng, tự động lấy câu dự phòng này
       let textHienThi = data.tinNhanBot;
       if (!textHienThi || textHienThi.trim() === "") {
           textHienThi = "Dạ, em đã tìm được các linh kiện tương thích và đẩy lên kệ cho anh/chị rồi ạ. Anh/chị kiểm tra nhé!";
       }
 
       setMessages((prev) => [...prev, { role: 'model', content: textHienThi }]);
-
-      // ========================================================
-      // 2. GẮP ĐỒ LÊN KỆ (Logic đã chạy rất hoàn hảo)
-      // ========================================================
       if (data.duLieuGoiY && data.duLieuGoiY.length > 0) {
           for (let i = 0; i < data.duLieuGoiY.length; i++) {
               let monDoCuaAI = data.duLieuGoiY[i];
@@ -90,7 +80,6 @@ export default function Chatbot() {
             {messages.map((msg, index) => (
               <div 
                 key={index} 
-                // SỬA Ở ĐÂY: Thêm 'whitespace-pre-wrap' để nó hiển thị đúng dấu xuống dòng của Markdown, và ép 'text-gray-200' cho AI
                 className={`max-w-[85%] p-3 rounded-lg whitespace-pre-wrap ${msg.role === 'user' ? 'bg-[#4C1D95] self-end rounded-tr-none text-white' : 'bg-[#313244] self-start rounded-tl-none text-gray-200'}`}
               >
                 {msg.content}
@@ -106,11 +95,12 @@ export default function Chatbot() {
           <div className="p-3 bg-[#1E1E2E] border-t border-gray-700 flex gap-2">
             <input
               type="text"
-              className="flex-1 bg-[#313244] text-white rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-purple-500 placeholder-gray-400"
+              className="flex-1 bg-[#313244] text-white rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-purple-500 placeholder-gray-400 disabled:opacity-50"
               placeholder="Hỏi về cấu hình PC..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSend()}
+              disabled={isLoading} 
             />
             <button 
               onClick={handleSend}

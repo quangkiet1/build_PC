@@ -1,88 +1,76 @@
-// 1. Lấy đồ nghề kết nối Database (Đường dẫn chuẩn của Next.js)
 import { prisma } from '@/lib/prisma';
-
-// 2. Lấy cái khuôn đúc của nhóm trưởng vào
 import { Product, Category } from '@/app/types/builder';
 
-// Hàm lấy linh kiện, trả về một Mảng chứa các đối tượng đúng chuẩn Product
-export async function layTop3LinhKien(tenLoai: string, mucGiaToiDa?: number | null, tuKhoaPhu?: string): Promise<Product[]> {
+// Hàm lấy linh kiện, trả về một Mảng chứa các đối tượng Product
+export async function layTop3LinhKien(tenLoai: string, mucGiaToiDa?: number | null, tuKhoaPhu?: string, giaMin?: number | null): Promise<Product[]> {
     try {
-        // ==========================================
-        // BƯỚC 1: LÊN DANH SÁCH YÊU CẦU CHO DATABASE
-        // ==========================================
-        // Dùng any ở đây vì biến này của Prisma rất phức tạp, mình viết đơn giản cho dễ hiểu
+        // LÊN DANH SÁCH YÊU CẦU CHO DATABASE
         const dieuKienTimKiem: any = {
             where: {
                 danhMuc: {
                     tenDanhMuc: {
                         contains: tenLoai,
-                        mode: 'insensitive' // 'CPU' hay 'cpu' đều tìm ra hết
+                        mode: 'insensitive' 
                     }
                 },
-                soLuongTon: { gt: 0 } // Bắt buộc phải còn hàng
+                soLuongTon: { gt: 0 }
             },
-            // Lấy 10 món để ra ngoài Controller tha hồ đem đi Check tương thích. 
-            // Check xong rớt bớt là vừa.
             take: 10, 
-            
-            // Ưu tiên xếp hàng xịn (giá cao nhất) lên đầu
             orderBy: { gia: 'desc' }, 
-            
-            // Lấy luôn tên danh mục kèm theo sản phẩm
             include: { danhMuc: true } 
         };
 
-        // Nếu khách hàng có yêu cầu ngân sách thì mới thêm vào bộ lọc
-        if (mucGiaToiDa) {
-            dieuKienTimKiem.where.gia = { lte: mucGiaToiDa }; // lte: Nhỏ hơn hoặc bằng
+        // LỌC GIÁ TIỀN 
+        if (mucGiaToiDa != null || giaMin != null) {
+            dieuKienTimKiem.where.gia = {};
+            
+            if (mucGiaToiDa != null) {
+                dieuKienTimKiem.where.gia.lte = mucGiaToiDa; // Nhỏ hơn hoặc bằng ngân sách
+            }
+            
+            if (giaMin != null) {
+                dieuKienTimKiem.where.gia.gt = giaMin; // Lớn hơn hẳn giá món cũ (Nâng cấp)
+            }
         }
 
-        if (tuKhoaPhu && tuKhoaPhu.trim() !== "") {
-            // Nếu khách đòi "64GB", tìm thẳng vào tên sản phẩm
+        // LỌC THEO YÊU CẦU RIÊNG (Ví dụ: "64GB", "ASUS")
+        if (tuKhoaPhu != null && tuKhoaPhu.trim() !== "") {
             dieuKienTimKiem.where.tenSanPham = { contains: tuKhoaPhu, mode: 'insensitive' };
         }
 
-        // ==========================================
-        // BƯỚC 2: CHUI XUỐNG KHO LẤY HÀNG
-        // ==========================================
+        //
+        // CHUI XUỐNG KHO LẤY HÀNG
         const danhSachTuDB = await prisma.sanPham.findMany(dieuKienTimKiem);
-
-
-        // ==========================================
-        // BƯỚC 3: GỌT GIŨA VÀ ĐẬP VÀO KHUÔN "Product"
-        // ==========================================
-        // ==========================================
-        // BƯỚC 3: GỌT GIŨA VÀ ĐẬP VÀO KHUÔN "Product"
-        // ==========================================
         const ketQuaCuoiCung: Product[] = [];
 
         for (let i = 0; i < danhSachTuDB.length; i++) {
-            // SỬA Ở ĐÂY: Ép kiểu thành 'any' để TS không bắt bẻ thuộc tính 'danhMuc'
             const monHang = danhSachTuDB[i] as any; 
-            
-            // Lấy cột thông số kỹ thuật (JSON) ra. 
             const thongSo = monHang.thongSoKyThuat || {};
+            
+            let theLoaiChuan = 'khac';
+            if (monHang.danhMuc != null && monHang.danhMuc.tenDanhMuc != null) {
+                 theLoaiChuan = monHang.danhMuc.tenDanhMuc.toLowerCase();
+            }
 
-            // Nhét dữ liệu vào đúng khuôn Product của nhóm trưởng
+            let hinhAnhBia = '';
+            if (monHang.hinhAnhs != null && monHang.hinhAnhs[0] != null) {
+                 hinhAnhBia = monHang.hinhAnhs[0];
+            } else if (monHang.hinhAnh != null) {
+                 hinhAnhBia = monHang.hinhAnh;
+            }
+
+            // Nhét dữ liệu vào đúng khuôn Product 
             const sanPhamChuan: Product = {
                 id: monHang.id,
                 name: monHang.tenSanPham,
                 brand: thongSo.brand || 'Đang cập nhật',
-                
-                // Mặc dù 'danhMuc' có thể bị gạch đỏ, nhưng khi chạy nó vẫn lấy được dữ liệu thật
-                category: (monHang.danhMuc?.tenDanhMuc?.toLowerCase() || 'khac') as Category,
+                category: theLoaiChuan as Category,
                 price: monHang.gia,
-                
-                // Lấy tấm hình đầu tiên
-                image: monHang.hinhAnhs?.[0] || monHang.hinhAnh || '', 
-                
+                image: hinhAnhBia, 
                 rating: 5, 
-                
-                // --- Đổ thông số kỹ thuật vào ---
                 socket: thongSo.socket,
                 tdp: thongSo.tdp || thongSo.watt,
-                
-                // Tìm đến dòng này trong chatbotModel.ts
+                // Ép hoa chữ DDR5 để hàm check không báo lỗi
                 ramType: (thongSo.type || thongSo.ram_type || thongSo.memoryType || thongSo.loaiRam || '').toUpperCase(),
                 wattage: thongSo.wattage || thongSo.watt,
             };
@@ -98,6 +86,6 @@ export async function layTop3LinhKien(tenLoai: string, mucGiaToiDa?: number | nu
 
     } catch (error) {
         console.error("Lỗi khi Model chui vào DB lấy linh kiện:", error);
-        return []; // Nếu lỗi thì trả về cái mảng rỗng cho web khỏi sập
+        return []; 
     }
 }
