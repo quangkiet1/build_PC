@@ -1,9 +1,10 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
+import { animate } from 'animejs'
 import { Menu, Settings, ShoppingCart, X } from 'lucide-react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { useCart } from '@/app/providers/cart-provider'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
@@ -13,14 +14,64 @@ export function Header() {
   const { cartCount } = useCart()
   const { user, openAuthModal } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const badgeRef = useRef<HTMLSpanElement>(null)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
   const t = useTranslations('header')
+
+  useEffect(() => {
+    const badge = badgeRef.current
+
+    if (!badge || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return
+    }
+
+    // Gentle floating animation for cart badge
+    const animation = animate(badge, {
+      rotate: [-3, 0, 3, 0],
+      scale: [1, 1.08],
+      duration: 2200,
+      alternate: true,
+      loop: true,
+      easing: 'spring(1, 100, 8, 0)',
+    })
+
+    return () => {
+      animation.pause()
+    }
+  }, [])
+
+  useEffect(() => {
+    const menu = mobileMenuRef.current
+
+    if (!mobileMenuOpen || !menu || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return
+    }
+
+    const targets = Array.from(menu.querySelectorAll<HTMLElement>('[data-menu-item]'))
+
+    // Smooth slide-in animation with spring effect
+    const animation = animate(targets.length > 0 ? targets : menu, {
+      opacity: [0, 1],
+      translateY: [15, 0],
+      duration: 350,
+      delay: (_, index) => index * 45,
+      easing: 'spring(1, 80, 12, 0)',
+    })
+
+    return () => {
+      animation.pause()
+    }
+  }, [mobileMenuOpen])
 
   return (
     <header className="sticky top-0 z-40 border-b border-[#1e2535] bg-[#0a0b10]/95 backdrop-blur-xl">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="group inline-flex items-center gap-3 text-2xl font-bold text-sky-300 transition hover:text-sky-200">
-            <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-sky-400/20 bg-[linear-gradient(135deg,rgba(56,189,248,0.18),rgba(99,102,241,0.28))] shadow-[0_10px_40px_rgba(56,189,248,0.16)] transition group-hover:scale-105">
+            <span
+              ref={badgeRef}
+              className="flex h-10 w-10 items-center justify-center rounded-2xl border border-sky-400/20 bg-[linear-gradient(135deg,rgba(56,189,248,0.18),rgba(99,102,241,0.28))] shadow-[0_10px_40px_rgba(56,189,248,0.16)] transition group-hover:scale-105"
+            >
               <Settings className="h-5 w-5" />
             </span>
             <span>{t('brand')}</span>
@@ -82,30 +133,31 @@ export function Header() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="space-y-2 border-t border-[#1e2535] py-4 md:hidden">
-            <Link href="/products" className="block rounded-lg px-4 py-2 text-slate-300 transition hover:bg-white/5 hover:text-white">
+          <div ref={mobileMenuRef} className="space-y-2 border-t border-[#1e2535] py-4 md:hidden">
+            <Link href="/products" data-menu-item className="block rounded-lg px-4 py-2 text-slate-300 transition hover:bg-white/5 hover:text-white">
               {t('products')}
             </Link>
             {user ? (
-              <Link href="/builder" className="block rounded-lg px-4 py-2 text-slate-300 transition hover:bg-white/5 hover:text-white">
+              <Link href="/builder" data-menu-item className="block rounded-lg px-4 py-2 text-slate-300 transition hover:bg-white/5 hover:text-white">
                 {t('builder')}
               </Link>
             ) : (
               <button
                 onClick={() => openAuthModal({ reason: 'required', nextUrl: '/builder' })}
+                data-menu-item
                 className="block w-full rounded-lg px-4 py-2 text-left text-slate-300 transition hover:bg-white/5 hover:text-white"
               >
                 {t('builder')}
               </button>
             )}
-            <Link href="/promotions" className="block rounded-lg px-4 py-2 text-slate-300 transition hover:bg-white/5 hover:text-white">
+            <Link href="/promotions" data-menu-item className="block rounded-lg px-4 py-2 text-slate-300 transition hover:bg-white/5 hover:text-white">
               {t('promotions')}
             </Link>
-            <div className="px-1 pt-2">
+            <div data-menu-item className="px-1 pt-2">
               <LanguageSwitcher />
             </div>
             {user ? (
-              <div className="grid gap-2 px-1 pt-2">
+              <div data-menu-item className="grid gap-2 px-1 pt-2">
                 <Link href="/profile" className="rounded-xl border border-[#2a3350] px-4 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/5">
                   {t('profile')}
                 </Link>
@@ -114,7 +166,7 @@ export function Header() {
                 </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3 px-1 pt-2">
+              <div data-menu-item className="grid grid-cols-2 gap-3 px-1 pt-2">
                 <button
                   onClick={() => openAuthModal({ mode: 'login', reason: 'login' })}
                   className="rounded-xl border border-[#2a3350] bg-transparent px-4 py-3 text-left text-sm font-semibold text-slate-200 transition hover:bg-white/5 hover:text-white"

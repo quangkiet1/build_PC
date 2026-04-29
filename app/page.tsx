@@ -21,6 +21,8 @@ import {
 } from 'lucide-react'
 import { ProductCard } from '@/app/components/ProductCard'
 import { ProtectedLink } from '@/components/ProtectedLink'
+import { AnimatedSection } from '@/components/motion/AnimatedSection'
+import { FloatingGlow } from '@/components/motion/FloatingGlow'
 import { getStorefrontData, normalizeCategoryName } from '@/lib/catalog'
 import { getTranslator } from '@/i18n/server'
 
@@ -112,10 +114,11 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-cover bg-center opacity-25" style={{ backgroundImage: `url(${HERO_IMG})` }} />
         <div className="absolute inset-0 bg-gradient-to-r from-[#07080d] via-[#07080d]/85 to-[#07080d]/35" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#07080d] via-[#07080d]/45 to-transparent" />
-        <div className="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/20 blur-3xl" />
+        <FloatingGlow className="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/20 blur-3xl" />
+        <FloatingGlow className="absolute right-[12%] top-[18%] h-48 w-48 rounded-full bg-sky-400/10 blur-3xl" duration={4200} delay={250} />
 
-        <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8">
-          <div className="max-w-2xl">
+        <AnimatedSection className="relative mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8" staggerSelector="[data-animate-item]">
+          <div className="max-w-2xl" data-animate-item>
             <span className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/20 px-3 py-1 text-xs font-medium text-indigo-300">
               <Flame className="h-3.5 w-3.5" />
               {t('launchBadge')}
@@ -146,7 +149,7 @@ export default async function HomePage() {
 
             <div className="mt-8 flex flex-wrap items-center gap-6">
               {heroStats.map((stat) => (
-                <div key={stat.label}>
+                <div key={stat.label} data-animate-item>
                   <p className="text-lg font-bold text-white">{stat.value}</p>
                   <p className="text-sm text-slate-500">{stat.label}</p>
                 </div>
@@ -154,7 +157,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="relative">
+          <div className="relative" data-animate-item>
             <div className="rounded-3xl border border-indigo-500/20 bg-gradient-to-br from-indigo-950/70 via-[#0f1117]/95 to-[#0f1117]/95 p-6 shadow-[0_30px_100px_rgba(79,70,229,0.18)] backdrop-blur-sm">
               <div className="flex items-center justify-between gap-3">
                 <div>
@@ -209,51 +212,54 @@ export default async function HomePage() {
               </ProtectedLink>
             </div>
           </div>
-        </div>
+        </AnimatedSection>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-bold text-white" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-              {t('categoriesTitle')}
-            </h2>
-            <p className="mt-1 text-sm text-slate-500">{t('categoriesDescription')}</p>
+        <AnimatedSection staggerSelector="[data-animate-item]">
+          <div className="mb-6 flex items-center justify-between gap-4" data-animate-item>
+            <div>
+              <h2 className="text-2xl font-bold text-white" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                {t('categoriesTitle')}
+              </h2>
+              <p className="mt-1 text-sm text-slate-500">{t('categoriesDescription')}</p>
+            </div>
+            <Link href="/products" className="inline-flex items-center gap-1 text-sm text-indigo-400 transition-colors hover:text-indigo-300">
+              {t('exploreProducts')}
+              <ChevronRight className="h-4 w-4" />
+            </Link>
           </div>
-          <Link href="/products" className="inline-flex items-center gap-1 text-sm text-indigo-400 transition-colors hover:text-indigo-300">
-            {t('exploreProducts')}
-            <ChevronRight className="h-4 w-4" />
-          </Link>
-        </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
-          {categories.map((category) => {
-            const normalized = normalizeCategoryName(category.tenDanhMuc)
-            const Icon = iconMap[normalized as keyof typeof iconMap] || Cpu
-            const accent = categoryStyles[normalized as keyof typeof categoryStyles] || categoryStyles.cpu
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
+            {categories.map((category) => {
+              const normalized = normalizeCategoryName(category.tenDanhMuc)
+              const Icon = iconMap[normalized as keyof typeof iconMap] || Cpu
+              const accent = categoryStyles[normalized as keyof typeof categoryStyles] || categoryStyles.cpu
 
-            return (
-              <Link
-                key={category.id}
-                href={`/products?category=${encodeURIComponent(category.tenDanhMuc)}`}
-                className={`group flex flex-col items-center gap-2.5 rounded-xl border bg-gradient-to-b ${accent.gradient} ${accent.border} p-4 transition-all duration-200 hover:scale-105`}
-              >
-                <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-[#0f1117] transition-transform group-hover:scale-110 ${accent.iconColor}`}>
-                  <Icon className="h-5 w-5" />
-                </div>
-                <div className="text-center">
-                  <p className="text-sm font-medium text-white">{category.tenDanhMuc}</p>
-                  <p className="text-xs text-slate-500">{t(`categorySubtitles.${normalized as keyof typeof iconMap}`)}</p>
-                </div>
-              </Link>
-            )
-          })}
-        </div>
+              return (
+                <Link
+                  key={category.id}
+                  href={`/products?category=${encodeURIComponent(category.tenDanhMuc)}`}
+                  data-animate-item
+                  className={`group flex flex-col items-center gap-2.5 rounded-xl border bg-gradient-to-b ${accent.gradient} ${accent.border} p-4 transition-all duration-200 hover:scale-105`}
+                >
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-[#0f1117] transition-transform group-hover:scale-110 ${accent.iconColor}`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-white">{category.tenDanhMuc}</p>
+                    <p className="text-xs text-slate-500">{t(`categorySubtitles.${normalized as keyof typeof iconMap}`)}</p>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </AnimatedSection>
       </section>
 
       <section className="bg-[#0a0b10] py-10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-6 flex items-center justify-between gap-4">
+        <AnimatedSection className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" staggerSelector="[data-animate-item]">
+          <div className="mb-6 flex items-center justify-between gap-4" data-animate-item>
             <div>
               <h2 className="flex items-center gap-2 text-2xl font-bold text-white" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 <TrendingUp className="h-5 w-5 text-indigo-400" />
@@ -271,16 +277,16 @@ export default async function HomePage() {
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-        </div>
+        </AnimatedSection>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-3xl border border-indigo-500/20 bg-gradient-to-br from-indigo-950 via-[#0f1117] to-[#0f1117]">
+        <AnimatedSection className="relative overflow-hidden rounded-3xl border border-indigo-500/20 bg-gradient-to-br from-indigo-950 via-[#0f1117] to-[#0f1117]" staggerSelector="[data-animate-item]">
           <div className="absolute left-1/4 top-0 h-64 w-64 rounded-full bg-indigo-600/20 blur-3xl" />
           <div className="absolute bottom-0 right-1/4 h-48 w-48 rounded-full bg-violet-600/20 blur-3xl" />
 
           <div className="relative grid items-center gap-0 lg:grid-cols-2">
-            <div className="p-8 lg:p-12">
+            <div className="p-8 lg:p-12" data-animate-item>
               <span className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/20 px-3 py-1 text-xs text-indigo-300">
                 <Wrench className="h-3.5 w-3.5" />
                 {t('builderBadge')}
@@ -316,7 +322,7 @@ export default async function HomePage() {
               </ProtectedLink>
             </div>
 
-            <div className="relative h-72 overflow-hidden lg:h-full lg:min-h-[24rem]">
+            <div className="relative h-72 overflow-hidden lg:h-full lg:min-h-[24rem]" data-animate-item>
               <div className="absolute inset-0 bg-cover bg-center opacity-60" style={{ backgroundImage: `url(${PC_IMG})` }} />
               <div className="absolute inset-0 bg-gradient-to-l from-transparent to-[#0a0e1a]/70" />
 
@@ -339,12 +345,12 @@ export default async function HomePage() {
               </div>
             </div>
           </div>
-        </div>
+        </AnimatedSection>
       </section>
 
       <section className="bg-[#0a0b10] py-10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-6 flex items-center justify-between gap-4">
+        <AnimatedSection className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" staggerSelector="[data-animate-item]">
+          <div className="mb-6 flex items-center justify-between gap-4" data-animate-item>
             <div className="flex flex-wrap items-center gap-3">
               <h2 className="flex items-center gap-2 text-2xl font-bold text-white" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 <Flame className="h-5 w-5 text-red-400" />
@@ -366,13 +372,14 @@ export default async function HomePage() {
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-        </div>
+        </AnimatedSection>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="grid gap-4 sm:grid-cols-2">
+        <AnimatedSection className="grid gap-4 sm:grid-cols-2" staggerSelector="[data-animate-item]" delay={120}>
           <Link
             href="/products"
+            data-animate-item
             className="group relative block h-52 overflow-hidden rounded-3xl border border-[#1e2535] bg-[#0f1117]"
           >
             <div className="absolute inset-0 bg-cover bg-center opacity-40 transition-all duration-500 group-hover:scale-105 group-hover:opacity-50" style={{ backgroundImage: `url(${GPU_IMG})` }} />
@@ -391,6 +398,7 @@ export default async function HomePage() {
 
           <ProtectedLink
             href="/builder"
+            data-animate-item
             className="group relative block h-52 overflow-hidden rounded-3xl border border-[#1e2535] bg-[#0f1117]"
           >
             <div className="absolute inset-0 bg-cover bg-center opacity-40 transition-all duration-500 group-hover:scale-105 group-hover:opacity-50" style={{ backgroundImage: `url(${PC_IMG})` }} />
@@ -406,13 +414,13 @@ export default async function HomePage() {
               </span>
             </div>
           </ProtectedLink>
-        </div>
+        </AnimatedSection>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid gap-4 lg:grid-cols-3">
+        <AnimatedSection className="grid gap-4 lg:grid-cols-3" staggerSelector="[data-animate-item]" delay={80}>
           {trustItems.map((item) => (
-            <div key={item.title} className="rounded-2xl border border-white/8 bg-white/5 p-5">
+            <div key={item.title} data-animate-item className="rounded-2xl border border-white/8 bg-white/5 p-5">
               <div className="mb-4 inline-flex rounded-2xl border border-white/10 bg-white/5 p-3 text-indigo-300">
                 <item.icon className="h-5 w-5" />
               </div>
@@ -420,12 +428,12 @@ export default async function HomePage() {
               <p className="mt-2 text-sm leading-relaxed text-slate-400">{item.description}</p>
             </div>
           ))}
-        </div>
+        </AnimatedSection>
       </section>
 
       <section className="bg-[#0a0b10] py-10">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="mb-6">
+        <AnimatedSection className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8" staggerSelector="[data-animate-item]" delay={100}>
+          <div className="mb-6" data-animate-item>
             <h2 className="flex items-center gap-2 text-2xl font-bold text-white" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
               <Award className="h-5 w-5 text-emerald-400" />
               {t('brandsTitle')}
@@ -436,6 +444,7 @@ export default async function HomePage() {
             {trustedBrands.map((brand) => (
               <span
                 key={brand}
+                data-animate-item
                 className="cursor-pointer text-sm font-semibold text-slate-600 transition-colors hover:text-slate-400 sm:text-base"
                 style={{ fontFamily: 'Space Grotesk, sans-serif' }}
               >
@@ -443,7 +452,7 @@ export default async function HomePage() {
               </span>
             ))}
           </div>
-        </div>
+        </AnimatedSection>
       </section>
     </main>
   )

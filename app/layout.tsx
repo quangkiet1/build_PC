@@ -9,6 +9,8 @@ import { CartProvider } from "./providers/cart-provider";
 import { ToastContainer } from "@/components/toast-container";
 import { Header } from "@/components/header";
 import { AuthModal } from "@/components/AuthModal";
+import { PageTransition } from "@/components/motion/PageTransition";
+import { BackToTop } from "@/components/motion/BackToTop";
 import { AuthProvider } from '@/context/AuthContext'
 import { getI18nServer } from '@/i18n/server'
 
@@ -50,7 +52,10 @@ export default async function RootLayout({
                 </Suspense>
                 <ToastContainer />
                 <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-                {children}
+                <PageTransition className="flex-1">
+                  {children}
+                </PageTransition>
+                <BackToTop />
               </CartProvider>
             </AuthProvider>
           </ToastProvider>

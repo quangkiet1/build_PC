@@ -658,6 +658,7 @@ async function main() {
       slug: 'asus-rog-strix-x870-e-gaming',
       gia: 9200000,
       moTa: 'Bo mạch chủ ASUS ROG STRIX X870-E Socket AM5',
+      thuongHieu: 'ASUS',
       thongSoKyThuat: {
         socket: 'AM5',
         chipset: 'X870-E',
@@ -670,6 +671,7 @@ async function main() {
       slug: 'msi-mpg-b850-edge-wifi',
       gia: 5500000,
       moTa: 'Bo mạch chủ MSI MPG B850 Edge WiFi Socket AM5',
+      thuongHieu: 'MSI',
       thongSoKyThuat: {
         socket: 'AM5',
         chipset: 'B850',
