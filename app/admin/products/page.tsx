@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Plus, Edit2, Trash2, X, ArrowLeft, Search, Package, Loader2, Upload, Image as ImageIcon } from 'lucide-react'
 import { useToast } from '@/app/providers/toast-provider'
 import { ConfirmDialog } from '@/components/confirm-dialog'
@@ -17,7 +18,7 @@ interface Product {
   hinhAnhs: string[]
   moTa?: string | null
   soLuongTon: number
-  thongSoKyThuat?: any
+  thongSoKyThuat?: Record<string, unknown> | null
   danhMuc: {
     id: string
     tenDanhMuc: string
@@ -327,10 +328,12 @@ export default function AdminProductsPage() {
                       <td className="px-5 py-4 text-sm text-white">
                         <div className="flex items-center gap-3">
                           {product.hinhAnhs.length > 0 ? (
-                            <img
+                            <Image
                               src={product.hinhAnhs[0]}
                               alt={product.tenSanPham}
-                              className="w-10 h-10 rounded-lg object-cover"
+                              width={40}
+                              height={40}
+                              className="rounded-lg object-cover"
                             />
                           ) : (
                             <div className="w-10 h-10 rounded-lg bg-slate-700 flex items-center justify-center">
@@ -544,9 +547,11 @@ export default function AdminProductsPage() {
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                       {formData.hinhAnhs.map((url, index) => (
                         <div key={index} className="relative group">
-                          <img
+                          <Image
                             src={url}
                             alt={`Product ${index + 1}`}
+                            width={96}
+                            height={96}
                             className="w-full h-24 rounded-lg object-cover border border-slate-700"
                           />
                           <button

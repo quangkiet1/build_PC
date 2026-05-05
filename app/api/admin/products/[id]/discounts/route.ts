@@ -102,7 +102,7 @@ export async function PUT(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params
+    const { id: _productId } = await context.params
     const auth = await authorizeRoles(request, ['QUAN_TRI_VIEN'])
     if (!auth.user) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
@@ -120,7 +120,14 @@ export async function PUT(
       return NextResponse.json({ error: 'Thiếu ID khuyến mãi' }, { status: 400 })
     }
 
-    const updateData: any = {}
+    type UpdateData = {
+      phanTramGiam?: number
+      ngayBatDau?: Date
+      ngayKetThuc?: Date
+      isActive?: boolean
+    }
+
+    const updateData: UpdateData = {}
     if (phanTramGiam !== undefined) {
       if (phanTramGiam < 1 || phanTramGiam > 100) {
         return NextResponse.json({ error: 'Phần trăm giảm phải từ 1-100' }, { status: 400 })
@@ -152,7 +159,7 @@ export async function DELETE(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params
+    const { id: _productId } = await context.params
     const auth = await authorizeRoles(request, ['QUAN_TRI_VIEN'])
     if (!auth.user) return NextResponse.json({ error: auth.error }, { status: auth.status })
 

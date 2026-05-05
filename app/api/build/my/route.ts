@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { authenticateRequest } from '@/lib/auth'
 
@@ -16,7 +17,13 @@ export async function GET(request: NextRequest) {
     const isPublic = searchParams.get('isPublic')
 
     // Build filter
-    const where: any = {
+    type BuildWhere = {
+      nguoiDungId: string
+      isCompleted?: boolean
+      isPublic?: boolean
+    }
+
+    const where: BuildWhere = {
       nguoiDungId: user.id
     }
 

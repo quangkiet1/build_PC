@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { ProductCard } from '@/app/components/ProductCard'
@@ -49,9 +50,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-8">
             <div className="aspect-square overflow-hidden rounded-3xl border border-slate-800 bg-slate-950 p-6">
-              <img
+              <Image
                 src={product.hinhAnh || '/images/cpu-i7.svg'}
                 alt={product.tenSanPham}
+                width={400}
+                height={400}
                 className="h-full w-full object-contain"
               />
             </div>

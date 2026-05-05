@@ -1,18 +1,22 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { ArrowRight, BadgePercent, ShoppingCart } from 'lucide-react'
-import { animate } from 'animejs'
 import { useTranslations } from 'next-intl'
 import { useToast } from '@/app/providers/toast-provider'
 import { useCart } from '@/app/providers/cart-provider'
 import { useAuth } from '@/context/AuthContext'
+import { cn } from '@/lib/utils'
 import type { Product } from './types'
 
 interface ProductCardProps {
   product: Product
   onAddToCart?: (product: Product) => Promise<void> | void
+  className?: string
+  featured?: boolean
 }
 
 const specLabelMap: Record<string, string> = {
@@ -53,10 +57,38 @@ function getSpecHighlights(product: Product) {
     }))
 }
 
-export function ProductCard({ product, onAddToCart }: ProductCardProps) {
+function getCategoryTone(category?: string | null) {
+  const key = category?.toLowerCase() || ''
+
+  if (key.includes('cpu')) {
+    return {
+      ring: 'from-cyan-400/55 via-cyan-300/10 to-transparent',
+      glow: 'neon-cyan',
+      accent: 'text-cyan-300',
+      badge: 'border-cyan-400/25 bg-cyan-400/10 text-cyan-200',
+    }
+  }
+
+  if (key.includes('gpu') || key.includes('vga')) {
+    return {
+      ring: 'from-fuchsia-400/55 via-fuchsia-300/10 to-transparent',
+      glow: 'neon-magenta',
+      accent: 'text-fuchsia-300',
+      badge: 'border-fuchsia-400/25 bg-fuchsia-400/10 text-fuchsia-200',
+    }
+  }
+
+  return {
+    ring: 'from-sky-400/45 via-sky-300/10 to-transparent',
+    glow: '',
+    accent: 'text-sky-300',
+    badge: 'border-sky-400/20 bg-sky-400/10 text-sky-200',
+  }
+}
+
+export function ProductCard({ product, onAddToCart, className, featured = false }: ProductCardProps) {
   const [isAdding, setIsAdding] = useState(false)
   const [imageError, setImageError] = useState(false)
-  const cardRef = useRef<HTMLElement>(null)
   const { addToast } = useToast()
   const { addItem } = useCart()
   const { requireAuth } = useAuth()
@@ -64,54 +96,11 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
   const brand = product.thuongHieu?.trim() || product.danhMuc?.tenDanhMuc || 'PC Builder'
   const specHighlights = getSpecHighlights(product)
+  const tone = getCategoryTone(product.danhMuc?.tenDanhMuc)
   const originalPrice =
     product.phanTramGiam && product.phanTramGiam > 0
       ? Math.round(product.gia / (1 - product.phanTramGiam / 100))
       : null
-
-  useEffect(() => {
-    const node = cardRef.current
-
-    if (!node || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      return
-    }
-
-    // Reset state for animation
-    node.style.opacity = '0'
-    node.style.transform = 'translateY(20px) scale(0.98)'
-
-    let animation: ReturnType<typeof animate> | null = null
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting)) {
-          return
-        }
-
-        // Smooth entrance animation with spring-like effect
-        animation = animate(node, {
-          opacity: [0, 1],
-          translateY: [20, 0],
-          scale: [0.98, 1],
-          duration: 600,
-          easing: 'spring(1, 80, 10, 0)',
-        })
-
-        observer.disconnect()
-      },
-      {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px',
-      }
-    )
-
-    observer.observe(node)
-
-    return () => {
-      observer.disconnect()
-      animation?.pause()
-    }
-  }, [])
 
   const handleAddToCart = async () => {
     setIsAdding(true)
@@ -135,13 +124,25 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   }
 
   return (
-    <article
-      ref={cardRef}
-      className="group flex h-full flex-col overflow-hidden rounded-[28px] border border-[#24314a] bg-[linear-gradient(180deg,rgba(14,18,27,0.98),rgba(9,12,18,0.98))] shadow-[0_20px_60px_rgba(2,6,23,0.18)] transition duration-300 hover:-translate-y-1 hover:border-sky-400/35 hover:shadow-[0_24px_70px_rgba(14,165,233,0.12)]"
+    <motion.article
+      initial={{ opacity: 0, y: 22, scale: 0.98 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: '0px 0px -60px 0px' }}
+      whileHover={{ scale: 1.02, y: -6 }}
+      transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+      className={cn(
+        'glass-card group relative flex h-full flex-col overflow-hidden rounded-[28px] transition-all duration-300',
+        'border-white/10 hover:border-white/20',
+        featured && 'border-cyan-300/12 bg-[linear-gradient(180deg,rgba(12,18,32,0.82),rgba(7,11,20,0.92))]',
+        className
+      )}
     >
-      <div className="relative overflow-hidden border-b border-white/6 bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.12),transparent_46%),linear-gradient(180deg,#0f1724,#0a0f18)]">
+      <div className={cn('absolute inset-x-0 top-0 h-px bg-linear-to-r', tone.ring)} />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_42%)] opacity-70" />
+
+      <div className="relative overflow-hidden border-b border-white/10">
         <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4">
-          <span className="rounded-full border border-sky-400/20 bg-sky-400/10 px-3 py-1 text-[11px] font-medium text-sky-200">
+          <span className={cn('rounded-full border px-3 py-1 text-[11px] font-medium', tone.badge)}>
             {product.danhMuc?.tenDanhMuc || brand}
           </span>
           {product.phanTramGiam ? (
@@ -153,16 +154,21 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         </div>
 
         <Link href={`/products/${product.slug}`} className="block">
-          <div className="relative flex h-56 items-center justify-center px-6 pb-6 pt-14">
+          <div className={cn('relative flex items-center justify-center px-6 pb-6 pt-14', featured ? 'h-56' : 'h-52')}>
             {product.hinhAnh && !imageError ? (
-              <img
+              <Image
                 src={product.hinhAnh}
                 alt={product.tenSanPham}
-                className="h-full w-full object-contain transition duration-500 group-hover:scale-105"
+                fill
+                sizes={featured ? '(min-width: 1280px) 24vw, (min-width: 768px) 40vw, 100vw' : '(min-width: 1280px) 18vw, (min-width: 640px) 40vw, 100vw'}
+                className={cn(
+                  'object-contain transition duration-500 group-hover:scale-[1.05]',
+                  tone.glow
+                )}
                 onError={() => setImageError(true)}
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center rounded-2xl border border-dashed border-slate-700 text-sm text-slate-500">
+              <div className="flex h-full w-full items-center justify-center rounded-2xl border border-dashed border-white/10 text-sm text-slate-500">
                 {t('noImage')}
               </div>
             )}
@@ -170,9 +176,9 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         </Link>
       </div>
 
-      <div className="flex flex-1 flex-col justify-between p-5 overflow-hidden">
-        <div className="flex flex-col">
-          <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-slate-500">
+      <div className="relative flex flex-1 flex-col justify-between overflow-hidden p-5">
+        <div>
+          <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.24em] text-slate-500">
             <span>{brand}</span>
             <span className="h-1 w-1 rounded-full bg-slate-700" />
             <span>{product.soLuongTon > 0 ? t('stock', { count: product.soLuongTon }) : 'Out of stock'}</span>
@@ -180,12 +186,12 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
           <Link
             href={`/products/${product.slug}`}
-            className="mt-3 line-clamp-2 text-lg font-semibold leading-snug text-white transition group-hover:text-sky-200"
+            className="mt-3 line-clamp-2 text-base font-semibold leading-snug text-white transition group-hover:text-slate-100 md:text-lg"
           >
             {product.tenSanPham}
           </Link>
 
-          <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-400">
+          <p className={cn('mt-2 text-sm leading-6 text-slate-400', featured ? 'line-clamp-2' : 'line-clamp-2')}>
             {product.moTa || t('descriptionFallback')}
           </p>
 
@@ -194,7 +200,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
               {specHighlights.map((spec) => (
                 <div
                   key={spec.label}
-                  className="rounded-full border border-white/8 bg-white/5 px-3 py-1.5 text-xs text-slate-300"
+                  className="font-tech rounded-full border border-white/8 bg-white/4 px-3 py-1.5 text-[11px] text-slate-300"
                 >
                   <span className="text-slate-500">{spec.label}:</span> {spec.value}
                 </div>
@@ -204,10 +210,10 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         </div>
 
         <div className="mt-5 space-y-3">
-          <div className="rounded-2xl border border-white/8 bg-white/5 p-4">
+          <div className="rounded-2xl border border-white/10 bg-white/4 p-4">
             <div className="flex items-end justify-between gap-4">
               <div>
-                <p className="text-2xl font-bold text-sky-300">{formatPrice(product.gia)}</p>
+                <p className={cn('font-tech text-2xl font-bold', tone.accent)}>{formatPrice(product.gia)}</p>
                 {originalPrice ? (
                   <p className="mt-1 text-sm text-slate-500 line-through">{formatPrice(originalPrice)}</p>
                 ) : (
@@ -215,7 +221,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
                 )}
               </div>
               <span
-                className={`rounded-full px-3 py-1 text-xs font-medium shrink-0 ${
+                className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${
                   product.soLuongTon > 5
                     ? 'bg-emerald-500/15 text-emerald-300'
                     : product.soLuongTon > 0
@@ -232,7 +238,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
             <button
               onClick={handleAddToCart}
               disabled={product.soLuongTon <= 0 || isAdding}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#38bdf8,#4f46e5)] px-4 py-3 font-semibold text-white shadow-[0_12px_30px_rgba(56,189,248,0.18)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400 disabled:shadow-none h-12"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#06b6d4,#8b5cf6)] px-4 py-3 text-sm font-semibold text-white shadow-[0_12px_34px_rgba(34,211,238,0.18)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400 disabled:shadow-none"
             >
               <ShoppingCart className="h-4 w-4" />
               {isAdding ? t('adding') : t('add')}
@@ -240,7 +246,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
             <Link
               href={`/products/${product.slug}`}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#2a3448] bg-[#121927] px-4 py-3 text-center font-semibold text-slate-200 transition hover:border-sky-400/30 hover:text-sky-200 h-12"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/4 px-4 py-3 text-center text-sm font-semibold text-slate-200 transition hover:border-white/20 hover:bg-white/8"
             >
               {t('details')}
               <ArrowRight className="h-4 w-4" />
@@ -248,6 +254,6 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           </div>
         </div>
       </div>
-    </article>
+    </motion.article>
   )
 }

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useLocale, useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -24,14 +25,12 @@ import {
   Shield,
   Truck,
   Tag,
-  ArrowRight,
   CreditCard,
   Banknote,
   CheckCircle2,
   Wrench,
   MapPin,
   Wallet,
-  ChevronDown,
   PackageCheck,
   Loader2,
   ArrowLeft
@@ -54,6 +53,15 @@ type CartItem = {
   sanPham: CartProduct
 }
 
+type AppliedPromotion = {
+  id: string
+  tenKhuyenMai: string
+  phanTramGiam: number
+  ngayBatDau: string
+  ngayKetThuc: string
+  isActive: boolean
+}
+
 export default function CartPage() {
   const t = useTranslations('cartPage')
   const locale = useLocale()
@@ -66,7 +74,7 @@ export default function CartPage() {
   const [couponApplied, setCouponApplied] = useState(false)
   const [processing, setProcessing] = useState(false)
   const [couponMessage, setCouponMessage] = useState<string | null>(null)
-  const [appliedPromotion, setAppliedPromotion] = useState<any>(null)
+  const [appliedPromotion, setAppliedPromotion] = useState<AppliedPromotion | null>(null)
 
   // Checkout state
   const [shippingAddress, setShippingAddress] = useState('')
@@ -129,6 +137,7 @@ export default function CartPage() {
 
   useEffect(() => {
     fetchCart()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const updateQuantity = async (itemId: string, quantity: number) => {
@@ -415,14 +424,12 @@ export default function CartPage() {
                   <div key={item.id} className="bg-[#0f1117] border border-[#1e2535] rounded-2xl p-4 flex flex-col md:flex-row gap-4 items-start md:items-center hover:border-[#2a3045] transition">
                     <Link href={`/products/${item.sanPham.slug}`} className="w-full md:w-24 h-24 rounded-2xl bg-[#141a26] flex items-center justify-center overflow-hidden shrink-0">
                       {item.sanPham.hinhAnh ? (
-                        <img
+                        <Image
                           src={item.sanPham.hinhAnh}
                           alt={item.sanPham.tenSanPham}
+                          width={96}
+                          height={96}
                           className="h-full w-full object-contain p-2"
-                          loading="lazy"
-                          onError={(event) => {
-                            event.currentTarget.style.display = 'none'
-                          }}
                         />
                       ) : (
                         <div className="flex items-center justify-center w-full h-full text-slate-600 text-xs">{t('image')}</div>

@@ -3,11 +3,24 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
 
+interface BuildItem {
+  id: string
+  tenSanPham: string
+  gia: number
+  hinhAnh?: string | null
+  soLuong: number
+}
+
+interface CurrentBuild {
+  items: BuildItem[]
+  tongGia: number
+}
+
 interface SaveBuildModalProps {
   isOpen: boolean
   onClose: () => void
   onSave: (name: string, isCompleted: boolean, isPublic: boolean) => void
-  currentBuild: any // Adjust type as needed
+  currentBuild: CurrentBuild
 }
 
 export function SaveBuildModal({ isOpen, onClose, onSave, currentBuild }: SaveBuildModalProps) {

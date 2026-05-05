@@ -3,8 +3,6 @@ import { prisma } from '@/lib/prisma'
 import { authorizeRoles } from '@/lib/auth'
 import { createOrderCode, validateOrderInput } from '@/lib/orders'
 
-const ALLOWED_PAYMENT_METHODS = ['COD', 'VNPAY', 'MOMO'] as const
-
 export async function GET(request: NextRequest) {
   const auth = await authorizeRoles(request, ['KHACH_HANG', 'QUAN_TRI_VIEN'])
   if (!auth.user) return NextResponse.json({ error: auth.error }, { status: auth.status })

@@ -22,6 +22,13 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 94.1%;
     --radius: 0.5rem;
+    --neon-cyan: 34 211 238;
+    --neon-magenta: 244 114 182;
+    --gaming-blue: 217 91% 60%;
+    --gaming-orange: 25 95% 53%;
+    --gaming-purple: 262 83% 58%;
+    --gaming-red: 0 84% 60%;
+    --gaming-green: 142 76% 36%;
   }
 
   .dark {
@@ -45,46 +52,64 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 94.1%;
   }
-}
 
-@layer base {
   * {
     border-color: hsl(var(--border));
   }
+
   body {
-    background-color: hsl(var(--background));
+    background:
+      radial-gradient(circle at 18% 0%, rgba(34, 211, 238, 0.12), transparent 26%),
+      radial-gradient(circle at 82% 0%, rgba(244, 114, 182, 0.12), transparent 22%),
+      linear-gradient(180deg, #05070d 0%, #090d18 48%, #04060b 100%);
     color: hsl(var(--foreground));
     font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: var(--font-sans), sans-serif;
   }
 }
 
-/* Custom gaming theme colors */
-:root {
-  --gaming-blue: 217 91% 60%;
-  --gaming-orange: 25 95% 53%;
-  --gaming-purple: 262 83% 58%;
-  --gaming-red: 0 84% 60%;
-  --gaming-green: 142 76% 36%;
+.font-tech {
+  font-family: var(--font-mono), monospace;
+}
+
+.glass-card {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.72), rgba(8, 12, 24, 0.82));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(22px);
+  box-shadow:
+    0 24px 80px rgba(2, 6, 23, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.neon-cyan {
+  filter: drop-shadow(0 0 22px rgba(var(--neon-cyan), 0.45));
+}
+
+.neon-magenta {
+  filter: drop-shadow(0 0 26px rgba(var(--neon-magenta), 0.42));
 }
 
 .gaming-gradient {
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     hsl(var(--gaming-blue)) 0%,
     hsl(var(--gaming-purple)) 50%,
-    hsl(var(--gaming-orange)) 100%);
+    hsl(var(--gaming-orange)) 100%
+  );
 }
 
 .gaming-text-gradient {
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     hsl(var(--gaming-blue)),
     hsl(var(--gaming-purple)),
-    hsl(var(--gaming-orange)));
+    hsl(var(--gaming-orange))
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Line clamp utilities */
 .line-clamp-1 {
   overflow: hidden;
   display: -webkit-box;
@@ -118,12 +143,12 @@
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(-18%);
   }
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }

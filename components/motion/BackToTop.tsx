@@ -11,12 +11,9 @@ export function BackToTop() {
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY
-      const windowHeight = window.innerHeight
-      const documentHeight = document.documentElement.scrollHeight
       
-      // Show button when scrolled to bottom (with small buffer)
-      const isAtBottom = scrollTop + windowHeight >= documentHeight - 100
-      setIsVisible(isAtBottom)
+      // Show button when scrolled down from top
+      setIsVisible(scrollTop > 100)
     }
 
     window.addEventListener('scroll', handleScroll)

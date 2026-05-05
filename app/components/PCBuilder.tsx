@@ -1,7 +1,9 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useLocale, useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
@@ -33,6 +35,7 @@ import { checkCompatibility, formatPrice, isProductCompatibleWithBuild } from '@
 import { useCart } from '@/app/providers/cart-provider'
 import { useAuth } from '@/context/AuthContext'
 import { SaveBuildModal } from '@/app/components/SaveBuildModal'
+import { BuildStepper } from '@/app/components/BuildStepper'
 import { BuilderCompare } from '@/components/BuilderCompare'
 import { useBuilderStore } from '@/store/useBuilderStore'
 
@@ -71,7 +74,6 @@ export function PCBuilder({ products }: PCBuilderProps) {
   const router = useRouter()
   const { addItem } = useCart()
   const { requireAuth } = useAuth()
-  const [buildName, setBuildName] = useState('')
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false)
 
   const {
@@ -87,14 +89,16 @@ export function PCBuilder({ products }: PCBuilderProps) {
     setProduct,
     removeProduct,
     resetBuild,
-    saveCurrentBuild,
     loadSavedBuild,
     deleteSavedBuild,
     toggleCompare,
   } = useBuilderStore()
 
-  const compatibilityT = (key: string, values?: Record<string, string | number>) => t(`compatibility.${key}`, values)
-  const issues = useMemo(() => checkCompatibility(build, compatibilityT), [build, t])
+  const compatibilityT = useCallback(
+    (key: string, values?: Record<string, string | number>) => t(`compatibility.${key}`, values),
+    [t]
+  )
+  const issues = useMemo(() => checkCompatibility(build, compatibilityT), [build, compatibilityT])
   const errors = issues.filter((issue) => issue.type === 'error')
   const warnings = issues.filter((issue) => issue.type === 'warning')
 
@@ -105,6 +109,13 @@ export function PCBuilder({ products }: PCBuilderProps) {
   const totalPrice = selectedProducts.reduce((sum, item) => sum + item.price, 0)
   const filledSlots = buildSlots.filter((slot) => build[slot.category])
   const progress = (filledSlots.length / buildSlots.length) * 100
+  const primaryStepperSteps = [
+    { category: 'cpu' as const, label: t('slots.cpu'), icon: Cpu },
+    { category: 'mainboard' as const, label: t('slots.mainboard'), icon: LayoutGrid },
+    { category: 'ram' as const, label: t('slots.ram'), icon: Database },
+    { category: 'gpu' as const, label: t('slots.gpu'), icon: Monitor },
+    { category: 'psu' as const, label: t('slots.psu'), icon: Zap },
+  ]
 
   const slotProducts = useMemo(() => {
     if (!activeSlot) return []
@@ -222,15 +233,30 @@ export function PCBuilder({ products }: PCBuilderProps) {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-6 rounded-2xl border border-indigo-500/20 bg-linear-to-br from-indigo-500/10 to-purple-500/10 p-6 backdrop-blur-sm">
+        <BuildStepper
+          build={build}
+          activeSlot={activeSlot}
+          steps={primaryStepperSteps}
+          onStepClick={(category) => {
+            setActiveSlot(category)
+            setSearchQuery('')
+          }}
+        />
+
+        <div className="glass-card mt-6 rounded-[28px] p-6">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-sm font-medium text-slate-300">
               {t('progress', { filled: filledSlots.length, total: buildSlots.length })}
             </span>
-            <span className="text-lg font-bold text-indigo-400">{Math.round(progress)}%</span>
+            <span className="font-tech text-lg font-bold text-cyan-300">{Math.round(progress)}%</span>
           </div>
-          <div className="h-3 overflow-hidden rounded-full border border-indigo-500/20 bg-slate-800/50">
-            <div className="h-full rounded-full bg-linear-to-r from-indigo-500 via-purple-500 to-indigo-600 transition-all duration-700" style={{ width: `${progress}%` }} />
+          <div className="h-3 overflow-hidden rounded-full bg-white/10">
+            <motion.div
+              initial={false}
+              animate={{ width: `${progress}%` }}
+              transition={{ type: 'spring', stiffness: 120, damping: 18 }}
+              className="h-full rounded-full bg-[linear-gradient(90deg,#22d3ee,#8b5cf6)]"
+            />
           </div>
         </div>
 
@@ -266,7 +292,13 @@ export function PCBuilder({ products }: PCBuilderProps) {
 
                       {selected ? (
                         <div className="flex min-w-0 flex-1 items-center gap-4">
-                          <img src={selected.image} alt={selected.name} className="h-12 w-12 shrink-0 rounded-lg border border-indigo-500/20 object-cover" />
+                          <Image
+                            src={selected.image}
+                            alt={selected.name}
+                            width={48}
+                            height={48}
+                            className="h-12 w-12 shrink-0 rounded-lg border border-indigo-500/20 object-cover"
+                          />
                           <div className="min-w-0 flex-1">
                             <p className="mb-1 text-xs font-semibold text-indigo-400">{selected.brand}</p>
                             <p className="truncate text-sm font-bold text-slate-100">{selected.name}</p>
@@ -322,8 +354,16 @@ export function PCBuilder({ products }: PCBuilderProps) {
                     </div>
                   </div>
 
-                  {isActive && (
-                    <div className="mt-3 overflow-hidden rounded-2xl border border-indigo-500/30 bg-[#0f1117] shadow-xl animate-in fade-in slide-in-from-top-2 duration-300">
+                  <AnimatePresence mode="wait" initial={false}>
+                    {isActive ? (
+                      <motion.div
+                        key={slot.category}
+                        initial={{ opacity: 0, y: 16, filter: 'blur(8px)' }}
+                        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                        exit={{ opacity: 0, y: -12, filter: 'blur(6px)' }}
+                        transition={{ duration: 0.22, ease: 'easeOut' }}
+                        className="glass-card mt-3 overflow-hidden rounded-2xl border border-cyan-400/20"
+                      >
                       <div className="border-b border-slate-800/50 bg-linear-to-r from-indigo-500/10 to-purple-500/10 p-4">
                         <div className="flex items-center gap-2">
                           <div className="relative flex-1">
@@ -369,7 +409,13 @@ export function PCBuilder({ products }: PCBuilderProps) {
                                 }`}
                                 onClick={() => compat.compatible && !exceedsBudget && setProduct(product)}
                               >
-                                <img src={product.image} alt={product.name} className="h-12 w-12 shrink-0 rounded-lg border border-indigo-500/20 object-cover" />
+                                <Image
+                                  src={product.image}
+                                  alt={product.name}
+                                  width={48}
+                                  height={48}
+                                  className="h-12 w-12 shrink-0 rounded-lg border border-indigo-500/20 object-cover"
+                                />
                                 <div className="min-w-0 flex-1">
                                   <div className="mb-1 flex flex-wrap items-center gap-2">
                                     <p className="text-xs font-semibold text-indigo-400">{product.brand}</p>
@@ -408,8 +454,9 @@ export function PCBuilder({ products }: PCBuilderProps) {
                           })
                         )}
                       </div>
-                    </div>
-                  )}
+                      </motion.div>
+                    ) : null}
+                  </AnimatePresence>
                 </div>
               )
             })}
@@ -658,3 +705,4 @@ export function PCBuilder({ products }: PCBuilderProps) {
     </>
   )
 }
+

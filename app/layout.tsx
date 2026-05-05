@@ -1,47 +1,46 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { Suspense } from "react";
+import type { Metadata } from 'next'
+import { Inter, Roboto_Mono } from 'next/font/google'
+import { Suspense } from 'react'
 import { NextIntlClientProvider } from 'next-intl'
 import { Toaster } from 'react-hot-toast'
-import "./globals.css";
-import { ToastProvider } from "./providers/toast-provider";
-import { CartProvider } from "./providers/cart-provider";
-import { ToastContainer } from "@/components/toast-container";
-import { Header } from "@/components/header";
-import { AuthModal } from "@/components/AuthModal";
-import { PageTransition } from "@/components/motion/PageTransition";
-import { BackToTop } from "@/components/motion/BackToTop";
+import './globals.css'
+import { ToastProvider } from './providers/toast-provider'
+import { CartProvider } from './providers/cart-provider'
+import { ToastContainer } from '@/components/toast-container'
+import { Header } from '@/components/header'
+import { AuthModal } from '@/components/AuthModal'
+import { PageTransition } from '@/components/motion/PageTransition'
+import { BackToTop } from '@/components/motion/BackToTop'
 import { AuthProvider } from '@/context/AuthContext'
 import { getI18nServer } from '@/i18n/server'
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const inter = Inter({
+  variable: '--font-sans',
+  subsets: ['latin'],
+  display: 'swap',
+})
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const robotoMono = Roboto_Mono({
+  variable: '--font-mono',
+  subsets: ['latin'],
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
-  title: "PC Builder - Xây dựng cấu hình PC của bạn",
-  description: "Nền tảng bán PC và xây dựng cấu hình PC trực tuyến với AI tư vấn cấu hình thông minh, kiểm tra tương thích linh kiện",
-};
+  title: 'PC Builder - Xay dung cau hinh PC cua ban',
+  description: 'Nen tang ban linh kien va xay dung cau hinh truc tuyen voi bo loc thong minh va kiem tra tuong thich',
+}
 
 export default async function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   const { locale, messages } = await getI18nServer()
 
   return (
-    <html
-      lang={locale}
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
+    <html lang={locale} className={`${inter.variable} ${robotoMono.variable} dark h-full antialiased`}>
+      <body className="flex min-h-full flex-col bg-[#05070d] font-sans text-white">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ToastProvider>
             <AuthProvider>
@@ -52,9 +51,7 @@ export default async function RootLayout({
                 </Suspense>
                 <ToastContainer />
                 <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-                <PageTransition className="flex-1">
-                  {children}
-                </PageTransition>
+                <PageTransition className="flex-1">{children}</PageTransition>
                 <BackToTop />
               </CartProvider>
             </AuthProvider>
@@ -62,5 +59,5 @@ export default async function RootLayout({
         </NextIntlClientProvider>
       </body>
     </html>
-  );
+  )
 }

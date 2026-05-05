@@ -35,10 +35,6 @@ export default function AdminPromotions() {
     isActive: true,
   })
 
-  useEffect(() => {
-    fetchData()
-  }, [])
-
   const fetchData = async () => {
     try {
       setLoading(true)
@@ -48,6 +44,24 @@ export default function AdminPromotions() {
         router.push('/?auth=required&next=/admin/promotions')
         return
       }
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch promotions')
+      }
+
+      const data = await response.json()
+      setPromotions(data.promotions || [])
+    } catch (error) {
+      console.error('Error fetching promotions:', error)
+      addToast('Lỗi khi tải danh sách khuyến mãi', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
 
       const data = await response.json()
       setPromotions(data.promotions || [])
