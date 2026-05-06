@@ -58,6 +58,14 @@ const buildSlots: BuildSlot[] = [
   { category: 'cooling', labelKey: 'slots.cooling', icon: Wind, required: false, descriptionKey: 'descriptions.cooling' },
 ]
 
+// Hàm tự động thay thế ảnh lỗi/trống thành ảnh demo trên mạng
+const getDemoImageUrl = (url?: string | null, fallbackName: string = 'PC') => {
+  if (!url || url.includes('via.placeholder.com')) {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackName)}&background=random&color=fff&size=300&bold=true`
+  }
+  return url
+}
+
 const budgetPresets = [
   { key: 'gaming15', budget: 15000000, color: 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' },
   { key: 'gaming25', budget: 25000000, color: 'text-blue-400 border-blue-500/30 bg-blue-500/10' },
@@ -293,7 +301,7 @@ export function PCBuilder({ products }: PCBuilderProps) {
                       {selected ? (
                         <div className="flex min-w-0 flex-1 items-center gap-4">
                           <Image
-                            src={selected.image}
+                            src={getDemoImageUrl(selected.image, selected.name)}
                             alt={selected.name}
                             width={48}
                             height={48}
@@ -395,7 +403,8 @@ export function PCBuilder({ products }: PCBuilderProps) {
                         ) : (
                           slotProducts.map((product) => {
                             const compat = isProductCompatibleWithBuild(product, build, compatibilityT)
-                            const exceedsBudget = Boolean(budgetLimit && totalPrice + product.price > budgetLimit)
+                            const currentSlotPrice = activeSlot && build[activeSlot] ? build[activeSlot]!.price : 0
+                            const exceedsBudget = Boolean(budgetLimit && totalPrice - currentSlotPrice + product.price > budgetLimit)
 
                             return (
                               <div
@@ -410,7 +419,7 @@ export function PCBuilder({ products }: PCBuilderProps) {
                                 onClick={() => compat.compatible && !exceedsBudget && setProduct(product)}
                               >
                                 <Image
-                                  src={product.image}
+                                  src={getDemoImageUrl(product.image, product.name)}
                                   alt={product.name}
                                   width={48}
                                   height={48}
@@ -705,4 +714,3 @@ export function PCBuilder({ products }: PCBuilderProps) {
     </>
   )
 }
-

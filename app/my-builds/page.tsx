@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Trash2, Eye, Copy, AlertCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'react-hot-toast'
 
 interface BuildItem {
   id: string
@@ -78,14 +79,14 @@ export default function MyBuildsPage() {
       })
 
       if (!res.ok) {
-        alert('Lỗi khi xóa cấu hình')
+        toast.error('Lỗi khi xóa cấu hình')
         return
       }
 
-      setBuilds(builds.filter((b) => b.id !== buildId))
-      alert('Đã xóa cấu hình')
+      setBuilds((prev) => prev.filter((b) => b.id !== buildId))
+      toast.success('Đã xóa cấu hình')
     } catch (err) {
-      alert('Lỗi khi xóa cấu hình')
+      toast.error('Lỗi khi xóa cấu hình')
       console.error(err)
     }
   }

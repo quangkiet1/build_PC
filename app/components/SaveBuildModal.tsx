@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { X } from 'lucide-react'
+import { toast } from 'react-hot-toast'
 
 interface BuildItem {
   id: string
@@ -30,7 +31,7 @@ export function SaveBuildModal({ isOpen, onClose, onSave, currentBuild }: SaveBu
 
   const handleSave = () => {
     if (!name.trim()) {
-      alert('Vui lòng nhập tên build')
+      toast.error('Vui lòng nhập tên build')
       return
     }
     onSave(name.trim(), isCompleted, isPublic)
