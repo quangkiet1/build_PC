@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Trash2, Eye, Copy, AlertCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
+import { motion } from 'framer-motion'
 
 interface BuildItem {
   id: string
@@ -114,24 +115,25 @@ export default function MyBuildsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-[#0d1117] to-[#161b22] py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-[#07080d] text-white relative">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.08),transparent_50%)] pointer-events-none" />
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Cấu Hình Của Tôi</h1>
-          <p className="text-slate-400">Quản lý các cấu hình PC đã lưu</p>
+          <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">Cấu Hình Của Tôi</h1>
+          <p className="text-slate-400">Quản lý các cấu hình PC đã lưu của bạn</p>
         </div>
 
         {/* Filters */}
-        <div className="mb-6 flex gap-2 flex-wrap">
+        <div className="mb-8 flex gap-3 flex-wrap">
           {(['all', 'completed', 'incomplete'] as const).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-4 py-2 rounded-lg font-medium transition ${
+              className={`px-5 py-2.5 rounded-[12px] font-medium transition-all backdrop-blur-md border ${
                 filter === f
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-[#1e2535] text-slate-300 hover:bg-[#2d3748]'
+                  ? 'bg-indigo-600/20 text-indigo-300 border-indigo-500/50 shadow-[0_0_15px_rgba(79,70,229,0.2)]'
+                  : 'bg-white/5 text-slate-300 border-white/10 hover:bg-white/10'
               }`}
             >
               {f === 'all' && 'Tất cả'}
@@ -143,10 +145,10 @@ export default function MyBuildsPage() {
 
         {/* Error */}
         {error && (
-          <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/30 rounded-lg flex gap-2">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 p-4 bg-rose-500/10 border border-rose-500/30 rounded-[16px] flex gap-3 items-center backdrop-blur-md">
             <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
-            <p className="text-rose-300">{error}</p>
-          </div>
+            <p className="text-rose-300 font-medium">{error}</p>
+          </motion.div>
         )}
 
         {/* Loading */}
@@ -158,29 +160,40 @@ export default function MyBuildsPage() {
 
         {/* Empty State */}
         {!loading && builds.length === 0 && (
-          <div className="text-center py-12">
-            <AlertCircle className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-slate-400 mb-2">Không có cấu hình nào</h3>
-            <p className="text-slate-500 mb-6">Bạn chưa lưu cấu hình PC nào. Hãy tạo một cấu hình mới.</p>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-20 bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl border border-white/10 rounded-[24px] shadow-xl">
+            <AlertCircle className="w-16 h-16 text-indigo-400/50 mx-auto mb-6" />
+            <h3 className="text-2xl font-bold text-white mb-2">Không có cấu hình nào</h3>
+            <p className="text-slate-400 mb-8 max-w-md mx-auto">Bạn chưa lưu cấu hình PC nào. Hãy trải nghiệm ngay công cụ xây dựng PC để tạo ra bộ máy mơ ước của bạn.</p>
             <Link
               href="/builder"
-              className="inline-block px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+              className="inline-block px-8 py-3 bg-[linear-gradient(135deg,#6366f1,#a855f7)] text-white font-semibold rounded-[16px] hover:brightness-110 transition shadow-[0_0_20px_rgba(99,102,241,0.3)]"
             >
               Tạo Cấu Hình Mới
             </Link>
-          </div>
+          </motion.div>
         )}
 
         {/* Builds List */}
         {!loading && builds.length > 0 && (
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {builds.map((build) => (
-              <div
+          <motion.div 
+            initial="hidden" 
+            animate="visible" 
+            variants={{
+              visible: { transition: { staggerChildren: 0.05 } }
+            }}
+            className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+          >
+            {builds.map((build, index) => (
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } }
+                }}
                 key={build.id}
-                className="bg-[#1e2535] rounded-lg border border-[#2d3748] overflow-hidden hover:border-indigo-500/50 transition"
+                className="bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl rounded-[24px] border border-white/10 overflow-hidden hover:border-indigo-500/50 transition-all duration-300 hover:shadow-[0_10px_30px_rgba(79,70,229,0.15)] hover:-translate-y-1 flex flex-col"
               >
                 {/* Card Header */}
-                <div className="p-4 border-b border-[#2d3748]">
+                <div className="p-5 border-b border-white/5 bg-white/5">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1 pr-2">
                       <h3 className="text-lg font-semibold text-white truncate">{build.tenCauHinh}</h3>
@@ -198,27 +211,27 @@ export default function MyBuildsPage() {
                 </div>
 
                 {/* Card Body */}
-                <div className="p-4 space-y-3">
+                <div className="p-5 space-y-4 flex-1">
                   {/* Price */}
-                  <div>
-                    <p className="text-sm text-slate-400">Tổng giá</p>
-                    <p className="text-xl font-bold text-indigo-400">{formatPrice(build.tongGia)}</p>
+                  <div className="bg-black/20 rounded-[12px] p-3 border border-white/5">
+                    <p className="text-xs uppercase tracking-wider text-slate-500 mb-1">Tổng giá</p>
+                    <p className="text-2xl font-bold text-indigo-400">{formatPrice(build.tongGia)}</p>
                   </div>
 
                   {/* Date */}
                   <div>
-                    <p className="text-sm text-slate-400">Ngày tạo</p>
-                    <p className="text-sm text-slate-300">{formatDate(build.ngayTao)}</p>
+                    <p className="text-xs text-slate-500 mb-1">Ngày tạo</p>
+                    <p className="text-sm font-medium text-slate-300">{formatDate(build.ngayTao)}</p>
                   </div>
 
                   {/* Items Preview */}
                   <div>
-                    <p className="text-sm text-slate-400 mb-2">Linh kiện</p>
-                    <div className="space-y-1 max-h-40 overflow-y-auto">
+                    <p className="text-xs text-slate-500 mb-2">Linh kiện ({build.itemCount})</p>
+                    <div className="space-y-1.5 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
                       {build.items.map((item) => (
-                        <div key={item.id} className="text-xs text-slate-400">
-                          <span className="text-slate-300">{item.sanPham.tenSanPham}</span>
-                          {item.soLuong > 1 && <span> x{item.soLuong}</span>}
+                        <div key={item.id} className="text-xs text-slate-400 bg-white/5 px-3 py-2 rounded-[8px] border border-white/5 flex justify-between items-center">
+                          <span className="text-slate-300 truncate mr-2">{item.sanPham.tenSanPham}</span>
+                          {item.soLuong > 1 && <span className="text-indigo-300 font-bold bg-indigo-500/20 px-1.5 py-0.5 rounded">x{item.soLuong}</span>}
                         </div>
                       ))}
                     </div>
@@ -226,10 +239,10 @@ export default function MyBuildsPage() {
                 </div>
 
                 {/* Card Footer - Actions */}
-                <div className="p-4 border-t border-[#2d3748] flex gap-2">
+                <div className="p-4 border-t border-white/5 flex gap-2 bg-black/20">
                   <button
                     onClick={() => handleLoadBuild(build.id)}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition text-sm font-medium"
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 rounded-[12px] transition text-sm font-medium"
                   >
                     <Copy className="w-4 h-4" />
                     Load
@@ -237,22 +250,22 @@ export default function MyBuildsPage() {
                   <Link
                     href={`/api/build/${build.id}`}
                     target="_blank"
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition text-sm font-medium"
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 rounded-[12px] transition text-sm font-medium"
                   >
                     <Eye className="w-4 h-4" />
                     Xem
                   </Link>
                   <button
                     onClick={() => handleDelete(build.id, build.tenCauHinh)}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg transition text-sm font-medium"
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-[12px] transition text-sm font-medium"
                   >
                     <Trash2 className="w-4 h-4" />
                     Xóa
                   </button>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     </div>

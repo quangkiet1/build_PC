@@ -40,22 +40,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
       : []
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-[#07080d] text-white">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.08),transparent_50%)] pointer-events-none" />
         <p className="text-sm text-slate-500">
           <Link href="/" className="transition hover:text-sky-300">Trang chu</Link> /{' '}
           <Link href="/products" className="transition hover:text-sky-300">San pham</Link> / <span className="text-slate-300">{product.tenSanPham}</span>
         </p>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-8">
-            <div className="aspect-square overflow-hidden rounded-3xl border border-slate-800 bg-slate-950 p-6">
+        <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] relative z-10">
+          <div className="rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] p-8 shadow-2xl backdrop-blur-xl">
+            <div className="relative aspect-square overflow-hidden rounded-[24px] bg-black/40 p-6 flex items-center justify-center">
+              <div className="absolute inset-0 bg-sky-400/10 blur-[100px] rounded-full scale-75" />
               <Image
-                src={product.hinhAnh || '/images/cpu-i7.svg'}
+                src={(product.hinhAnh || '/images/cpu-i7.svg').replace('via.placeholder.com', 'placehold.co')}
                 alt={product.tenSanPham}
-                width={400}
-                height={400}
-                className="h-full w-full object-contain"
+                fill
+                className="object-contain p-8 drop-shadow-[0_0_20px_rgba(56,189,248,0.2)] transition-transform duration-700 hover:scale-105"
               />
             </div>
           </div>
@@ -68,7 +69,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <p className="mt-4 text-slate-300">{product.moTa || 'San pham chua co mo ta chi tiet.'}</p>
             </div>
 
-            <div className="grid gap-3 rounded-2xl border border-slate-800 bg-slate-900/50 p-5 text-sm text-slate-300 sm:grid-cols-2">
+            <div className="grid gap-4 rounded-[24px] border border-white/10 bg-white/5 p-6 text-sm text-slate-300 sm:grid-cols-2 backdrop-blur-md">
               <div>
                 <p className="text-slate-500">Ton kho</p>
                 <p className="mt-1 font-semibold text-white">{product.soLuongTon > 0 ? `${product.soLuongTon} san pham` : 'Het hang'}</p>
@@ -87,16 +88,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5">
-              <h2 className="text-lg font-semibold">Thong so ky thuat</h2>
-              <div className="mt-4 grid gap-3 text-sm">
+            <div className="rounded-[24px] border border-white/10 bg-white/5 p-6 backdrop-blur-md">
+              <h2 className="text-lg font-semibold text-white">Thong so ky thuat</h2>
+              <div className="mt-5 grid gap-3 text-sm">
                 {specs.length === 0 ? (
                   <p className="text-slate-400">Chua co du lieu thong so ky thuat.</p>
                 ) : (
                   specs.map(([key, value]) => (
-                    <div key={key} className="flex items-center justify-between gap-4 rounded-xl border border-slate-800 bg-slate-950/70 px-4 py-3">
-                      <span className="text-slate-400">{key}</span>
-                      <span className="font-medium text-white">{String(value)}</span>
+                    <div key={key} className="flex items-center justify-between gap-4 rounded-2xl border border-white/5 bg-black/20 px-5 py-3 transition hover:bg-black/30">
+                      <span className="text-slate-400 font-medium">{key}</span>
+                      <span className="font-semibold text-white">{String(value)}</span>
                     </div>
                   ))
                 )}

@@ -1,7 +1,9 @@
-﻿import Link from 'next/link'
+import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { ProductCard } from '@/app/components/ProductCard'
 import { getTranslator } from '@/i18n/server'
+import { AnimatedSection } from '@/components/motion/AnimatedSection'
+import { ShieldCheck, SlidersHorizontal } from 'lucide-react'
 
 type ProductsPageProps = {
   searchParams?: Promise<{
@@ -70,34 +72,50 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const activeFilterCount = [search, category, brand, sort !== 'newest' ? sort : ''].filter(Boolean).length
 
   return (
-    <div className="min-h-screen text-white">
-      <div className="border-b border-white/10 bg-[#05070d]/95 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          <p className="text-sm text-slate-500">
-            <Link href="/" className="transition hover:text-cyan-300">
+    <div className="min-h-screen bg-[#030304] text-white font-body selection:bg-[#F7931A] selection:text-white pb-24">
+      {/* BACKGROUND ELEMENTS */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-grid-pattern opacity-30"></div>
+        <div className="absolute top-0 left-[10%] w-[40%] h-[40%] bg-radial-blur pointer-events-none"></div>
+      </div>
+
+      {/* HEADER SECTION */}
+      <div className="relative z-10 border-b border-white/5 bg-[#0F1115]/80 backdrop-blur-xl pt-12 pb-8">
+        <div className="mx-auto max-w-7xl px-4 md:px-8">
+          <p className="text-xs font-mono text-[#F7931A] uppercase tracking-widest mb-4">
+            <Link href="/" className="hover:text-[#FFD600] transition-colors">
               {t('breadcrumbHome')}
             </Link>{' '}
-            / <span className="text-slate-300">{t('breadcrumbCurrent')}</span>
+            <span className="text-white/50">/</span> <span className="text-white">{t('breadcrumbCurrent')}</span>
           </p>
-          <h1 className="mt-3 text-4xl font-bold text-white">{t('title')}</h1>
-          <p className="mt-2 max-w-2xl text-slate-400">{t('description')}</p>
-
-          <form className="glass-card mt-6 grid gap-3 rounded-[28px] p-4 md:grid-cols-[2fr_1fr_1fr_1fr_auto]">
-            <input
-              type="text"
-              name="search"
-              defaultValue={search}
-              placeholder={t('searchPlaceholder')}
-              className="rounded-2xl border border-white/10 bg-[#08101d]/80 px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-400/40"
-            />
+          <h1 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-4 text-white">
+            {t('title')}
+          </h1>
+          <p className="text-sm md:text-base text-muted max-w-2xl leading-relaxed">
+            {t('description')}
+          </p>
+        </div>
+        
+        {/* FILTER BAR */}
+        <div className="mt-8 mx-auto max-w-7xl px-4 md:px-8">
+          <form className="flex flex-col md:flex-row gap-3 bg-[#030304]/50 border border-white/10 rounded-2xl p-4 backdrop-blur-md">
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                name="search"
+                defaultValue={search}
+                placeholder={t('searchPlaceholder')}
+                className="w-full bg-[#0F1115] border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-[#F7931A]/50 focus:shadow-[0_0_15px_rgba(247,147,26,0.15)] transition-all"
+              />
+            </div>
             <select
               name="category"
               defaultValue={category}
-              className="rounded-2xl border border-white/10 bg-[#08101d]/80 px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-400/40"
+              className="md:w-48 bg-[#0F1115] border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-[#F7931A]/50 focus:shadow-[0_0_15px_rgba(247,147,26,0.15)] transition-all cursor-pointer"
             >
               <option value="">{t('allCategories')}</option>
               {categories.map((item) => (
-                <option key={item.id} value={item.tenDanhMuc}>
+                <option key={item.id} value={item.tenDanhMuc} className="bg-[#0F1115]">
                   {item.tenDanhMuc}
                 </option>
               ))}
@@ -105,11 +123,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             <select
               name="brand"
               defaultValue={brand}
-              className="rounded-2xl border border-white/10 bg-[#08101d]/80 px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-400/40"
+              className="md:w-48 bg-[#0F1115] border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-[#F7931A]/50 focus:shadow-[0_0_15px_rgba(247,147,26,0.15)] transition-all cursor-pointer"
             >
-              <option value="">Tat ca thuong hieu</option>
+              <option value="">Tất cả thương hiệu</option>
               {brands.map((item) => (
-                <option key={item.thuongHieu} value={item.thuongHieu!}>
+                <option key={item.thuongHieu} value={item.thuongHieu!} className="bg-[#0F1115]">
                   {item.thuongHieu}
                 </option>
               ))}
@@ -117,106 +135,109 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             <select
               name="sort"
               defaultValue={sort}
-              className="rounded-2xl border border-white/10 bg-[#08101d]/80 px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-400/40"
+              className="md:w-48 bg-[#0F1115] border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-[#F7931A]/50 focus:shadow-[0_0_15px_rgba(247,147,26,0.15)] transition-all cursor-pointer"
             >
-              <option value="newest">{t('sortNewest')}</option>
-              <option value="price-asc">{t('sortPriceAsc')}</option>
-              <option value="price-desc">{t('sortPriceDesc')}</option>
+              <option value="newest" className="bg-[#0F1115]">{t('sortNewest')}</option>
+              <option value="price-asc" className="bg-[#0F1115]">{t('sortPriceAsc')}</option>
+              <option value="price-desc" className="bg-[#0F1115]">{t('sortPriceDesc')}</option>
             </select>
-            <button className="rounded-2xl bg-[linear-gradient(135deg,#22d3ee,#8b5cf6)] px-5 py-3 font-semibold text-slate-950 transition hover:brightness-110">
+            <button className="flex items-center justify-center gap-2 md:w-32 rounded-xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-4 py-3 text-sm font-semibold text-white shadow-[0_0_15px_-5px_rgba(247,147,26,0.5)] transition-all hover:scale-[1.02] hover:shadow-[0_0_20px_-5px_rgba(247,147,26,0.7)]">
+              <SlidersHorizontal className="h-4 w-4" />
               {t('apply')}
             </button>
           </form>
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-5 flex items-center justify-between gap-4">
-          <p className="font-tech text-sm uppercase tracking-[0.24em] text-slate-500">
+      <div className="mx-auto max-w-7xl px-4 md:px-8 py-10 relative z-10">
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <p className="text-xs font-mono text-muted uppercase tracking-widest">
             {t('count', {
               count: products.length,
               suffix: category ? t('inCategory', { category }) : '',
             })}
           </p>
           {(search || category || brand || sort !== 'newest') && (
-            <Link href="/products" className="text-sm text-cyan-300 transition hover:text-cyan-200">
+            <Link href="/products" className="text-xs font-mono text-[#F7931A] hover:text-[#FFD600] transition-colors border border-[#F7931A]/30 bg-[#F7931A]/10 px-3 py-1.5 rounded-full inline-block w-fit">
               {t('clearFilters')}
             </Link>
           )}
         </div>
 
         {products.length === 0 ? (
-          <div className="glass-card rounded-[28px] p-10 text-center">
-            <h2 className="text-2xl font-semibold">{t('emptyTitle')}</h2>
-            <p className="mt-2 text-slate-400">{t('emptyDescription')}</p>
+          <div className="border border-white/10 rounded-2xl p-16 text-center bg-[#0F1115]/50 backdrop-blur-md">
+            <div className="mx-auto w-16 h-16 border border-white/10 bg-white/5 rounded-2xl flex items-center justify-center mb-6 text-muted">
+              <SlidersHorizontal className="h-8 w-8" />
+            </div>
+            <h2 className="text-2xl font-heading font-bold mb-2">{t('emptyTitle')}</h2>
+            <p className="text-sm text-muted max-w-md mx-auto">{t('emptyDescription')}</p>
           </div>
         ) : (
-          <div className="space-y-8">
+          <div className="space-y-16">
             {featuredProducts.length > 0 ? (
-              <section className="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
-                <div className="glass-card rounded-[30px] p-6">
-                  <p className="font-tech text-xs uppercase tracking-[0.3em] text-cyan-300/70">Storefront edit</p>
-                  <h2 className="mt-3 text-2xl font-semibold text-white">Khong gian mua linh kien gon hon</h2>
-                  <p className="mt-3 text-sm leading-6 text-slate-400">
-                    Minh doi khu noi bat sang kieu editorial shelf: nhieu card can nhau, it cam giac phong to,
-                    nhin premium hon va de quet hon tren desktop lan mobile.
-                  </p>
+              <AnimatedSection staggerSelector="[data-animate-item]">
+                <section className="grid gap-6 lg:grid-cols-3">
+                  <div data-animate-item className="border border-white/10 rounded-2xl p-8 bg-[#0F1115] flex flex-col relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#F7931A]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    
+                    <div className="relative z-10">
+                      <div className="inline-flex items-center gap-2 rounded-full border border-[#F7931A]/30 bg-[#F7931A]/10 px-3 py-1 mb-6 text-[10px] font-mono text-[#FFD600] uppercase tracking-widest shadow-[0_0_10px_rgba(247,147,26,0.2)]">
+                        <ShieldCheck className="h-3 w-3" />
+                        Premium Selection
+                      </div>
+                      
+                      <h2 className="text-3xl font-heading font-bold leading-tight mb-4">Không gian mua linh kiện gọn hơn</h2>
+                      <p className="text-sm text-muted leading-relaxed mb-8">
+                        Khu vực nổi bật được thiết kế theo kiểu editorial shelf: nhiều card cạnh nhau, ít cảm giác phóng to,
+                        nhìn premium hơn và dễ quét hơn trên desktop lẫn mobile.
+                      </p>
+                    </div>
 
-                  <div className="mt-6 grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
-                    <div className="rounded-2xl border border-white/10 bg-white/4 px-4 py-3">
-                      <p className="font-tech text-[11px] uppercase tracking-[0.24em] text-slate-500">Visible now</p>
-                      <p className="mt-2 text-xl font-semibold text-white">{products.length}</p>
-                    </div>
-                    <div className="rounded-2xl border border-white/10 bg-white/4 px-4 py-3">
-                      <p className="font-tech text-[11px] uppercase tracking-[0.24em] text-slate-500">Active filters</p>
-                      <p className="mt-2 text-xl font-semibold text-white">{activeFilterCount}</p>
-                    </div>
-                    <div className="rounded-2xl border border-white/10 bg-white/4 px-4 py-3">
-                      <p className="font-tech text-[11px] uppercase tracking-[0.24em] text-slate-500">Featured shelf</p>
-                      <p className="mt-2 text-xl font-semibold text-white">{featuredProducts.length}</p>
+                    <div className="mt-auto grid grid-cols-2 gap-3 relative z-10">
+                      <div className="border border-white/10 rounded-xl bg-white/5 p-4 backdrop-blur-sm">
+                        <p className="text-[10px] font-mono text-muted uppercase tracking-widest">Hiển thị</p>
+                        <p className="mt-1 text-2xl font-heading font-bold">{products.length}</p>
+                      </div>
+                      <div className="border border-white/10 rounded-xl bg-white/5 p-4 backdrop-blur-sm">
+                        <p className="text-[10px] font-mono text-muted uppercase tracking-widest">Bộ lọc</p>
+                        <p className="mt-1 text-2xl font-heading font-bold">{activeFilterCount}</p>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="mt-6 flex flex-wrap gap-2">
-                    <span className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1.5 text-xs text-cyan-200">
-                      compact spotlight
-                    </span>
-                    <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-300">
-                      balanced cards
-                    </span>
-                    <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-300">
-                      cleaner rhythm
-                    </span>
+                  <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {featuredProducts.map((product, index) => (
+                      <div data-animate-item key={product.id}>
+                        <ProductCard product={product} featured={index < 2} className="h-full" />
+                      </div>
+                    ))}
                   </div>
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  {featuredProducts.map((product, index) => (
-                    <ProductCard key={product.id} product={product} featured={index < 2} className="h-full" />
-                  ))}
-                </div>
-              </section>
+                </section>
+              </AnimatedSection>
             ) : null}
 
             {catalogProducts.length > 0 ? (
-              <section className="space-y-4">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="font-tech text-xs uppercase tracking-[0.28em] text-slate-500">Full catalog</p>
-                    <h2 className="mt-2 text-2xl font-semibold text-white">Tat ca san pham</h2>
-                    <p className="mt-1 text-sm text-slate-400">Danh sach chinh duoc can lai theo nhip grid deu va thoang hon.</p>
+              <AnimatedSection staggerSelector="[data-animate-item]">
+                <section>
+                  <div data-animate-item className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                    <div>
+                      <h2 className="text-3xl font-heading font-bold">Tất cả sản phẩm</h2>
+                      <p className="mt-2 text-sm text-muted">Khám phá toàn bộ danh mục linh kiện PC cao cấp.</p>
+                    </div>
+                    <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-mono text-muted uppercase tracking-widest">
+                      {catalogProducts.length} sản phẩm
+                    </span>
                   </div>
-                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-300">
-                    {catalogProducts.length} more items
-                  </span>
-                </div>
 
-                <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
-                  {catalogProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} className="h-full" />
-                  ))}
-                </div>
-              </section>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {catalogProducts.map((product) => (
+                      <div data-animate-item key={product.id}>
+                        <ProductCard product={product} className="h-full" />
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </AnimatedSection>
             ) : null}
           </div>
         )}

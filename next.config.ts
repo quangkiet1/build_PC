@@ -4,6 +4,7 @@ import createNextIntlPlugin from 'next-intl/plugin'
 const nextConfig: NextConfig = {
   serverExternalPackages: ['@prisma/client', 'prisma'],
   images: {
+    formats: ['image/webp'],
     remotePatterns: [
       {
         protocol: 'https',

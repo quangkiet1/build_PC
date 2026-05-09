@@ -312,14 +312,15 @@ export default function CartPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#07080d] text-white flex items-center justify-center px-4 py-12">
-        <div className="max-w-xl w-full text-center">
-          <div className="animate-pulse h-24 w-24 rounded-3xl bg-[#0f1117] border border-[#1e2535] mx-auto mb-6" />
-          <div className="h-8 bg-slate-800/60 rounded-xl mx-auto mb-3 w-48" />
-          <div className="h-4 bg-slate-800/40 rounded-xl mx-auto mb-4 w-64" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.08),transparent_50%)] pointer-events-none" />
+        <div className="max-w-xl w-full text-center relative z-10">
+          <div className="animate-pulse h-24 w-24 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md mx-auto mb-6" />
+          <div className="h-8 bg-white/10 rounded-xl mx-auto mb-3 w-48 backdrop-blur-md" />
+          <div className="h-4 bg-white/5 rounded-xl mx-auto mb-4 w-64 backdrop-blur-md" />
           <div className="grid gap-3 mt-8">
-            <div className="h-20 bg-slate-800/30 rounded-2xl" />
-            <div className="h-20 bg-slate-800/30 rounded-2xl" />
-            <div className="h-20 bg-slate-800/30 rounded-2xl" />
+            <div className="h-20 bg-white/5 rounded-[24px] border border-white/10 backdrop-blur-md" />
+            <div className="h-20 bg-white/5 rounded-[24px] border border-white/10 backdrop-blur-md" />
+            <div className="h-20 bg-white/5 rounded-[24px] border border-white/10 backdrop-blur-md" />
           </div>
         </div>
       </div>
@@ -352,9 +353,10 @@ export default function CartPage() {
   if (error && items.length === 0) {
     return (
       <div className="min-h-screen bg-[#07080d] text-white flex items-center justify-center px-4 py-12">
-        <div className="max-w-xl w-full text-center">
-          <div className="w-24 h-24 rounded-3xl bg-[#0f1117] border border-[#1e2535] mx-auto mb-6 flex items-center justify-center">
-            <ShoppingCart className="w-10 h-10 text-slate-500" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(244,63,94,0.08),transparent_50%)] pointer-events-none" />
+        <div className="max-w-xl w-full text-center relative z-10">
+          <div className="w-24 h-24 rounded-[32px] bg-rose-500/10 border border-rose-500/20 backdrop-blur-xl mx-auto mb-6 flex items-center justify-center">
+            <ShoppingCart className="w-10 h-10 text-rose-400" />
           </div>
           <h2 className="text-3xl font-bold mb-3">{t('loadCartTitle')}</h2>
           <p className="text-slate-400 mb-8">{error}</p>
@@ -362,7 +364,7 @@ export default function CartPage() {
             <Link href="/products" className="w-full sm:w-auto px-5 py-3 gaming-gradient rounded-xl text-white font-semibold transition">
               {t('backToProducts')}
             </Link>
-            <ProtectedLink href="/builder" className="w-full sm:w-auto px-5 py-3 border border-[#1e2535] rounded-xl text-slate-200 hover:border-indigo-500 transition flex items-center justify-center gap-2">
+            <ProtectedLink href="/builder" className="w-full sm:w-auto px-5 py-3 border border-white/10 bg-white/5 rounded-xl text-slate-200 hover:border-indigo-500 transition flex items-center justify-center gap-2 backdrop-blur-md">
               <Wrench className="w-4 h-4" /> {t('builderCta')}
             </ProtectedLink>
           </div>
@@ -374,9 +376,10 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-[#07080d] text-white flex items-center justify-center px-4 py-12">
-        <div className="max-w-xl w-full text-center">
-          <div className="w-24 h-24 rounded-3xl bg-[#0f1117] border border-[#1e2535] mx-auto mb-6 flex items-center justify-center">
-            <ShoppingCart className="w-10 h-10 text-slate-500" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.08),transparent_50%)] pointer-events-none" />
+        <div className="max-w-xl w-full text-center relative z-10">
+          <div className="w-24 h-24 rounded-[32px] bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] border border-white/10 backdrop-blur-xl mx-auto mb-6 flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.15)]">
+            <ShoppingCart className="w-10 h-10 text-indigo-400" />
           </div>
           <h2 className="text-3xl font-bold mb-3">{t('emptyTitle')}</h2>
           <p className="text-slate-400 mb-8">{t('emptyDescription')}</p>
@@ -384,7 +387,7 @@ export default function CartPage() {
             <Link href="/products" className="w-full sm:w-auto px-6 py-3 gaming-gradient rounded-xl text-white font-semibold transition">
               {t('exploreProducts')}
             </Link>
-            <ProtectedLink href="/builder" className="w-full sm:w-auto px-6 py-3 border border-[#1e2535] rounded-xl text-slate-200 hover:border-indigo-500 transition flex items-center justify-center gap-2">
+            <ProtectedLink href="/builder" className="w-full sm:w-auto px-6 py-3 border border-white/10 bg-white/5 backdrop-blur-md rounded-xl text-slate-200 hover:border-indigo-500 transition flex items-center justify-center gap-2">
               <Wrench className="w-4 h-4" /> {t('builderCta')}
             </ProtectedLink>
           </div>
@@ -421,15 +424,16 @@ export default function CartPage() {
               </h2>
               <div className="grid gap-3">
                 {items.map((item) => (
-                  <div key={item.id} className="bg-[#0f1117] border border-[#1e2535] rounded-2xl p-4 flex flex-col md:flex-row gap-4 items-start md:items-center hover:border-[#2a3045] transition">
-                    <Link href={`/products/${item.sanPham.slug}`} className="w-full md:w-24 h-24 rounded-2xl bg-[#141a26] flex items-center justify-center overflow-hidden shrink-0">
+                  <div key={item.id} className="bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl border border-white/10 rounded-[24px] p-4 flex flex-col md:flex-row gap-4 items-start md:items-center hover:border-white/20 transition duration-300 shadow-xl">
+                    <Link href={`/products/${item.sanPham.slug}`} className="w-full md:w-24 h-24 rounded-2xl bg-black/40 flex items-center justify-center overflow-hidden shrink-0 relative group">
+                      <div className="absolute inset-0 bg-sky-400/10 blur-[20px] rounded-full scale-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                       {item.sanPham.hinhAnh ? (
                         <Image
-                          src={item.sanPham.hinhAnh}
+                          src={item.sanPham.hinhAnh.replace('via.placeholder.com', 'placehold.co')}
                           alt={item.sanPham.tenSanPham}
                           width={96}
                           height={96}
-                          className="h-full w-full object-contain p-2"
+                          className="h-full w-full object-contain p-2 relative z-10 transition-transform duration-500 group-hover:scale-110"
                         />
                       ) : (
                         <div className="flex items-center justify-center w-full h-full text-slate-600 text-xs">{t('image')}</div>
@@ -455,11 +459,11 @@ export default function CartPage() {
                       </div>
 
                       <div className="mt-3 flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-1 rounded-xl border border-[#2a3045] bg-[#141a26] p-0.5">
+                        <div className="flex items-center gap-1 rounded-xl border border-white/10 bg-black/40 p-0.5">
                           <button
                             onClick={() => updateQuantity(item.id, item.soLuong - 1)}
                             disabled={processing || item.soLuong <= 1}
-                            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#1e2535] transition disabled:opacity-50"
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition disabled:opacity-50"
                           >
                             <Minus className="w-3.5 h-3.5" />
                           </button>
@@ -467,7 +471,7 @@ export default function CartPage() {
                           <button
                             onClick={() => updateQuantity(item.id, item.soLuong + 1)}
                             disabled={processing}
-                            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#1e2535] transition disabled:opacity-50"
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition disabled:opacity-50"
                           >
                             <Plus className="w-3.5 h-3.5" />
                           </button>
@@ -483,7 +487,7 @@ export default function CartPage() {
               </div>
 
               <div className="flex items-center justify-between mt-4">
-                <Link href="/products" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0f1117] border border-[#1e2535] text-slate-400 hover:text-white text-sm transition">
+                <Link href="/products" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md text-slate-400 hover:text-white text-sm transition hover:bg-white/10">
                   <ArrowLeft className="w-3.5 h-3.5" /> {t('continueLink')}
                 </Link>
                 <button
@@ -497,7 +501,7 @@ export default function CartPage() {
             </div>
 
             {/* Shipping address */}
-            <div className="bg-[#0f1117] border border-[#1e2535] rounded-2xl p-6">
+            <div className="bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl border border-white/10 rounded-[24px] p-6 shadow-xl">
               <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-indigo-400" />
                 {t('shippingTitle')}
@@ -515,7 +519,7 @@ export default function CartPage() {
             </div>
 
             {/* Payment method */}
-            <div className="bg-[#0f1117] border border-[#1e2535] rounded-2xl p-6">
+            <div className="bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl border border-white/10 rounded-[24px] p-6 shadow-xl">
               <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-indigo-400" />
                 {t('paymentTitle')}
@@ -529,10 +533,10 @@ export default function CartPage() {
                       key={method.id}
                       type="button"
                       onClick={() => setPaymentMethod(method.id)}
-                      className={`rounded-xl border p-4 text-left transition ${
+                      className={`rounded-[16px] border p-4 text-left transition ${
                         isSelected
-                          ? 'border-indigo-500/50 bg-indigo-500/10 ring-1 ring-indigo-500/20'
-                          : 'border-[#1e2535] bg-[#141a26] hover:border-[#2a3045]'
+                          ? 'border-indigo-500/50 bg-indigo-500/10 shadow-[0_0_15px_rgba(99,102,241,0.1)]'
+                          : 'border-white/10 bg-black/20 hover:border-white/20 hover:bg-black/30'
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -551,8 +555,8 @@ export default function CartPage() {
 
           {/* Right column - Order summary */}
           <div className="space-y-4">
-            <div className="bg-[#0f1117] border border-[#1e2535] rounded-2xl overflow-hidden sticky top-20">
-              <div className="p-6 border-b border-[#1e2535]">
+            <div className="bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl border border-white/10 rounded-[24px] overflow-hidden sticky top-20 shadow-xl">
+              <div className="p-6 border-b border-white/10">
                 <p className="text-xs uppercase tracking-[0.25em] text-slate-500 mb-1">{t('summaryEyebrow')}</p>
                 <h2 className="text-xl font-semibold text-white">{t('summaryTitle')}</h2>
               </div>
@@ -571,7 +575,7 @@ export default function CartPage() {
                     <span>-{formatPrice(discount)}</span>
                   </div>
                 )}
-                <Separator className="bg-[#1e2535]" />
+                <Separator className="bg-white/10" />
                 <div className="flex justify-between items-baseline gap-4">
                   <span className="text-slate-300 font-semibold">{t('total')}</span>
                   <span className="text-2xl font-bold text-indigo-400">{formatPrice(totalPrice)}</span>
@@ -601,7 +605,7 @@ export default function CartPage() {
             </div>
 
             {/* Coupon */}
-            <div className="bg-[#0f1117] border border-[#1e2535] rounded-2xl p-5 space-y-3">
+            <div className="bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl border border-white/10 rounded-[24px] p-5 space-y-3 shadow-xl">
               <p className="text-sm text-slate-400 flex items-center gap-2">
                 <Tag className="w-4 h-4 text-indigo-400" /> {t('couponTitle')}
               </p>
@@ -609,7 +613,7 @@ export default function CartPage() {
                 <input
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                  className="flex-1 rounded-xl border border-[#1e2535] bg-[#141a26] py-2.5 px-4 text-sm text-white placeholder:text-slate-600 focus:border-indigo-500/50 focus:outline-none"
+                  className="flex-1 rounded-[12px] border border-white/10 bg-black/20 py-2.5 px-4 text-sm text-white placeholder:text-slate-500 focus:border-indigo-500/50 focus:outline-none transition hover:bg-black/30"
                   placeholder={t('couponPlaceholder')}
                 />
                 <button
@@ -625,7 +629,7 @@ export default function CartPage() {
             </div>
 
             {/* Trust badges */}
-            <div className="bg-[#0f1117] border border-[#1e2535] rounded-2xl p-5 space-y-3">
+            <div className="bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl border border-white/10 rounded-[24px] p-5 space-y-3 shadow-xl">
               <div className="flex items-center gap-2.5 text-slate-300 text-sm">
                 <Shield className="w-4 h-4 text-emerald-400 shrink-0" />
                 <span>{t('trust.securePayment')}</span>

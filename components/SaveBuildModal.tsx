@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Loader2 } from 'lucide-react'
+import { X, Loader2, Sparkles } from 'lucide-react'
 
 interface SaveBuildModalProps {
   isOpen: boolean
@@ -38,77 +38,91 @@ export function SaveBuildModal({ isOpen, onClose, buildId, onSave }: SaveBuildMo
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[#1e2535] rounded-lg border border-[#2d3748] p-6 max-w-md w-full mx-4">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-white">Lưu Cấu Hình</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-white">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#030304]/80 backdrop-blur-sm">
+      <div className="w-full max-w-md mx-4 rounded-2xl border border-white/10 bg-[#0F1115] p-6 shadow-[0_0_50px_rgba(247,147,26,0.15)] relative overflow-hidden">
+        <div className="absolute top-[-20%] left-[-20%] w-[60%] h-[60%] bg-[#F7931A]/10 blur-[80px] rounded-full pointer-events-none" />
+        <div className="absolute inset-0 bg-grid-pattern opacity-20 pointer-events-none" />
 
-        {/* Error */}
-        {error && (
-          <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded text-rose-300 text-sm">
-            {error}
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-2">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#F7931A]/30 bg-[#F7931A]/10 px-2.5 py-0.5 text-[10px] font-mono font-medium text-[#FFD600] uppercase tracking-widest">
+              <Sparkles className="h-3 w-3" />
+              Lưu trữ
+            </div>
+            <button onClick={onClose} className="text-muted hover:text-white transition-colors">
+              <X className="h-5 w-5" />
+            </button>
           </div>
-        )}
+          <h2 className="text-2xl font-heading font-bold text-white mb-4">Lưu Cấu Hình</h2>
 
-        {/* Name Input */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-slate-300 mb-2">
-            Tên Cấu Hình
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Nhập tên cấu hình..."
-            className="w-full px-4 py-2 bg-[#141a26] border border-[#2d3748] rounded-lg text-white placeholder:text-slate-500 focus:border-indigo-500/50 outline-none"
-          />
-        </div>
+          {/* Error */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm font-mono uppercase tracking-wide">
+              {error}
+            </div>
+          )}
 
-        {/* Checkboxes */}
-        <div className="space-y-3 mb-6">
-          <label className="flex items-center gap-2 cursor-pointer">
+          {/* Name Input */}
+          <div className="mb-4">
+            <label className="block text-xs font-mono uppercase tracking-widest text-muted mb-2">
+              Tên Cấu Hình
+            </label>
             <input
-              type="checkbox"
-              checked={isCompleted}
-              onChange={(e) => setIsCompleted(e.target.checked)}
-              className="w-4 h-4 rounded accent-indigo-600"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Nhập tên cấu hình..."
+              className="w-full rounded-xl border border-white/10 bg-[#030304] px-4 py-3 text-sm text-white outline-none transition-all focus:border-[#F7931A]/50 focus:shadow-[0_0_15px_rgba(247,147,26,0.15)] placeholder:text-muted"
             />
-            <span className="text-sm text-slate-300">Đánh dấu là hoàn thành</span>
-          </label>
+          </div>
 
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={isPublic}
-              onChange={(e) => setIsPublic(e.target.checked)}
-              className="w-4 h-4 rounded accent-indigo-600"
-            />
-            <span className="text-sm text-slate-300">Công khai cấu hình (cho phép người khác xem)</span>
-          </label>
-        </div>
+          {/* Checkboxes */}
+          <div className="space-y-3 mb-8 p-4 rounded-xl border border-white/5 bg-white/5 backdrop-blur-sm">
+            <label className="flex items-center space-x-3 cursor-pointer group">
+              <div className="relative flex items-center justify-center">
+                <input
+                  type="checkbox"
+                  checked={isCompleted}
+                  onChange={(e) => setIsCompleted(e.target.checked)}
+                  className="peer appearance-none w-5 h-5 border border-white/20 rounded bg-[#030304] checked:bg-[#F7931A] checked:border-[#F7931A] transition-colors cursor-pointer"
+                />
+                <svg className="absolute w-3 h-3 text-[#030304] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path></svg>
+              </div>
+              <span className="text-sm font-medium text-white group-hover:text-[#F7931A] transition-colors">Đánh dấu là hoàn thành</span>
+            </label>
 
-        {/* Actions */}
-        <div className="flex gap-2">
-          <button
-            onClick={onClose}
-            disabled={loading}
-            className="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition disabled:opacity-50"
-          >
-            Hủy
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={loading}
-            className="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            {loading ? 'Đang lưu...' : 'Lưu'}
-          </button>
+            <label className="flex items-center space-x-3 cursor-pointer group">
+              <div className="relative flex items-center justify-center">
+                <input
+                  type="checkbox"
+                  checked={isPublic}
+                  onChange={(e) => setIsPublic(e.target.checked)}
+                  className="peer appearance-none w-5 h-5 border border-white/20 rounded bg-[#030304] checked:bg-[#F7931A] checked:border-[#F7931A] transition-colors cursor-pointer"
+                />
+                <svg className="absolute w-3 h-3 text-[#030304] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path></svg>
+              </div>
+              <span className="text-sm font-medium text-white group-hover:text-[#F7931A] transition-colors">Công khai cấu hình (cho phép người khác xem)</span>
+            </label>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3">
+            <button
+              onClick={onClose}
+              disabled={loading}
+              className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-mono font-medium text-muted transition hover:bg-white/10 hover:text-white disabled:opacity-50"
+            >
+              Hủy
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={loading}
+              className="flex-1 rounded-xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-4 py-3 text-sm font-semibold text-white shadow-[0_0_15px_-5px_rgba(247,147,26,0.5)] transition-all hover:scale-[1.02] hover:shadow-[0_0_20px_-5px_rgba(247,147,26,0.7)] flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {loading && <Loader2 className="w-4 h-4 animate-spin text-white" />}
+              {loading ? 'Đang lưu...' : 'Lưu cấu hình'}
+            </button>
+          </div>
         </div>
       </div>
     </div>

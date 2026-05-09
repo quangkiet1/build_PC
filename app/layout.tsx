@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Roboto_Mono } from 'next/font/google'
+import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google'
 import { Suspense } from 'react'
 import { NextIntlClientProvider } from 'next-intl'
 import { Toaster } from 'react-hot-toast'
@@ -20,7 +20,13 @@ const inter = Inter({
   display: 'swap',
 })
 
-const robotoMono = Roboto_Mono({
+const spaceGrotesk = Space_Grotesk({
+  variable: '--font-heading',
+  subsets: ['latin'],
+  display: 'swap',
+})
+
+const jetbrainsMono = JetBrains_Mono({
   variable: '--font-mono',
   subsets: ['latin'],
   display: 'swap',
@@ -39,8 +45,8 @@ export default async function RootLayout({
   const { locale, messages } = await getI18nServer()
 
   return (
-    <html lang={locale} className={`${inter.variable} ${robotoMono.variable} dark h-full antialiased`}>
-      <body className="flex min-h-full flex-col bg-[#05070d] font-sans text-white">
+    <html lang={locale} className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} dark h-full antialiased`}>
+      <body className="flex min-h-full flex-col bg-[#030304] font-sans text-white selection:bg-[#F7931A] selection:text-white">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ToastProvider>
             <AuthProvider>

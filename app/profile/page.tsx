@@ -20,10 +20,11 @@ export default async function ProfilePage() {
   ])
 
   return (
-    <main className="min-h-screen bg-[#07080d] px-4 py-10 text-white sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-4xl space-y-6">
-        <section className="rounded-3xl border border-indigo-500/20 bg-linear-to-br from-indigo-500/10 to-slate-900 p-6">
-          <div className="flex items-center gap-3">
+    <main className="min-h-screen bg-[#07080d] px-4 py-10 text-white sm:px-6 lg:px-8 relative">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.08),transparent_50%)] pointer-events-none" />
+      <div className="mx-auto max-w-4xl space-y-8 relative z-10">
+        <section className="rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(99,102,241,0.1),rgba(15,23,42,0.6))] backdrop-blur-xl p-8 shadow-[0_0_40px_rgba(79,70,229,0.1)]">
+          <div className="flex items-center gap-4">
             <User className="h-7 w-7 text-indigo-300" />
             <div>
               <h1 className="text-3xl font-bold">{t('title')}</h1>
@@ -60,23 +61,23 @@ export default async function ProfilePage() {
           />
         </section>
 
-        <section className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl border border-slate-800 bg-[#0f1117] p-5">
-            <p className="text-sm text-slate-400">{t('orders')}</p>
-            <p className="mt-2 text-3xl font-bold">{orderCount}</p>
+        <section className="grid gap-6 sm:grid-cols-2">
+          <div className="rounded-[20px] border border-white/10 bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl p-6 shadow-xl transition-all hover:border-indigo-500/30">
+            <p className="text-sm text-slate-400 uppercase tracking-wider">{t('orders')}</p>
+            <p className="mt-2 text-4xl font-bold bg-gradient-to-br from-white to-slate-500 bg-clip-text text-transparent">{orderCount}</p>
           </div>
-          <div className="rounded-2xl border border-slate-800 bg-[#0f1117] p-5">
-            <p className="text-sm text-slate-400">{t('cartItems')}</p>
-            <p className="mt-2 text-3xl font-bold">{cartItemCount}</p>
+          <div className="rounded-[20px] border border-white/10 bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl p-6 shadow-xl transition-all hover:border-indigo-500/30">
+            <p className="text-sm text-slate-400 uppercase tracking-wider">{t('cartItems')}</p>
+            <p className="mt-2 text-4xl font-bold bg-gradient-to-br from-white to-slate-500 bg-clip-text text-transparent">{cartItemCount}</p>
           </div>
         </section>
 
-        <section className="flex flex-wrap gap-3">
-          <Link href="/cart" className="rounded-xl bg-indigo-600 px-4 py-2 font-semibold hover:bg-indigo-500">
+        <section className="flex flex-wrap gap-4 mt-8">
+          <Link href="/cart" className="rounded-[12px] bg-[linear-gradient(135deg,#6366f1,#a855f7)] px-6 py-3 font-semibold hover:brightness-110 transition shadow-[0_0_20px_rgba(99,102,241,0.3)]">
             {t('openCart')}
           </Link>
           {user.vaiTro === 'QUAN_TRI_VIEN' && (
-            <Link href="/admin" className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-2 font-semibold text-amber-300 hover:bg-amber-500/20">
+            <Link href="/admin" className="rounded-[12px] border border-amber-500/40 bg-amber-500/10 px-6 py-3 font-semibold text-amber-300 hover:bg-amber-500/20 transition">
               {t('openAdmin')}
             </Link>
           )}
@@ -88,12 +89,14 @@ export default async function ProfilePage() {
 
 function InfoCard({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <article className="rounded-2xl border border-slate-800 bg-[#0f1117] p-5">
-      <div className="flex items-center gap-2 text-slate-400">
-        {icon}
-        <span className="text-sm">{label}</span>
+    <article className="rounded-[20px] border border-white/10 bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl p-6 shadow-lg transition hover:bg-white/5">
+      <div className="flex items-center gap-3 text-slate-400">
+        <div className="p-2 bg-black/20 rounded-lg border border-white/5">
+          {icon}
+        </div>
+        <span className="text-sm font-medium tracking-wide uppercase">{label}</span>
       </div>
-      <p className="mt-2 text-lg font-semibold text-white">{value}</p>
+      <p className="mt-3 text-lg font-semibold text-white ml-1">{value}</p>
     </article>
   )
 }

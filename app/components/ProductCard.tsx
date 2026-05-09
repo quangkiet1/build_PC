@@ -57,35 +57,6 @@ function getSpecHighlights(product: Product) {
     }))
 }
 
-function getCategoryTone(category?: string | null) {
-  const key = category?.toLowerCase() || ''
-
-  if (key.includes('cpu')) {
-    return {
-      ring: 'from-cyan-400/55 via-cyan-300/10 to-transparent',
-      glow: 'neon-cyan',
-      accent: 'text-cyan-300',
-      badge: 'border-cyan-400/25 bg-cyan-400/10 text-cyan-200',
-    }
-  }
-
-  if (key.includes('gpu') || key.includes('vga')) {
-    return {
-      ring: 'from-fuchsia-400/55 via-fuchsia-300/10 to-transparent',
-      glow: 'neon-magenta',
-      accent: 'text-fuchsia-300',
-      badge: 'border-fuchsia-400/25 bg-fuchsia-400/10 text-fuchsia-200',
-    }
-  }
-
-  return {
-    ring: 'from-sky-400/45 via-sky-300/10 to-transparent',
-    glow: '',
-    accent: 'text-sky-300',
-    badge: 'border-sky-400/20 bg-sky-400/10 text-sky-200',
-  }
-}
-
 export function ProductCard({ product, onAddToCart, className, featured = false }: ProductCardProps) {
   const [isAdding, setIsAdding] = useState(false)
   const [imageError, setImageError] = useState(false)
@@ -96,7 +67,6 @@ export function ProductCard({ product, onAddToCart, className, featured = false 
 
   const brand = product.thuongHieu?.trim() || product.danhMuc?.tenDanhMuc || 'PC Builder'
   const specHighlights = getSpecHighlights(product)
-  const tone = getCategoryTone(product.danhMuc?.tenDanhMuc)
   const originalPrice =
     product.phanTramGiam && product.phanTramGiam > 0
       ? Math.round(product.gia / (1 - product.phanTramGiam / 100))
@@ -124,51 +94,38 @@ export function ProductCard({ product, onAddToCart, className, featured = false 
   }
 
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 22, scale: 0.98 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, margin: '0px 0px -60px 0px' }}
-      whileHover={{ scale: 1.02, y: -6 }}
-      transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+    <article
       className={cn(
-        'glass-card group relative flex h-full flex-col overflow-hidden rounded-[28px] transition-all duration-300',
-        'border-white/10 hover:border-white/20',
-        featured && 'border-cyan-300/12 bg-[linear-gradient(180deg,rgba(12,18,32,0.82),rgba(7,11,20,0.92))]',
+        'group relative flex h-full flex-col bg-[#0F1115] border border-white/10 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:border-[#F7931A]/50 hover:shadow-[0_0_30px_-10px_rgba(247,147,26,0.2)] overflow-hidden',
         className
       )}
     >
-      <div className={cn('absolute inset-x-0 top-0 h-px bg-linear-to-r', tone.ring)} />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_42%)] opacity-70" />
-
-      <div className="relative overflow-hidden border-b border-white/10">
-        <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4">
-          <span className={cn('rounded-full border px-3 py-1 text-[11px] font-medium', tone.badge)}>
+      <div className="relative border-b border-white/10 bg-black/40">
+        <div className="absolute inset-x-0 top-0 flex items-start justify-between p-4 z-10">
+          <span className="rounded-md border border-white/10 bg-black/50 backdrop-blur-md px-2.5 py-1 text-[10px] font-mono text-white">
             {product.danhMuc?.tenDanhMuc || brand}
           </span>
           {product.phanTramGiam ? (
-            <span className="inline-flex items-center gap-1 rounded-full border border-rose-500/30 bg-rose-500/15 px-3 py-1 text-[11px] font-medium text-rose-200">
-              <BadgePercent className="h-3.5 w-3.5" />
+            <span className="inline-flex items-center gap-1 rounded-md border border-[#F7931A]/50 bg-[#F7931A]/20 backdrop-blur-md px-2.5 py-1 text-[10px] font-mono text-[#FFD600] shadow-[0_0_10px_rgba(247,147,26,0.3)]">
+              <BadgePercent className="h-3 w-3" />
               -{product.phanTramGiam}%
             </span>
           ) : null}
         </div>
 
         <Link href={`/products/${product.slug}`} className="block">
-          <div className={cn('relative flex items-center justify-center px-6 pb-6 pt-14', featured ? 'h-56' : 'h-52')}>
+          <div className={cn('relative flex items-center justify-center p-8', featured ? 'h-64' : 'h-56')}>
             {product.hinhAnh && !imageError ? (
               <Image
-                src={product.hinhAnh}
+                src={product.hinhAnh.replace('via.placeholder.com', 'placehold.co')}
                 alt={product.tenSanPham}
                 fill
                 sizes={featured ? '(min-width: 1280px) 24vw, (min-width: 768px) 40vw, 100vw' : '(min-width: 1280px) 18vw, (min-width: 640px) 40vw, 100vw'}
-                className={cn(
-                  'object-contain transition duration-500 group-hover:scale-[1.05]',
-                  tone.glow
-                )}
+                className="object-contain p-8 transition-transform duration-500 group-hover:scale-110"
                 onError={() => setImageError(true)}
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center rounded-2xl border border-dashed border-white/10 text-sm text-slate-500">
+              <div className="flex h-full w-full items-center justify-center border border-dashed border-white/10 rounded-xl bg-white/5 text-xs font-mono text-muted">
                 {t('noImage')}
               </div>
             )}
@@ -176,84 +133,78 @@ export function ProductCard({ product, onAddToCart, className, featured = false 
         </Link>
       </div>
 
-      <div className="relative flex flex-1 flex-col justify-between overflow-hidden p-5">
+      <div className="flex flex-1 flex-col justify-between p-6">
         <div>
-          <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.24em] text-slate-500">
+          <div className="flex items-center gap-2 text-[10px] font-mono text-muted mb-3 uppercase tracking-wider">
             <span>{brand}</span>
-            <span className="h-1 w-1 rounded-full bg-slate-700" />
-            <span>{product.soLuongTon > 0 ? t('stock', { count: product.soLuongTon }) : 'Out of stock'}</span>
+            <span className="h-1 w-1 rounded-full bg-white/20" />
+            <span className={product.soLuongTon > 0 ? "text-[#F7931A]" : "text-red-400"}>
+              {product.soLuongTon > 0 ? t('stock', { count: product.soLuongTon }) : 'Out of stock'}
+            </span>
           </div>
 
           <Link
             href={`/products/${product.slug}`}
-            className="mt-3 line-clamp-2 text-base font-semibold leading-snug text-white transition group-hover:text-slate-100 md:text-lg"
+            className="block text-lg font-heading font-semibold leading-tight text-white hover:text-[#F7931A] transition-colors"
           >
-            {product.tenSanPham}
+            <span className="line-clamp-2">{product.tenSanPham}</span>
           </Link>
-
-          <p className={cn('mt-2 text-sm leading-6 text-slate-400', featured ? 'line-clamp-2' : 'line-clamp-2')}>
-            {product.moTa || t('descriptionFallback')}
-          </p>
 
           {specHighlights.length > 0 ? (
             <div className="mt-4 flex flex-wrap gap-2">
               {specHighlights.map((spec) => (
                 <div
                   key={spec.label}
-                  className="font-tech rounded-full border border-white/8 bg-white/4 px-3 py-1.5 text-[11px] text-slate-300"
+                  className="rounded border border-white/5 bg-white/5 px-2 py-1 text-[10px] font-mono text-muted"
                 >
-                  <span className="text-slate-500">{spec.label}:</span> {spec.value}
+                  <span className="opacity-60">{spec.label}:</span> <span className="text-white">{spec.value}</span>
                 </div>
               ))}
             </div>
           ) : null}
         </div>
 
-        <div className="mt-5 space-y-3">
-          <div className="rounded-2xl border border-white/10 bg-white/4 p-4">
-            <div className="flex items-end justify-between gap-4">
-              <div>
-                <p className={cn('font-tech text-2xl font-bold', tone.accent)}>{formatPrice(product.gia)}</p>
-                {originalPrice ? (
-                  <p className="mt-1 text-sm text-slate-500 line-through">{formatPrice(originalPrice)}</p>
-                ) : (
-                  <p className="mt-1 text-sm text-slate-500">{brand}</p>
-                )}
-              </div>
-              <span
-                className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${
-                  product.soLuongTon > 5
-                    ? 'bg-emerald-500/15 text-emerald-300'
-                    : product.soLuongTon > 0
-                      ? 'bg-amber-500/15 text-amber-300'
-                      : 'bg-rose-500/15 text-rose-300'
-                }`}
-              >
-                {product.soLuongTon > 5 ? 'Ready' : product.soLuongTon > 0 ? 'Low stock' : 'Out'}
-              </span>
+        <div className="mt-6 pt-5 border-t border-white/10">
+          <div className="flex items-end justify-between gap-4 mb-5">
+            <div>
+              <p className="text-xl font-heading font-bold text-white tracking-tight">{formatPrice(product.gia)}</p>
+              {originalPrice && (
+                <p className="mt-1 text-[11px] font-mono text-muted line-through">{formatPrice(originalPrice)}</p>
+              )}
             </div>
+            <span
+              className={`shrink-0 rounded flex items-center justify-center border px-2 py-1 text-[10px] font-mono uppercase ${
+                product.soLuongTon > 5
+                  ? 'border-[#FFD600]/30 bg-[#FFD600]/10 text-[#FFD600]'
+                  : product.soLuongTon > 0
+                    ? 'border-[#F7931A]/30 bg-[#F7931A]/10 text-[#F7931A]'
+                    : 'border-red-500/30 bg-red-500/10 text-red-400'
+              }`}
+            >
+              {product.soLuongTon > 5 ? 'Ready' : product.soLuongTon > 0 ? 'Low stock' : 'Out'}
+            </span>
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid grid-cols-[1fr_auto] gap-3">
             <button
               onClick={handleAddToCart}
               disabled={product.soLuongTon <= 0 || isAdding}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#06b6d4,#8b5cf6)] px-4 py-3 text-sm font-semibold text-white shadow-[0_12px_34px_rgba(34,211,238,0.18)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400 disabled:shadow-none"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-4 text-sm font-semibold text-white shadow-[0_0_15px_-5px_rgba(247,147,26,0.5)] transition-all hover:scale-[1.02] hover:shadow-[0_0_20px_-5px_rgba(247,147,26,0.7)] disabled:cursor-not-allowed disabled:bg-none disabled:bg-white/5 disabled:text-muted disabled:border disabled:border-white/10 disabled:shadow-none disabled:hover:scale-100"
             >
               <ShoppingCart className="h-4 w-4" />
-              {isAdding ? t('adding') : t('add')}
+              <span className="font-mono text-xs uppercase tracking-wider">{isAdding ? t('adding') : t('add')}</span>
             </button>
 
             <Link
               href={`/products/${product.slug}`}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/4 px-4 py-3 text-center text-sm font-semibold text-slate-200 transition hover:border-white/20 hover:bg-white/8"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:bg-white/10 hover:border-white/20"
+              aria-label={t('details')}
             >
-              {t('details')}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
       </div>
-    </motion.article>
+    </article>
   )
 }
