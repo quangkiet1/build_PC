@@ -1,0 +1,114 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { authorizeRoles } from '@/lib/auth'
+
+export async function GET(request: NextRequest) {
+  try {
+    const auth = await authorizeRoles(request, ['QUAN_TRI_VIEN'])
+    if (!auth.user) return NextResponse.json({ error: auth.error }, { status: auth.status })
+
+    const promotions = await prisma.khuyenMai.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        _count: { select: { suDungKhuyenMais: true } },
+      },
+    })
+
+    return NextResponse.json({ promotions })
+  } catch (error) {
+    console.error('GET /api/admin/promotions:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const auth = await authorizeRoles(request, ['QUAN_TRI_VIEN'])
+    if (!auth.user) return NextResponse.json({ error: auth.error }, { status: auth.status })
+
+    const body = await request.json()
+    const {
+      maKhuyenMai,
+      tenKhuyenMai,
+      moTa,
+      loaiGiamGia = 'PHAN_TRAM',
+      giaTriGiam,
+      phanTramGiam,
+      minOrderValue,
+      gioiHanTong,
+      gioiHanMoiNguoi,
+      ngayBatDau,
+      ngayKetThuc,
+      isActive,
+    } = body
+
+    if (!maKhuyenMai || !tenKhuyenMai || !ngayBatDau || !ngayKetThuc) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    }
+
+    if (!['PHAN_TRAM', 'SO_TIEN'].includes(String(loaiGiamGia))) {
+      return NextResponse.json({ error: 'Discount type is invalid' }, { status: 400 })
+    }
+
+    const discountValue = Number(giaTriGiam ?? phanTramGiam)
+    if (!Number.isFinite(discountValue) || discountValue <= 0) {
+      return NextResponse.json({ error: 'Discount value must be greater than 0' }, { status: 400 })
+    }
+
+    if (loaiGiamGia === 'PHAN_TRAM' && (discountValue < 1 || discountValue > 100)) {
+      return NextResponse.json({ error: 'Percentage must be between 1 and 100' }, { status: 400 })
+    }
+
+    const startDate = new Date(ngayBatDau)
+    const endDate = new Date(ngayKetThuc)
+    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime()) || startDate >= endDate) {
+      return NextResponse.json({ error: 'Date range is invalid' }, { status: 400 })
+    }
+
+    // Check if promo code already exists (for new promotions)
+    const existing = await prisma.khuyenMai.findFirst({
+      where: { maKhuyenMai: maKhuyenMai.toUpperCase() },
+    })
+
+    if (existing) {
+      return NextResponse.json({ error: 'Promotion code already exists' }, { status: 400 })
+    }
+
+    const promotion = await prisma.khuyenMai.create({
+      data: {
+        maKhuyenMai: maKhuyenMai.toUpperCase(),
+        tenKhuyenMai: tenKhuyenMai.trim(),
+        moTa: moTa?.trim() || null,
+        phanTramGiam: loaiGiamGia === 'PHAN_TRAM' ? Math.round(discountValue) : 0,
+        loaiGiamGia,
+        giaTriGiam: discountValue,
+        minOrderValue: minOrderValue ? Number(minOrderValue) : null,
+        gioiHanTong: gioiHanTong ? Number(gioiHanTong) : null,
+        gioiHanMoiNguoi: Math.max(1, Number(gioiHanMoiNguoi || 1)),
+        ngayBatDau: startDate,
+        ngayKetThuc: endDate,
+        isActive: isActive !== false,
+      },
+    })
+
+    try {
+      const users = await prisma.nguoiDung.findMany({ select: { id: true } })
+      if (users.length > 0) {
+        await prisma.userKhuyenMai.createMany({
+          data: users.map((user) => ({
+            nguoiDungId: user.id,
+            khuyenMaiId: promotion.id,
+          })),
+          skipDuplicates: true,
+        })
+      }
+    } catch (error) {
+      console.warn('Warning: could not assign new promotion to all users', error)
+    }
+
+    return NextResponse.json({ promotion }, { status: 201 })
+  } catch (error) {
+    console.error('POST /api/admin/promotions:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
