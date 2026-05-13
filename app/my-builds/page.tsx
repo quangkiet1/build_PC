@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Trash2, Eye, Copy, AlertCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -36,7 +36,7 @@ export default function MyBuildsPage() {
   const [error, setError] = useState<string | null>(null)
   const [filter, setFilter] = useState<'all' | 'completed' | 'incomplete'>('all')
 
-  const fetchBuilds = async () => {
+  const fetchBuilds = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -63,11 +63,11 @@ export default function MyBuildsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [filter])
 
   useEffect(() => {
     fetchBuilds()
-  }, [filter])
+  }, [fetchBuilds])
 
   const handleDelete = async (buildId: string, buildName: string) => {
     if (!window.confirm(`Xác nhận xóa cấu hình "${buildName}"?`)) {

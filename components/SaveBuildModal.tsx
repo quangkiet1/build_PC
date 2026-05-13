@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X, Loader2, Sparkles } from 'lucide-react'
 
 interface SaveBuildModalProps {
@@ -11,11 +11,15 @@ interface SaveBuildModalProps {
 }
 
 export function SaveBuildModal({ isOpen, onClose, buildId, onSave }: SaveBuildModalProps) {
-  const [name, setName] = useState(`Build ${new Date().toLocaleDateString('vi-VN')}`)
+  const [name, setName] = useState('Build mới')
   const [isCompleted, setIsCompleted] = useState(true)
   const [isPublic, setIsPublic] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    setName(`Build ${new Date().toLocaleDateString('vi-VN')}`)
+  }, [])
 
   const handleSave = async () => {
     if (!name.trim()) {
