@@ -172,7 +172,7 @@ export default async function HomePage() {
       </section>
 
       {/* CATEGORIES GRID */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20 relative z-10">
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16 relative z-10">
         <AnimatedSection staggerSelector="[data-animate-item]">
           <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6" data-animate-item>
             <div>
@@ -215,7 +215,7 @@ export default async function HomePage() {
       </section>
 
       {/* FEATURED PRODUCTS */}
-      <section className="bg-[#0F1115] py-24 border-y border-white/5 relative z-10">
+      <section className="bg-[#0F1115] py-16 lg:py-20 border-y border-white/5 relative z-10">
         <AnimatedSection className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" staggerSelector="[data-animate-item]">
           <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6" data-animate-item>
             <div>
@@ -241,7 +241,7 @@ export default async function HomePage() {
       </section>
 
       {/* BUILDER SECTION */}
-      <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8 relative z-10">
+      <section className="mx-auto max-w-7xl px-4 py-16 lg:py-20 sm:px-6 lg:px-8 relative z-10">
         <AnimatedSection className="relative rounded-[2rem] border border-white/10 bg-[#0F1115] overflow-hidden shadow-[0_0_50px_-10px_rgba(247,147,26,0.05)]" staggerSelector="[data-animate-item]">
           <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#F7931A]/10 to-transparent pointer-events-none" />
           
@@ -321,7 +321,7 @@ export default async function HomePage() {
       </section>
 
       {/* PROMO CARDS */}
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 relative z-10">
+      <section className="mx-auto max-w-7xl px-4 py-8 lg:py-12 sm:px-6 lg:px-8 relative z-10">
         <AnimatedSection className="grid gap-6 sm:grid-cols-2" staggerSelector="[data-animate-item]">
           <Link
             href="/products"
@@ -370,7 +370,7 @@ export default async function HomePage() {
       </section>
 
       {/* TRUST FACTORS */}
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 relative z-10">
+      <section className="mx-auto max-w-7xl px-4 py-8 lg:py-12 sm:px-6 lg:px-8 relative z-10">
         <AnimatedSection className="grid gap-6 md:grid-cols-3" staggerSelector="[data-animate-item]">
           {trustItems.map((item) => (
             <div key={item.title} data-animate-item className="rounded-2xl border border-white/10 bg-[#0F1115] p-8 transition-all hover:border-[#F7931A]/30 hover:-translate-y-1">
@@ -385,7 +385,7 @@ export default async function HomePage() {
       </section>
 
       {/* LATEST/BRANDS SECTION */}
-      <section className="bg-[#0F1115] border-t border-white/5 mt-8 pt-16 pb-10 relative z-10 overflow-hidden">
+      <section className="bg-[#0F1115] border-t border-white/5 pt-12 pb-6 relative z-10 overflow-hidden">
         <AnimatedSection className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" staggerSelector="[data-animate-item]">
           <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6" data-animate-item>
             <div className="flex flex-wrap items-center gap-4">
@@ -414,8 +414,8 @@ export default async function HomePage() {
             </InfiniteSlider>
           </div>
           
-          <div className="mt-14 pt-8 border-t border-white/10" data-animate-item>
-            <p className="text-center text-xs font-mono text-muted uppercase tracking-widest mb-8">{t('brandsTitle')}</p>
+          <div className="mt-10 pt-6 border-t border-white/10" data-animate-item>
+            <p className="text-center text-xs font-mono text-muted uppercase tracking-widest mb-6">{t('brandsTitle')}</p>
             <InfiniteSlider speed={80} reverse>
               {trustedBrands.map((brand) => (
                 <span
@@ -431,15 +431,15 @@ export default async function HomePage() {
       </section>
 
       <footer className="relative z-10 border-t border-white/10 bg-[#07080D]">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1.2fr_0.8fr_1fr] lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[1.2fr_0.8fr_1fr] lg:px-8">
           <div>
-            <div className="inline-flex items-center gap-3">
+            <div className="inline-flex items-center gap-2">
               <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#F7931A]/30 bg-[#F7931A]/10 text-[#FFD600]">
                 <Cpu className="h-5 w-5" />
               </span>
               <span className="text-2xl font-heading font-bold text-white">PC Builder</span>
             </div>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-muted">
               {t('description')}
             </p>
           </div>
@@ -466,7 +466,7 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div className="border-t border-white/10 px-4 py-5 text-center text-[11px] font-mono uppercase tracking-widest text-muted">
+        <div className="border-t border-white/10 px-4 py-4 text-center text-[11px] font-mono uppercase tracking-widest text-muted">
           (c) 2026 PC Builder. {t('brandsTitle')}.
         </div>
       </footer>

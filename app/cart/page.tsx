@@ -57,6 +57,8 @@ type AppliedPromotion = {
   id: string
   tenKhuyenMai: string
   phanTramGiam: number
+  loaiGiamGia?: 'PHAN_TRAM' | 'SO_TIEN'
+  giaTriGiam?: number
   ngayBatDau: string
   ngayKetThuc: string
   isActive: boolean
@@ -75,6 +77,7 @@ export default function CartPage() {
   const [processing, setProcessing] = useState(false)
   const [couponMessage, setCouponMessage] = useState<string | null>(null)
   const [appliedPromotion, setAppliedPromotion] = useState<AppliedPromotion | null>(null)
+  const [couponDiscount, setCouponDiscount] = useState(0)
 
   // Checkout state
   const [shippingAddress, setShippingAddress] = useState('')
@@ -97,7 +100,7 @@ export default function CartPage() {
   )
 
   const shippingCost = subtotal >= SHIPPING_FREE_THRESHOLD ? 0 : 50000
-  const discount = couponApplied && appliedPromotion ? Math.round(subtotal * (appliedPromotion.phanTramGiam / 100)) : 0
+  const discount = couponApplied && appliedPromotion ? couponDiscount : 0
   const totalPrice = subtotal + shippingCost - discount
   const totalItems = useMemo(
     () => items.reduce((sum, item) => sum + item.soLuong, 0),
@@ -214,6 +217,7 @@ export default function CartPage() {
       setCouponCode('')
       setCouponMessage(null)
       setAppliedPromotion(null)
+      setCouponDiscount(0)
     } catch {
       setError(t('clearFailed'))
     } finally {
@@ -230,14 +234,13 @@ export default function CartPage() {
 
     setProcessing(true)
     try {
-      const productIds = items.map(i => i.sanPham.id)
       const response = await fetch('/api/promotions/check', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           maKhuyenMai: normalized,
-          sanPhamIds: productIds
+          orderTotal: subtotal
         })
       })
 
@@ -247,15 +250,18 @@ export default function CartPage() {
         setCouponApplied(false)
         setCouponMessage(data.error || t('couponInvalid'))
         setAppliedPromotion(null)
+        setCouponDiscount(0)
       } else {
         setCouponApplied(true)
         setAppliedPromotion(data.promotion)
+        setCouponDiscount(Number(data.discount || 0))
         setCouponMessage(t('couponApplied'))
       }
     } catch {
       setCouponApplied(false)
       setCouponMessage(t('couponError'))
       setAppliedPromotion(null)
+      setCouponDiscount(0)
     } finally {
       setProcessing(false)
     }
@@ -273,7 +279,8 @@ export default function CartPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           shippingAddress: shippingAddress.trim(),
-          paymentMethod
+          paymentMethod,
+          maKhuyenMai: couponApplied ? couponCode.trim().toUpperCase() : undefined
         })
       })
       const data = await response.json()
@@ -294,6 +301,7 @@ export default function CartPage() {
       setCouponCode('')
       setCouponMessage(null)
       setAppliedPromotion(null)
+      setCouponDiscount(0)
       setShippingAddress('')
       
       // Refresh cart count in header

@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { ProductCard } from '@/app/components/ProductCard'
 import { readSpecString } from '@/lib/types'
 import { AddToCartButton } from '@/components/add-to-cart-button'
+import { getSimilarProducts } from '@/lib/recommendations'
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>
@@ -24,15 +25,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound()
   }
 
-  const relatedProducts = await prisma.sanPham.findMany({
-    where: {
-      danhMucId: product.danhMucId,
-      id: { not: product.id }
-    },
-    include: { danhMuc: true },
-    take: 4,
-    orderBy: { createdAt: 'desc' }
-  })
+  const recommendationResult = await getSimilarProducts(product.id, 4)
+  const relatedProducts = recommendationResult?.recommendations || []
 
   const specs =
     product.thongSoKyThuat && typeof product.thongSoKyThuat === 'object' && !Array.isArray(product.thongSoKyThuat)
@@ -112,7 +106,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
         <section className="mt-14">
           <div className="mb-6 flex items-center justify-between gap-4">
-            <h2 className="text-2xl font-semibold">San pham lien quan</h2>
+            <h2 className="text-2xl font-semibold">San pham goi y tuong tu</h2>
             <Link href="/products" className="text-sm text-sky-300 transition hover:text-sky-200">Xem them</Link>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { authorizeRoles } from '@/lib/auth'
+import { awardOrderRewardPoints } from '@/lib/rewards'
 
 const VALID_STATUSES = ['CHO_XAC_NHAN', 'DA_XAC_NHAN', 'DANG_GIAO', 'DA_GIAO', 'DA_HUY'] as const
 
@@ -22,14 +23,33 @@ export async function PATCH(
       return NextResponse.json({ error: 'Trạng thái đơn hàng không hợp lệ' }, { status: 400 })
     }
 
-    const order = await prisma.donHang.update({
-      where: { id },
-      data: { trangThai: status },
-      include: {
-        nguoiDung: true,
-        chiTietDonHangs: { include: { sanPham: true } },
-        thanhToans: true,
-      },
+    const order = await prisma.$transaction(async (tx) => {
+      const updatedOrder = await tx.donHang.update({
+        where: { id },
+        data: { trangThai: status },
+        include: {
+          nguoiDung: true,
+          chiTietDonHangs: { include: { sanPham: true } },
+          thanhToans: true,
+          lichSuDiem: true,
+          khuyenMai: true,
+        },
+      })
+
+      if (status === 'DA_GIAO') {
+        await awardOrderRewardPoints(tx, updatedOrder.id)
+      }
+
+      return tx.donHang.findUniqueOrThrow({
+        where: { id: updatedOrder.id },
+        include: {
+          nguoiDung: true,
+          chiTietDonHangs: { include: { sanPham: true } },
+          thanhToans: true,
+          lichSuDiem: true,
+          khuyenMai: true,
+        },
+      })
     })
 
     return NextResponse.json({ order })

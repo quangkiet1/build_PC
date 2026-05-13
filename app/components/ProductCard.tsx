@@ -4,11 +4,12 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowRight, BadgePercent, ShoppingCart } from 'lucide-react'
+import { ArrowRight, BadgePercent, Scale, ShoppingCart } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useToast } from '@/app/providers/toast-provider'
 import { useCart } from '@/app/providers/cart-provider'
 import { useAuth } from '@/context/AuthContext'
+import { useCompare } from '@/components/compare-provider'
 import { cn } from '@/lib/utils'
 import type { Product } from './types'
 
@@ -63,7 +64,9 @@ export function ProductCard({ product, onAddToCart, className, featured = false 
   const { addToast } = useToast()
   const { addItem } = useCart()
   const { requireAuth } = useAuth()
+  const { toggleProduct, isSelected } = useCompare()
   const t = useTranslations('productCard')
+  const compared = isSelected(product.id)
 
   const brand = product.thuongHieu?.trim() || product.danhMuc?.tenDanhMuc || 'PC Builder'
   const specHighlights = getSpecHighlights(product)
@@ -91,6 +94,11 @@ export function ProductCard({ product, onAddToCart, className, featured = false 
     } finally {
       setIsAdding(false)
     }
+  }
+
+  const handleCompare = () => {
+    const result = toggleProduct(product)
+    addToast(result.message, result.ok ? 'success' : 'error')
   }
 
   return (
@@ -185,7 +193,7 @@ export function ProductCard({ product, onAddToCart, className, featured = false 
             </span>
           </div>
 
-          <div className="grid grid-cols-[1fr_auto] gap-3">
+          <div className="grid grid-cols-[1fr_auto_auto] gap-3">
             <button
               onClick={handleAddToCart}
               disabled={product.soLuongTon <= 0 || isAdding}
@@ -202,6 +210,20 @@ export function ProductCard({ product, onAddToCart, className, featured = false 
             >
               <ArrowRight className="h-4 w-4" />
             </Link>
+
+            <button
+              type="button"
+              onClick={handleCompare}
+              className={`inline-flex h-11 w-11 items-center justify-center rounded-full border transition-colors ${
+                compared
+                  ? 'border-[#F7931A]/50 bg-[#F7931A]/15 text-[#FFD600]'
+                  : 'border-white/10 bg-white/5 text-white hover:bg-white/10 hover:border-white/20'
+              }`}
+              aria-label="So sanh"
+              title="So sanh"
+            >
+              <Scale className="h-4 w-4" />
+            </button>
           </div>
         </div>
       </div>

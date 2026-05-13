@@ -6,7 +6,7 @@ export type ProductPayload = {
   moTa?: string
   hinhAnh?: string
   hinhAnhs?: string[]
-  thongSoKyThuat?: any
+  thongSoKyThuat?: unknown
 }
 
 export function slugifyProductName(name: string) {
@@ -56,10 +56,6 @@ export function validateAdminProductPayload(input: Record<string, unknown>) {
 
   if (!Number.isInteger(soLuongTon) || soLuongTon < 0) {
     return { ok: false as const, error: 'So luong ton khong hop le' }
-  }
-
-  if (hinhAnhs.length === 0 && !hinhAnh) {
-    return { ok: false as const, error: 'Vui lòng thêm ít nhất một hình ảnh sản phẩm' }
   }
 
   return {

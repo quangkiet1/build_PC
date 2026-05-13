@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronDown, LogOut, Package, Settings, User } from 'lucide-react'
+import { ChevronDown, KeyRound, LogOut, Package, Settings, User } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
@@ -55,6 +55,10 @@ export function UserDropdown() {
         <DropdownMenuItem onClick={() => router.push('/orders')}>
           <Package className="h-4 w-4" />
           {t('orders')}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => router.push('/account/codes')}>
+          <KeyRound className="h-4 w-4" />
+          Ma cua toi
         </DropdownMenuItem>
         {user.role === 'QUAN_TRI_VIEN' && (
           <DropdownMenuItem onClick={() => router.push('/admin')}>

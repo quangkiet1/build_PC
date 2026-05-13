@@ -17,6 +17,7 @@ model NguoiDung {
   vaiTro        VaiTro   @default(KHACH_HANG)
   soDienThoai   String?
   diaChi        String?
+  diemTichLuy   Int      @default(0)
   ngayTao       DateTime @default(now())
   ngayCapNhat   DateTime @updatedAt
 
@@ -26,6 +27,8 @@ model NguoiDung {
   tinNhanChats  TinNhanChat[]
   gioHangs      GioHang[]
   userKhuyenMais UserKhuyenMai[]
+  lichSuDiems   LichSuDiem[]
+  suDungKhuyenMais SuDungKhuyenMai[]
 
   @@map("nguoi_dung")
 }
@@ -78,7 +81,13 @@ model KhuyenMai {
   maKhuyenMai   String   @unique
   tenKhuyenMai  String
   moTa          String?
-  phanTramGiam  Int      // Phần trăm giảm (1-100)
+  phanTramGiam  Int      @default(0) // Giu tuong thich voi UI cu
+  loaiGiamGia   LoaiGiamGia @default(PHAN_TRAM)
+  giaTriGiam    Float    @default(0)
+  minOrderValue Float?
+  gioiHanTong   Int?
+  gioiHanMoiNguoi Int    @default(1)
+  soLuotDaDung  Int      @default(0)
   ngayBatDau    DateTime
   ngayKetThuc   DateTime
   isActive      Boolean  @default(true)
@@ -88,8 +97,15 @@ model KhuyenMai {
   // Quan hệ
   khuyenMaiSanPhams KhuyenMaiSanPham[]
   userKhuyenMais     UserKhuyenMai[]
+  suDungKhuyenMais   SuDungKhuyenMai[]
+  donHangs           DonHang[]
 
   @@map("khuyen_mai")
+}
+
+enum LoaiGiamGia {
+  PHAN_TRAM
+  SO_TIEN
 }
 
 model KhuyenMaiSanPham {
@@ -173,15 +189,21 @@ model DonHang {
   maDonHang         String         @unique
   trangThai         TrangThaiDon   @default(CHO_XAC_NHAN)
   tongTien          Float
+  tamTinh           Float?
+  tienGiam          Float          @default(0)
   diaChiGiaoHang    String
   ghiChu            String?
   ngayTao           DateTime       @default(now())
 
   nguoiDungId       String
   nguoiDung         NguoiDung      @relation(fields: [nguoiDungId], references: [id], onDelete: Cascade)
+  khuyenMaiId       String?
+  khuyenMai         KhuyenMai?     @relation(fields: [khuyenMaiId], references: [id], onDelete: SetNull)
 
   chiTietDonHangs   ChiTietDonHang[]
   thanhToans        ThanhToan[]
+  lichSuDiem        LichSuDiem?
+  suDungKhuyenMai   SuDungKhuyenMai?
 
   @@map("don_hang")
 }
@@ -206,6 +228,29 @@ enum TrangThaiDon {
   DANG_GIAO
   DA_GIAO
   DA_HUY
+}
+
+// ====================== DIEM THANH VIEN ======================
+model LichSuDiem {
+  id            String   @id @default(cuid())
+  diem          Int
+  loai          LoaiGiaoDichDiem
+  lyDo          String
+  ngayTao       DateTime @default(now())
+
+  nguoiDungId   String
+  nguoiDung     NguoiDung @relation(fields: [nguoiDungId], references: [id], onDelete: Cascade)
+
+  donHangId     String?  @unique
+  donHang       DonHang? @relation(fields: [donHangId], references: [id], onDelete: SetNull)
+
+  @@index([nguoiDungId, ngayTao])
+  @@map("lich_su_diem")
+}
+
+enum LoaiGiaoDichDiem {
+  CONG
+  TRU
 }
 
 // ====================== THANH TOÁN ======================
@@ -255,5 +300,24 @@ model UserKhuyenMai {
 
   @@unique([nguoiDungId, khuyenMaiId])
   @@map("user_khuyen_mai")
+}
+
+model SuDungKhuyenMai {
+  id            String   @id @default(cuid())
+  maKhuyenMai   String
+  soTienGiam    Float
+  ngaySuDung    DateTime @default(now())
+
+  nguoiDungId   String
+  nguoiDung     NguoiDung @relation(fields: [nguoiDungId], references: [id], onDelete: Cascade)
+
+  khuyenMaiId   String
+  khuyenMai     KhuyenMai @relation(fields: [khuyenMaiId], references: [id], onDelete: Restrict)
+
+  donHangId     String   @unique
+  donHang       DonHang  @relation(fields: [donHangId], references: [id], onDelete: Cascade)
+
+  @@index([nguoiDungId, khuyenMaiId])
+  @@map("su_dung_khuyen_mai")
 }
 

@@ -76,6 +76,15 @@ interface PCBuilderProps {
   products: Product[]
 }
 
+type BuildRecommendation = {
+  purpose: string
+  budget: number
+  total: number
+  overBudget: boolean
+  items: Product[]
+  missingCategories: Category[]
+}
+
 export function PCBuilder({ products }: PCBuilderProps) {
   const locale = useLocale() as AppLocale
   const t = useTranslations('builder')
@@ -83,6 +92,10 @@ export function PCBuilder({ products }: PCBuilderProps) {
   const { addItem } = useCart()
   const { requireAuth } = useAuth()
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false)
+  const [recommendationPurpose, setRecommendationPurpose] = useState('gaming')
+  const [recommendationBudget, setRecommendationBudget] = useState(25000000)
+  const [recommendation, setRecommendation] = useState<BuildRecommendation | null>(null)
+  const [recommendationLoading, setRecommendationLoading] = useState(false)
 
   const {
     build,
@@ -204,6 +217,37 @@ export function PCBuilder({ products }: PCBuilderProps) {
       const message = error instanceof Error ? error.message : t('addAllFailed')
       toast.error(message)
     }
+  }
+
+  const handleRecommendBuild = async () => {
+    setRecommendationLoading(true)
+    try {
+      const response = await fetch('/api/recommendations/build', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          purpose: recommendationPurpose,
+          budget: recommendationBudget,
+          selectedProductIds: selectedProducts.map((product) => product.id),
+        }),
+      })
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.error || 'Recommendation failed')
+      }
+      setRecommendation(data.recommendation)
+    } catch (error) {
+      console.error('Recommendation error:', error)
+      toast.error('Khong the goi y cau hinh luc nay')
+    } finally {
+      setRecommendationLoading(false)
+    }
+  }
+
+  const applyRecommendation = () => {
+    if (!recommendation) return
+    recommendation.items.forEach((product) => setProduct(product))
+    toast.success('Da ap dung cau hinh goi y')
   }
 
   return (
@@ -650,6 +694,70 @@ export function PCBuilder({ products }: PCBuilderProps) {
                   {t('reset')}
                 </button>
               </div>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-[#0F1115] p-6 shadow-xl">
+              <h3 className="mb-4 flex items-center gap-2 text-sm font-heading font-bold text-white">
+                <div className="rounded-lg bg-[#F7931A]/20 p-1.5 border border-[#F7931A]/30">
+                  <Lightbulb className="h-4 w-4 text-[#FFD600]" />
+                </div>
+                Goi y cau hinh
+              </h3>
+              <div className="grid gap-3">
+                <select
+                  value={recommendationPurpose}
+                  onChange={(event) => setRecommendationPurpose(event.target.value)}
+                  className="rounded-xl border border-white/10 bg-[#030304] px-3 py-2 text-sm text-white outline-none focus:border-[#F7931A]/50"
+                >
+                  <option value="office">Van phong</option>
+                  <option value="gaming">Gaming</option>
+                  <option value="graphics">Do hoa</option>
+                  <option value="programming">Lap trinh</option>
+                </select>
+                <input
+                  type="number"
+                  min={3000000}
+                  step={500000}
+                  value={recommendationBudget}
+                  onChange={(event) => setRecommendationBudget(Number(event.target.value))}
+                  className="rounded-xl border border-white/10 bg-[#030304] px-3 py-2 text-sm text-white outline-none focus:border-[#F7931A]/50"
+                />
+                <button
+                  type="button"
+                  onClick={handleRecommendBuild}
+                  disabled={recommendationLoading}
+                  className="rounded-xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-4 py-3 text-sm font-bold text-white transition hover:scale-[1.02] disabled:opacity-60"
+                >
+                  {recommendationLoading ? 'Dang goi y...' : 'Tao goi y'}
+                </button>
+              </div>
+
+              {recommendation && (
+                <div className="mt-4 space-y-2">
+                  <div className="flex items-center justify-between rounded-lg border border-white/10 bg-black/30 p-3">
+                    <span className="text-xs font-mono text-muted">Tong goi y</span>
+                    <span className={recommendation.overBudget ? 'text-red-300' : 'text-[#FFD600]'}>
+                      {formatPrice(recommendation.total, locale)}
+                    </span>
+                  </div>
+                  <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
+                    {recommendation.items.map((product) => (
+                      <div key={product.id} className="rounded-lg border border-white/10 bg-white/5 p-3">
+                        <p className="text-[10px] font-mono uppercase tracking-widest text-[#F7931A]">{product.category}</p>
+                        <p className="mt-1 line-clamp-1 text-xs font-semibold text-white">{product.name}</p>
+                        <p className="mt-1 text-xs text-[#FFD600]">{formatPrice(product.price, locale)}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={applyRecommendation}
+                    className="w-full rounded-xl border border-[#F7931A]/30 bg-[#F7931A]/10 px-4 py-2.5 text-sm font-semibold text-[#FFD600] transition hover:bg-[#F7931A]/15"
+                  >
+                    Ap dung goi y
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-[#0F1115] p-6 shadow-xl">

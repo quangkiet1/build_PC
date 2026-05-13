@@ -5,7 +5,13 @@ import { authorizeRoles } from '@/lib/auth'
 
 interface PromotionBody {
   tenKhuyenMai: string
-  phanTramGiam: string | number
+  moTa?: string
+  phanTramGiam?: string | number
+  loaiGiamGia?: 'PHAN_TRAM' | 'SO_TIEN'
+  giaTriGiam?: string | number
+  minOrderValue?: string | number | null
+  gioiHanTong?: string | number | null
+  gioiHanMoiNguoi?: string | number
   ngayBatDau: string
   ngayKetThuc: string
   isActive?: boolean
@@ -21,25 +27,48 @@ export async function PUT(
     if (!auth.user) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
     const body = await request.json() as PromotionBody
-    const { tenKhuyenMai, phanTramGiam, ngayBatDau, ngayKetThuc, isActive } = body
+    const loaiGiamGia = body.loaiGiamGia || 'PHAN_TRAM'
 
-    if (!tenKhuyenMai || !phanTramGiam || !ngayBatDau || !ngayKetThuc) {
+    if (!body.tenKhuyenMai || !body.ngayBatDau || !body.ngayKetThuc) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    const percent = parseInt(String(phanTramGiam))
-    if (percent < 1 || percent > 100) {
+    if (!['PHAN_TRAM', 'SO_TIEN'].includes(loaiGiamGia)) {
+      return NextResponse.json({ error: 'Discount type is invalid' }, { status: 400 })
+    }
+
+    const discountValue = Number(body.giaTriGiam ?? body.phanTramGiam)
+    if (!Number.isFinite(discountValue) || discountValue <= 0) {
+      return NextResponse.json({ error: 'Discount value must be greater than 0' }, { status: 400 })
+    }
+
+    if (loaiGiamGia === 'PHAN_TRAM' && (discountValue < 1 || discountValue > 100)) {
       return NextResponse.json({ error: 'Percentage must be between 1 and 100' }, { status: 400 })
+    }
+
+    const startDate = new Date(body.ngayBatDau)
+    const endDate = new Date(body.ngayKetThuc)
+    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime()) || startDate >= endDate) {
+      return NextResponse.json({ error: 'Date range is invalid' }, { status: 400 })
     }
 
     const promotion = await prisma.khuyenMai.update({
       where: { id },
       data: {
-        tenKhuyenMai: tenKhuyenMai.trim(),
-        phanTramGiam: percent,
-        ngayBatDau: new Date(ngayBatDau),
-        ngayKetThuc: new Date(ngayKetThuc),
-        isActive: isActive !== false,
+        tenKhuyenMai: body.tenKhuyenMai.trim(),
+        moTa: body.moTa?.trim() || null,
+        phanTramGiam: loaiGiamGia === 'PHAN_TRAM' ? Math.round(discountValue) : 0,
+        loaiGiamGia,
+        giaTriGiam: discountValue,
+        minOrderValue: body.minOrderValue ? Number(body.minOrderValue) : null,
+        gioiHanTong: body.gioiHanTong ? Number(body.gioiHanTong) : null,
+        gioiHanMoiNguoi: Math.max(1, Number(body.gioiHanMoiNguoi || 1)),
+        ngayBatDau: startDate,
+        ngayKetThuc: endDate,
+        isActive: body.isActive !== false,
+      },
+      include: {
+        _count: { select: { suDungKhuyenMais: true } },
       },
     })
 
@@ -62,10 +91,22 @@ export async function DELETE(
     const auth = await authorizeRoles(request, ['QUAN_TRI_VIEN'])
     if (!auth.user) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
-    await prisma.khuyenMai.delete({
-      where: { id },
-    })
+    const usedCount = await prisma.suDungKhuyenMai.count({ where: { khuyenMaiId: id } })
+    if (usedCount > 0) {
+      const promotion = await prisma.khuyenMai.update({
+        where: { id },
+        data: { isActive: false },
+      })
 
+      return NextResponse.json({
+        success: true,
+        softDeleted: true,
+        promotion,
+        message: 'Promotion has usage history, so it was disabled instead of deleted.',
+      })
+    }
+
+    await prisma.khuyenMai.delete({ where: { id } })
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('DELETE /api/admin/promotions/[id]:', error)
