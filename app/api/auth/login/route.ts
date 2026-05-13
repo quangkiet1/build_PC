@@ -8,7 +8,11 @@ export async function POST(request: NextRequest) {
   try {
     getJwtSecret()
 
-    const body = await request.json()
+    const body = await request.json().catch(() => null)
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Du lieu dang nhap khong hop le' }, { status: 400 })
+    }
+
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''
     const password = typeof body.password === 'string' ? body.password : ''
 
