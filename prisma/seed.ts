@@ -5,6 +5,128 @@ import { PrismaClient, VaiTro } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+type SeedProductKind = 'cpu' | 'gpu' | 'ram' | 'storage' | 'psu' | 'mainboard'
+
+type SeedProductImageInput = {
+  slug: string
+  tenSanPham: string
+  thuongHieu?: string
+}
+
+type ProductImageSource = {
+  hinhAnh?: string
+  hinhAnhs?: string[]
+}
+
+// Dan link anh tu internet vao day theo slug san pham.
+// hinhAnh: anh dai dien. hinhAnhs: danh sach anh gallery.
+// Neu hinhAnh de trong nhung hinhAnhs co link, seed se lay hinhAnhs[0] lam anh dai dien.
+const productImageSources: Record<string, ProductImageSource> = {
+  // CPU
+  'intel-core-i9-14900ks': { hinhAnh: '', hinhAnhs: [] },
+  'intel-core-i9-14900k': { hinhAnh: '', hinhAnhs: [] },
+  'intel-core-i7-14700k': { hinhAnh: '', hinhAnhs: [] },
+  'intel-core-i7-14700': { hinhAnh: '', hinhAnhs: [] },
+  'intel-core-i5-14600k': { hinhAnh: '', hinhAnhs: [] },
+  'amd-ryzen-9-7950x3d': { hinhAnh: '', hinhAnhs: [] },
+  'amd-ryzen-9-7950x': { hinhAnh: '', hinhAnhs: [] },
+  'amd-ryzen-9-7900x': { hinhAnh: '', hinhAnhs: [] },
+  'amd-ryzen-7-7700x': { hinhAnh: '', hinhAnhs: [] },
+  'amd-ryzen-5-7500f': { hinhAnh: '', hinhAnhs: [] },
+
+  // GPU
+  'nvidia-rtx-4090': { hinhAnh: '', hinhAnhs: [] },
+  'nvidia-rtx-4080-super': { hinhAnh: '', hinhAnhs: [] },
+  'nvidia-rtx-4080': { hinhAnh: '', hinhAnhs: [] },
+  'nvidia-rtx-4070-ti-super': { hinhAnh: '', hinhAnhs: [] },
+  'nvidia-rtx-4070-ti': { hinhAnh: '', hinhAnhs: [] },
+  'nvidia-rtx-4070': { hinhAnh: '', hinhAnhs: [] },
+  'amd-radeon-rx-7900-xtx': { hinhAnh: '', hinhAnhs: [] },
+  'amd-radeon-rx-7900-xt': { hinhAnh: '', hinhAnhs: [] },
+
+  // RAM
+  'corsair-vengeance-ddr5-64gb': { hinhAnh: '', hinhAnhs: [] },
+  'corsair-vengeance-ddr5-32gb': { hinhAnh: '', hinhAnhs: [] },
+  'kingston-fury-beast-ddr5-32gb': { hinhAnh: '', hinhAnhs: [] },
+  'gskill-trident-z5-ddr5-48gb': { hinhAnh: '', hinhAnhs: [] },
+  'crucial-pro-ddr5-32gb': { hinhAnh: '', hinhAnhs: [] },
+  'rog-strix-flare-ii-ddr5-32gb': { hinhAnh: '', hinhAnhs: [] },
+
+  // Storage
+  'samsung-990-pro-4tb': { hinhAnh: '', hinhAnhs: [] },
+  'samsung-990-pro-2tb': { hinhAnh: '', hinhAnhs: [] },
+  'wd-black-sn850x-2tb': { hinhAnh: '', hinhAnhs: [] },
+  'wd-black-sn850x-4tb': { hinhAnh: '', hinhAnhs: [] },
+  'kingston-nv2-1tb': { hinhAnh: '', hinhAnhs: [] },
+  'seagate-barracuda-4tb': { hinhAnh: '', hinhAnhs: [] },
+
+  // PSU
+  'corsair-hx1200i-1200w': { hinhAnh: '', hinhAnhs: [] },
+  'corsair-rm850x-850w': { hinhAnh: '', hinhAnhs: [] },
+  'evga-supernova-850-g6': { hinhAnh: '', hinhAnhs: [] },
+  'seasonic-focus-750w': { hinhAnh: '', hinhAnhs: [] },
+  'msi-mag-a650gl-650w': { hinhAnh: '', hinhAnhs: [] },
+
+  // Mainboard
+  'asus-rog-maximus-z890-e': { hinhAnh: '', hinhAnhs: [] },
+  'msi-mpg-z890-carbon-wifi': { hinhAnh: '', hinhAnhs: [] },
+  'gigabyte-z890-master': { hinhAnh: '', hinhAnhs: [] },
+  'asus-rog-strix-x870-e-gaming': { hinhAnh: '', hinhAnhs: [] },
+  'msi-mpg-b850-edge-wifi': { hinhAnh: '', hinhAnhs: [] },
+}
+
+function getManualProductImages(product: SeedProductImageInput) {
+  const source = productImageSources[product.slug]
+  if (!source) return []
+
+  const urls = [source.hinhAnh, ...(source.hinhAnhs ?? [])]
+    .map((url) => url?.trim())
+    .filter((url): url is string => Boolean(url))
+
+  return Array.from(new Set(urls))
+}
+
+function getSeedProductImages(kind: SeedProductKind, product: SeedProductImageInput) {
+  const manualImages = getManualProductImages(product)
+  if (manualImages.length > 0) {
+    return manualImages
+  }
+
+  const brand = product.thuongHieu?.toLowerCase() || ''
+  const slug = product.slug.toLowerCase()
+
+  const imagesByKind: Record<SeedProductKind, string[]> = {
+    cpu: brand.includes('amd')
+      ? ['/images/cpu-ryzen.svg', '/images/cpu-amd.svg', '/images/cpu-i7.svg']
+      : ['/images/cpu-i7.svg', '/images/cpu-amd.svg', '/images/cpu-ryzen.svg'],
+    gpu: brand.includes('amd')
+      ? ['/images/gpu-rx7900.svg', '/images/gpu-rtx4090.svg', '/images/gpu-rtx4070.svg']
+      : slug.includes('4090')
+        ? ['/images/gpu-rtx4090.svg', '/images/gpu-rtx4070.svg', '/images/gpu-rx7900.svg']
+        : ['/images/gpu-rtx4070.svg', '/images/gpu-rtx4090.svg', '/images/gpu-rx7900.svg'],
+    ram: brand.includes('g.skill')
+      ? ['/images/ram-gskill.svg', '/images/ram-corsair.svg', '/images/ram-kingston.svg']
+      : brand.includes('kingston')
+        ? ['/images/ram-kingston.svg', '/images/ram-corsair.svg', '/images/ram-gskill.svg']
+        : ['/images/ram-corsair.svg', '/images/ram-gskill.svg', '/images/ram-kingston.svg'],
+    storage: brand.includes('wd')
+      ? ['/images/ssd-wd.svg', '/images/hdd-wd.svg', '/images/nvme-samsung.svg']
+      : brand.includes('seagate')
+        ? ['/images/hdd-wd.svg', '/images/ssd-wd.svg', '/images/nvme-samsung.svg']
+        : ['/images/nvme-samsung.svg', '/images/ssd-samsung.svg', '/images/ssd-wd.svg'],
+    psu: brand.includes('seasonic')
+      ? ['/images/psu-seasonic.svg', '/images/psu-corsair.svg', '/images/case-corsair.svg']
+      : ['/images/psu-corsair.svg', '/images/psu-seasonic.svg', '/images/case-corsair.svg'],
+    mainboard: brand.includes('msi')
+      ? ['/images/mb-msi.svg', '/images/mb-asus.svg', '/images/mb-rog.svg']
+      : brand.includes('asus') || slug.includes('rog')
+        ? ['/images/mb-rog.svg', '/images/mb-asus.svg', '/images/mb-msi.svg']
+        : ['/images/mb-asus.svg', '/images/mb-rog.svg', '/images/mb-msi.svg'],
+  }
+
+  return imagesByKind[kind]
+}
+
 /**
  * Hàm thay đổi vai trò của người dùng
  * @param email - Email của tài khoản cần thay đổi
@@ -222,10 +344,13 @@ async function main() {
   ]
 
   for (const cpu of cpuProducts) {
+    const hinhAnhs = getSeedProductImages('cpu', cpu)
+
     await prisma.sanPham.create({
       data: {
         ...cpu,
-        hinhAnh: `https://via.placeholder.com/300x300?text=${cpu.slug}`,
+        hinhAnh: hinhAnhs[0],
+        hinhAnhs,
         soLuongTon: 50,
         danhMucId: cpuCat.id
       }
@@ -341,10 +466,13 @@ async function main() {
   ]
 
   for (const gpu of gpuProducts) {
+    const hinhAnhs = getSeedProductImages('gpu', gpu)
+
     await prisma.sanPham.create({
       data: {
         ...gpu,
-        hinhAnh: `https://via.placeholder.com/300x300?text=${gpu.slug}`,
+        hinhAnh: hinhAnhs[0],
+        hinhAnhs,
         soLuongTon: 30,
         danhMucId: gpuCat.id
       }
@@ -434,10 +562,13 @@ async function main() {
   ]
 
   for (const ram of ramProducts) {
+    const hinhAnhs = getSeedProductImages('ram', ram)
+
     await prisma.sanPham.create({
       data: {
         ...ram,
-        hinhAnh: `https://via.placeholder.com/300x300?text=${ram.slug}`,
+        hinhAnh: hinhAnhs[0],
+        hinhAnhs,
         soLuongTon: 100,
         danhMucId: ramCat.id
       }
@@ -527,10 +658,13 @@ async function main() {
   ]
 
   for (const storage of storageProducts) {
+    const hinhAnhs = getSeedProductImages('storage', storage)
+
     await prisma.sanPham.create({
       data: {
         ...storage,
-        hinhAnh: `https://via.placeholder.com/300x300?text=${storage.slug}`,
+        hinhAnh: hinhAnhs[0],
+        hinhAnhs,
         soLuongTon: 75,
         danhMucId: storageCat.id
       }
@@ -602,10 +736,13 @@ async function main() {
   ]
 
   for (const psu of psuProducts) {
+    const hinhAnhs = getSeedProductImages('psu', psu)
+
     await prisma.sanPham.create({
       data: {
         ...psu,
-        hinhAnh: `https://via.placeholder.com/300x300?text=${psu.slug}`,
+        hinhAnh: hinhAnhs[0],
+        hinhAnhs,
         soLuongTon: 60,
         danhMucId: psuCat.id
       }
@@ -682,10 +819,13 @@ async function main() {
   ]
 
   for (const mobo of motherboardProducts) {
+    const hinhAnhs = getSeedProductImages('mainboard', mobo)
+
     await prisma.sanPham.create({
       data: {
         ...mobo,
-        hinhAnh: `https://via.placeholder.com/300x300?text=${mobo.slug}`,
+        hinhAnh: hinhAnhs[0],
+        hinhAnhs,
         soLuongTon: 40,
         danhMucId: mainboardCat.id
       }
@@ -724,27 +864,27 @@ async function main() {
   console.log('   - 5 PSU')
   console.log('   - 5 Motherboard')
   console.log('   = 45 sản phẩm')
-}
 
-// Tạo user admin nếu chưa tồn tại, rồi cập nhật vai trò
-const adminEmail = 'huynhkietzuki@gmail.com'
-const existingAdmin = await prisma.nguoiDung.findUnique({ where: { email: adminEmail } })
-if (!existingAdmin) {
-  await prisma.nguoiDung.create({
-    data: {
-      hoTen: 'Admin User',
-      email: adminEmail,
-      matKhauHash: '$2a$10$dummyhashfortestingonly',
-      vaiTro: VaiTro.QUAN_TRI_VIEN
-    }
-  })
-  console.log(`✅ Created admin user: ${adminEmail}`)
-} else {
-  await prisma.nguoiDung.update({
-    where: { email: adminEmail },
-    data: { vaiTro: VaiTro.QUAN_TRI_VIEN }
-  })
-  console.log(`✅ Updated admin role: ${adminEmail}`)
+  // Tạo user admin nếu chưa tồn tại, rồi cập nhật vai trò
+  const adminEmail = 'huynhkietzuki@gmail.com'
+  const existingAdmin = await prisma.nguoiDung.findUnique({ where: { email: adminEmail } })
+  if (!existingAdmin) {
+    await prisma.nguoiDung.create({
+      data: {
+        hoTen: 'Admin User',
+        email: adminEmail,
+        matKhauHash: '$2a$10$dummyhashfortestingonly',
+        vaiTro: VaiTro.QUAN_TRI_VIEN
+      }
+    })
+    console.log(`✅ Created admin user: ${adminEmail}`)
+  } else {
+    await prisma.nguoiDung.update({
+      where: { email: adminEmail },
+      data: { vaiTro: VaiTro.QUAN_TRI_VIEN }
+    })
+    console.log(`✅ Updated admin role: ${adminEmail}`)
+  }
 }
 
 main()
