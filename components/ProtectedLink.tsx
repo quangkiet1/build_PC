@@ -12,12 +12,18 @@ type ProtectedLinkProps = {
 
 export function ProtectedLink({ href, className, children, ...rest }: ProtectedLinkProps) {
   const router = useRouter()
-  const { requireAuth } = useAuth()
+  const { user } = useAuth()
 
   return (
     <button
       type="button"
-      onClick={() => void requireAuth(() => router.push(href), { nextUrl: href, reason: 'required' })}
+      onClick={() => {
+        if (user) {
+          router.push(href)
+        } else {
+          router.push(`/login?next=${encodeURIComponent(href)}`)
+        }
+      }}
       className={className}
       {...rest}
     >

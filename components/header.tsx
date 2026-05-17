@@ -4,11 +4,14 @@ import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import { Menu, Settings, ShoppingCart, X } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useAuth } from '@/context/AuthContext'
 import { useCart } from '@/app/providers/cart-provider'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { UserDropdown } from '@/components/UserDropdown'
+
+const AUTH_ROUTES = ['/login', '/register']
 
 export function Header() {
   const { cartCount } = useCart()
@@ -17,6 +20,9 @@ export function Header() {
   const badgeRef = useRef<HTMLSpanElement>(null)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const t = useTranslations('header')
+  const pathname = usePathname()
+
+  const isAuthRoute = AUTH_ROUTES.some((r) => pathname === r)
 
   useEffect(() => {
     const badge = badgeRef.current
@@ -63,6 +69,9 @@ export function Header() {
     }
   }, [mobileMenuOpen])
 
+  if (isAuthRoute) return null
+
+
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0F1115]/80 backdrop-blur-xl">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -86,9 +95,12 @@ export function Header() {
                 {t('builder')}
               </Link>
             ) : (
-              <button onClick={() => openAuthModal({ reason: 'required', nextUrl: '/builder' })} className="text-sm font-mono tracking-widest uppercase text-muted transition hover:text-[#F7931A]">
+              <Link
+                href="/login?next=/builder"
+                className="text-sm font-mono tracking-widest uppercase text-muted transition hover:text-[#F7931A]"
+              >
                 {t('builder')}
-              </button>
+              </Link>
             )}
             <Link href="/promotions" className="text-sm font-mono tracking-widest uppercase text-muted transition hover:text-[#F7931A]">
               {t('promotions')}
@@ -98,18 +110,18 @@ export function Header() {
               <UserDropdown />
             ) : (
               <div className="flex items-center gap-3">
-                <button
-                  onClick={() => openAuthModal({ mode: 'login', reason: 'login' })}
+                <Link
+                  href="/login"
                   className="rounded-full border border-white/20 bg-transparent px-4 py-2 text-sm font-semibold text-white transition hover:border-[#F7931A]/50 hover:bg-[#F7931A]/10 hover:text-[#F7931A]"
                 >
                   {t('login')}
-                </button>
-                <button
-                  onClick={() => openAuthModal({ mode: 'register', reason: 'register' })}
+                </Link>
+                <Link
+                  href="/register"
                   className="rounded-full bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-4 py-2 text-sm font-semibold text-white shadow-[0_0_15px_-5px_rgba(247,147,26,0.5)] transition hover:scale-105 hover:shadow-[0_0_25px_-5px_rgba(247,147,26,0.7)]"
                 >
                   {t('register')}
-                </button>
+                </Link>
               </div>
             )}
           </div>
@@ -142,13 +154,13 @@ export function Header() {
                 {t('builder')}
               </Link>
             ) : (
-              <button
-                onClick={() => openAuthModal({ reason: 'required', nextUrl: '/builder' })}
+              <Link
+                href="/login?next=/builder"
                 data-menu-item
-                className="block w-full rounded-lg px-4 py-2 text-left text-muted font-mono uppercase tracking-widest text-sm transition hover:bg-white/5 hover:text-[#F7931A]"
+                className="block rounded-lg px-4 py-2 text-muted font-mono uppercase tracking-widest text-sm transition hover:bg-white/5 hover:text-[#F7931A]"
               >
                 {t('builder')}
-              </button>
+              </Link>
             )}
             <Link href="/promotions" data-menu-item className="block rounded-lg px-4 py-2 text-muted font-mono uppercase tracking-widest text-sm transition hover:bg-white/5 hover:text-[#F7931A]">
               {t('promotions')}
@@ -167,18 +179,18 @@ export function Header() {
               </div>
             ) : (
               <div data-menu-item className="grid grid-cols-2 gap-3 px-1 pt-2">
-                <button
-                  onClick={() => openAuthModal({ mode: 'login', reason: 'login' })}
+                <Link
+                  href="/login"
                   className="rounded-full border border-white/20 bg-transparent px-4 py-3 text-center text-sm font-semibold text-white transition hover:border-[#F7931A]/50 hover:bg-[#F7931A]/10 hover:text-[#F7931A]"
                 >
                   {t('login')}
-                </button>
-                <button
-                  onClick={() => openAuthModal({ mode: 'register', reason: 'register' })}
+                </Link>
+                <Link
+                  href="/register"
                   className="rounded-full bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-4 py-3 text-center text-sm font-semibold text-white shadow-[0_0_15px_-5px_rgba(247,147,26,0.5)] transition hover:scale-105 hover:shadow-[0_0_25px_-5px_rgba(247,147,26,0.7)]"
                 >
                   {t('register')}
-                </button>
+                </Link>
               </div>
             )}
           </div>

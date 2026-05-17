@@ -321,3 +321,21 @@ model SuDungKhuyenMai {
   @@map("su_dung_khuyen_mai")
 }
 
+// ====================== MÃ XÁC NHẬN (QUÊN MẬT KHẨU) ======================
+model MaXacNhan {
+  id          String   @id @default(cuid())
+  email       String
+  ma          String   // 6-digit OTP
+  loai        LoaiMaXacNhan @default(QUEN_MAT_KHAU)
+  hetHan      DateTime
+  daXacNhan   Boolean  @default(false)
+  soLanThu    Int      @default(0) // Số lần thử nhập sai
+  ngayTao     DateTime @default(now())
+
+  @@index([email, loai])
+  @@map("ma_xac_nhan")
+}
+
+enum LoaiMaXacNhan {
+  QUEN_MAT_KHAU
+}

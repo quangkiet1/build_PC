@@ -27,8 +27,8 @@ export default async function RootLayout({
   const { locale, messages } = await getI18nServer()
 
   return (
-    <html lang={locale} className="dark h-full antialiased">
-      <body className="flex min-h-full flex-col bg-[#030304] font-sans text-white selection:bg-[#F7931A] selection:text-white">
+    <html lang={locale} className="dark h-full antialiased overflow-x-hidden">
+      <body className="flex min-h-full flex-col bg-[#030304] font-sans text-white selection:bg-[#F7931A] selection:text-white overflow-x-hidden">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ToastProvider>
             <AuthProvider>

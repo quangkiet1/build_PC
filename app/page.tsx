@@ -68,10 +68,10 @@ export default async function HomePage() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#030304] text-white font-body selection:bg-[#F7931A] selection:text-white">
       {/* BACKGROUND ELEMENTS */}
-      <div className="fixed inset-0 pointer-events-none z-0">
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-40"></div>
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-radial-blur pointer-events-none"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-radial-blur pointer-events-none"></div>
+        <div className="absolute -top-1/4 -left-1/4 w-3/4 h-3/4 bg-radial-blur pointer-events-none"></div>
+        <div className="absolute -bottom-1/4 -right-1/4 w-3/4 h-3/4 bg-radial-blur pointer-events-none"></div>
       </div>
 
       {/* HERO SECTION */}
