@@ -42,7 +42,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ 
           tinNhanBot: ketQuaAI.tinNhanBot, 
           duLieuGoiY: ketQuaAI.duLieuGoiY, 
-          hieuLenhUI: ketQuaAI.hieuLenhUI 
+          hieuLenhUI: ketQuaAI.hieuLenhUI,
+          yeuCauBuildPC: ketQuaAI.yeuCauBuildPC,
+          danhSachTrenKeMoi: ketQuaAI.danhSachTrenKeMoi,
+          chiHoiTuVan: ketQuaAI.chiHoiTuVan,
       });
 
   } catch (error) {

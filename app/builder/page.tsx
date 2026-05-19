@@ -24,7 +24,6 @@ export default async function BuilderPage() {
   return (
     <>
       <PCBuilder products={builderProducts} />
-      <Chatbot />
     </>
   )
 }

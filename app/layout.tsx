@@ -13,6 +13,7 @@ import { PageTransition } from '@/components/motion/PageTransition'
 import { BackToTop } from '@/components/motion/BackToTop'
 import { AuthProvider } from '@/context/AuthContext'
 import { getI18nServer } from '@/i18n/server'
+import { ChatbotWrapper } from '@/components/ChatbotWrapper'
 
 export const metadata: Metadata = {
   title: 'PC Builder - Xay dung cau hinh PC cua ban',
@@ -42,6 +43,7 @@ export default async function RootLayout({
                   <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
                   <PageTransition className="flex-1">{children}</PageTransition>
                   <BackToTop />
+                  <ChatbotWrapper />
                 </CompareProvider>
               </CartProvider>
             </AuthProvider>

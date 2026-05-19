@@ -6,147 +6,239 @@ import { isProductCompatibleWithBuild } from '@/app/lib/builder-utils';
 
 const apiKey = process.env.GEMINI_API_KEY || "";
 const genAI = new GoogleGenerativeAI(apiKey);
-const TEN_MODEL_AI = "gemini-2.5-flash"; 
+const TEN_MODEL_AI = "gemini-2.0-flash";
+const MODEL_DU_PHONG = "gemini-1.5-flash"; // Fallback khi 2.0-flash hết quota
 
+// ─── Retry helper: tự chờ và thử lại khi bị 429/503, fallback sang model dự phòng ──
+async function generateWithRetry(
+    model: any,
+    prompt: string,
+    maxRetries = 3
+): Promise<string> {
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+            const res = await model.generateContent(prompt);
+            return res.response.text();
+        } catch (err: any) {
+            const status = err?.status ?? err?.statusCode;
+            const is429 = status === 429 || String(err?.message).includes('429');
+            const is503 = status === 503 || String(err?.message).includes('503');
 
-// 1. HÀM PHÂN TÍCH 
+            if (is429) {
+                // Kiểm tra xem có phải hết quota ngày không
+                const violations: string[] = err?.errorDetails
+                    ?.find((d: any) => d['@type']?.includes('QuotaFailure'))
+                    ?.violations?.map((v: any) => v.quotaId) ?? [];
+                const hetQuotaNgay = violations.some(v => v.includes('PerDay'));
+
+                if (hetQuotaNgay) {
+                    // Hết quota ngày → thử fallback 1 lần, không retry vô ích
+                    if (attempt === 0) {
+                        console.log(`[Chatbot] Quota ngày đã hết, thử ${MODEL_DU_PHONG}...`);
+                        try {
+                            const modelDuPhong = genAI.getGenerativeModel({ model: MODEL_DU_PHONG });
+                            const resDp = await modelDuPhong.generateContent(prompt);
+                            return resDp.response.text();
+                        } catch (dpErr: any) {
+                            console.error(`[Chatbot] Fallback ${MODEL_DU_PHONG} cũng lỗi:`, dpErr?.status);
+                        }
+                    }
+                    // Cả 2 model đều hết quota → throw ngay, không retry tốn thời gian
+                    throw err;
+                }
+
+                // Rate limit tạm thời (per-minute) → retry với backoff ngắn
+                if (attempt < maxRetries - 1) {
+                    let waitMs = 5000 * (attempt + 1);
+                    try {
+                        const retryInfo = err?.errorDetails?.find(
+                            (d: any) => d['@type']?.includes('RetryInfo')
+                        );
+                        if (retryInfo?.retryDelay) {
+                            const secs = parseFloat(retryInfo.retryDelay.replace('s', ''));
+                            // Chỉ chờ tối đa 15 giây, không chờ 59 giây
+                            if (!isNaN(secs)) waitMs = Math.min(Math.ceil(secs * 1000) + 500, 15000);
+                        }
+                    } catch {}
+                    console.log(`[Chatbot] Rate limited (per-min). Retry ${attempt + 1}/${maxRetries} sau ${waitMs}ms...`);
+                    await new Promise(r => setTimeout(r, waitMs));
+                    continue;
+                }
+            }
+
+            if (is503 && attempt < maxRetries - 1) {
+                const waitMs = 4000 * (attempt + 1);
+                console.log(`[Chatbot] 503 overload. Retry ${attempt + 1}/${maxRetries} sau ${waitMs}ms...`);
+                await new Promise(r => setTimeout(r, waitMs));
+                continue;
+            }
+
+            throw err;
+        }
+    }
+    throw new Error("Đã thử lại tối đa nhưng vẫn thất bại");
+}
+
+// ============================================================
+// 1. PHÂN TÍCH TIN NHẮN → JSON
+// ============================================================
 async function phanTich(tinNhanKhach: string, lichSuChat: any[]) {
-    const modelThuKy = genAI.getGenerativeModel({ model: TEN_MODEL_AI, generationConfig: { responseMimeType: "application/json" } });
+    const modelThuKy = genAI.getGenerativeModel({ 
+        model: TEN_MODEL_AI, 
+        generationConfig: { responseMimeType: "application/json" } 
+    });
+
     let chuoiLichSu = "";
     if (lichSuChat != null) {
         for (let i = 0; i < lichSuChat.length - 1; i++) {
-            let nguoiNoi = "";
-            if (lichSuChat[i].role === 'user') {
-                nguoiNoi = "Khách";
-            } else {
-                nguoiNoi = "AI";
-            }
-            chuoiLichSu = chuoiLichSu + nguoiNoi + ": " + lichSuChat[i].content + "\n";
+            const nguoiNoi = lichSuChat[i].role === 'user' ? "Khách" : "AI";
+            chuoiLichSu += nguoiNoi + ": " + lichSuChat[i].content + "\n";
         }
     }
 
-    const cauLenhPhanTich = `Ban la cong cu boc tach. Tra ve 1 JSON co dang:
+    const cauLenhPhanTich = `Ban la cong cu boc tach thong tin tu tin nhan. Tra ve DUY NHAT 1 JSON (khong giai thich them):
     {
-      "nganSach": number hoac null,
-      "nhungMonMuonDoi": [ { "loai": "storage", "tuKhoa": "4TB" }, { "loai": "cpu", "tuKhoa": "" } ]
+      "nganSach": <number hoac null>,
+      "nhungMonMuonDoi": [ { "loai": "cpu", "tuKhoa": "" } ],
+      "yeuCauBuildPC": <true hoac false>,
+      "chiHoiTuVan": <true hoac false>
     }
-    Quy uoc 'loai' bat buoc la: cpu, motherboard, ram, gpu, storage, psu, case, cooling (VD: 'chip' la 'cpu', 'bo nho', 'o cung', 'hdd' la 'storage'). 
+
+    Quy uoc "loai": cpu, motherboard, ram, gpu, storage, psu, case, cooling.
     
-    QUAN TRỌNG: Hãy đọc [LỊCH SỬ CHAT] bên dưới để tìm 'nganSach' nếu [TIN NHẮN MỚI] không nhắc đến số tiền. 
-    Neu khach muon nang cap/doi mon nao, them vao nhungMonMuonDoi. Khong giai thich.
+    PHAN TICH NHU SAU:
+    - "nganSach": doc trong [LICH SU CHAT] neu [TIN NHAN MOI] khong co so tien.
+    - "nhungMonMuonDoi": khi khach muon doi/nang cap 1 mon cu the.
+    - "yeuCauBuildPC" = true: khach muon AI TU DONG CHON LINH KIEN VA BUILD (vd: "build cho toi", "chon giup toi", "lap rap", "tao cau hinh").
+    - "chiHoiTuVan" = true: khach chi hoi chung, khong can AI chon linh kien ngay (vd: "CPU nay co tot khong?", "so sanh 2 cai nay", "hen ho gi the").
     
-    [LỊCH SỬ CHAT]
+    [LICH SU CHAT]
     ${chuoiLichSu}
 
-    [TIN NHẮN MỚI]
+    [TIN NHAN MOI]
     ${tinNhanKhach}`;
     
     try {
-        const phanHoi = await modelThuKy.generateContent(cauLenhPhanTich);
-        
-        let locnoidung = phanHoi.response.text();
-        locnoidung = locnoidung.replace(/```json/g, "");
-        locnoidung = locnoidung.replace(/```/g, "");
-        locnoidung = locnoidung.trim();
-        
+        const rawText = await generateWithRetry(modelThuKy, cauLenhPhanTich);
+        let locnoidung = rawText
+            .replace(/```json/g, "").replace(/```/g, "").trim();
         return JSON.parse(locnoidung);
     } catch (e) { 
-        console.error("Lỗi Phân Tích:", e);
-        return { nganSach: null, nhungMonMuonDoi: [] }; 
+        console.error("Loi Phan Tich:", e);
+        return { nganSach: null, nhungMonMuonDoi: [], yeuCauBuildPC: false, chiHoiTuVan: true }; 
     }
 }
 
 
-// TẠO TIN NHẮN 
-async function messWithUser(tinNhanKhach: string, lichSuChat: any[], danhSachTrenKe: any[], doGoiYTuKho: any[], thieuNganSach: boolean) {
+// ============================================================
+// 2. TẠO TIN NHẮN CHO USER
+// ============================================================
+async function messWithUser(
+    tinNhanKhach: string, 
+    lichSuChat: any[], 
+    danhSachTrenKe: any[], 
+    doGoiYTuKho: any[], 
+    thieuNganSach: boolean,
+    chiHoiTuVan: boolean
+) {
+    // Đọc system prompt từ AGENTS.md
     const duongDanFileLuat = path.join(process.cwd(), 'AGENTS.md');
-    let promptAgent = fs.readFileSync(duongDanFileLuat, 'utf-8');
-
-    // Dịch Giỏ hàng
-    let chuoiDangChon = "";
-    for (let i = 0; i < danhSachTrenKe.length; i++) {
-        let monDo = danhSachTrenKe[i];
-        chuoiDangChon = chuoiDangChon + "- " + (monDo.name || "Linh kiện") + " : " + (monDo.price || 0) + " VNĐ\n";
-    }
-    if (chuoiDangChon === "") chuoiDangChon = "Chưa có món nào trên kệ.";
-
-    let chuoiDeXuat = "";
-    for (let i = 0; i < doGoiYTuKho.length; i++) {
-        let monDo = doGoiYTuKho[i];
-        chuoiDeXuat = chuoiDeXuat + "- " + (monDo.name || "Linh kiện") + " : " + (monDo.price || 0) + " VNĐ\n";
+    let promptAgent = "";
+    try {
+        promptAgent = fs.readFileSync(duongDanFileLuat, 'utf-8');
+    } catch {
+        promptAgent = "Ban la chuyen gia tu van PC. Tra loi bang tieng Viet, ngan gon, than thien.";
     }
 
-    // Nếu hết tiền, KHÔNG cho AI thấy bất kỳ list đề xuất ảo nào
-    if (doGoiYTuKho.length === 0) {
-        chuoiDeXuat = ""; 
-    }
-    promptAgent = promptAgent.replace('{$Current_Cart}', chuoiDangChon);
-    promptAgent = promptAgent.replace('{$Database_Items}', chuoiDeXuat);
+    // Định dạng kệ hàng hiện tại
+    let chuoiDangChon = danhSachTrenKe.length > 0
+        ? danhSachTrenKe.map(m => `- ${m.name || "Linh kiện"}: ${(m.price || 0).toLocaleString('vi-VN')}đ`).join("\n")
+        : "Chưa có món nào trên kệ.";
 
-    // Gom Lịch sử
+    // Định dạng linh kiện đề xuất mới
+    let chuoiDeXuat = doGoiYTuKho.length > 0
+        ? doGoiYTuKho.map(m => `- ${m.name || "Linh kiện"}: ${(m.price || 0).toLocaleString('vi-VN')}đ`).join("\n")
+        : "";
+
+    // Gom lịch sử
     let chuoiLichSu = "";
     for (let i = 0; i < lichSuChat.length - 1; i++) {
-        let ng = lichSuChat[i].role === 'user' ? "Khách" : "AI";
-        chuoiLichSu = chuoiLichSu + ng + ": " + lichSuChat[i].content + "\n";
+        const ng = lichSuChat[i].role === 'user' ? "Khách" : "AI";
+        chuoiLichSu += ng + ": " + lichSuChat[i].content + "\n";
     }
 
-    // Lệnh riêng khi thiếu tiền (Vì AGENTS.md đã bắt rỗng thì im lặng, nhưng cần nó hỏi tiền nếu thieuNganSach = true)
-    let lenhHoiTien = "";
-    if (thieuNganSach === true) {
-        lenhHoiTien = "Khách hàng CHƯA CUNG CẤP NGÂN SÁCH. Hãy bỏ qua mọi format ở trên, chỉ in ra một câu duy nhất hỏi ngân sách của khách để đi chợ.";
+    // Lệnh đặc biệt
+    let lenhDacBiet = "";
+    if (thieuNganSach && !chiHoiTuVan) {
+        lenhDacBiet = `LENH DAC BIET: Khach chua cung cap ngan sach de build PC. Chi in ra DUY NHAT mot cau hoi ngan sach, khong lam gi khac.`;
+    } else if (chiHoiTuVan) {
+        lenhDacBiet = `LENH DAC BIET: Khach chi dang hoi tu van, KHONG can push linh kien. Tra loi chuyen mon, ngan gon.`;
     }
 
-    const promptGop =`[HỆ THỐNG BÁO CÁO TÌNH TRẠNG KỆ HÀNG CỦA KHÁCH]
-    - Đang có sẵn trên kệ: \n${chuoiDangChon}
-    - Hệ thống vừa lấy thêm: \n${chuoiDeXuat}
+    const promptGop = `[TRANG THAI KE HANG HIEN TAI CUA KHACH]
+${chuoiDangChon}
 
-    [LỆNH TỐI CAO - PHẢI TUÂN THỦ 100%]
-    1. TUYỆT ĐỐI KHÔNG HỎI khách hàng đang có linh kiện gì (vì danh sách đã được hệ thống cung cấp ở ngay bên trên).
-    2. KHÔNG SỬ DỤNG MARKDOWN (Tuyệt đối không dùng dấu **, *, #).
-    ${lenhHoiTien}
+${chuoiDeXuat ? `[HE THONG VUA LAY THEM LINH KIEN MOI]\n${chuoiDeXuat}\n` : ""}
+[LENH TOI CAO - PHAI TUAN THU 100%]
+1. TUYET DOI KHONG HOI khach hang dang co linh kien gi (he thong da cung cap danh sach o tren).
+2. KHONG SU DUNG MARKDOWN (khong dung **, *, #).
+3. Tra loi bang tieng Viet, than thien, ngan gon (toi da 3 dong tru khi can giai thich ky).
+${lenhDacBiet}
 
-    [LỊCH SỬ HỘI THOẠI TRƯỚC ĐÓ - CHỈ ĐỂ THAM KHẢO NGỮ CẢNH]
-    ${chuoiLichSu}
+[LICH SU HOI THOAI]
+${chuoiLichSu}
 
-    [TIN NHẮN MỚI CỦA KHÁCH]
-    ${tinNhanKhach}`;
+[TIN NHAN MOI CUA KHACH]
+${tinNhanKhach}`;
 
     try {
-        const modelChuyenGia = genAI.getGenerativeModel({ model: TEN_MODEL_AI, systemInstruction: promptAgent });
-        const phanHoiCuoi = await modelChuyenGia.generateContent(promptGop);
-        let cauTraLoiCuoiCung = phanHoiCuoi.response.text();
-
-        if (cauTraLoiCuoiCung == null || cauTraLoiCuoiCung.trim() === "") {
+        const modelChuyenGia = genAI.getGenerativeModel({ 
+            model: TEN_MODEL_AI, 
+            systemInstruction: promptAgent 
+        });
+        const cauTraLoi = await generateWithRetry(modelChuyenGia, promptGop);
+        if (!cauTraLoi || cauTraLoi.trim() === "") {
             return "Dạ, anh/chị xem các linh kiện trên kệ nhé!";
         }
-        return cauTraLoiCuoiCung;
-    } catch (error) { 
-        console.log(error);
-        return "Dạ, hệ thống đang bận một chút, anh/chị đợi lát nhé!"; 
+        return cauTraLoi;
+    } catch (error: any) { 
+        console.error("Loi messWithUser:", error);
+        const status = error?.status ?? error?.statusCode;
+        if (status === 429) {
+            const violations: string[] = error?.errorDetails
+                ?.find((d: any) => d['@type']?.includes('QuotaFailure'))
+                ?.violations?.map((v: any) => v.quotaId) ?? [];
+            const hetQuotaNgay = violations.some((v: string) => v.includes('PerDay'));
+            if (hetQuotaNgay) {
+                return "⚠️ AI đã dùng hết quota miễn phí cho hôm nay. Quota sẽ reset lúc 7h sáng mai (giờ VN). Anh/chị vui lòng thử lại sau nhé!";
+            }
+            return "Dạ, AI đang bận xử lý, anh/chị thử lại sau vài giây nhé! 🙏";
+        }
+        return "Dạ, hệ thống gặp sự cố tạm thời, anh/chị thử lại nhé!";
     }
 }
 
+
+// ============================================================
+// 3. KIỂM KÊ HÀNG CŨ (loại bỏ món cần đổi)
+// ============================================================
 function kiemKeHangCu(keLinhKienHienTai: any, cacLoaiKhachDoi: string[]) {
     let danhSachTrenKe: any[] = [];
     let cacTheLoaiDaCo: string[] = [];
     let tongTienDaTieu = 0;
 
     if (keLinhKienHienTai != null) {
-        let mangTam = Object.values(keLinhKienHienTai);
-        for (let i = 0; i < mangTam.length; i++) {
-            if (mangTam[i] != null) {
-                let monDo = mangTam[i] as any;
-                let theLoaiMonDo = monDo.category ? monDo.category.toLowerCase() : "";
-                let biKhachDoi = false;
-                for (let j = 0; j < cacLoaiKhachDoi.length; j++) {
-                     if (cacLoaiKhachDoi[j] === theLoaiMonDo) biKhachDoi = true;
-                }
+        const mangTam = Object.values(keLinhKienHienTai);
+        for (const item of mangTam) {
+            if (item == null) continue;
+            const monDo = item as any;
+            const theLoai = monDo.category ? monDo.category.toLowerCase() : "";
+            const biDoi = cacLoaiKhachDoi.includes(theLoai);
 
-                if (biKhachDoi === false) {
-                    danhSachTrenKe.push(monDo);
-                    tongTienDaTieu += (monDo.price || 0); 
-                    if (theLoaiMonDo !== "") cacTheLoaiDaCo.push(theLoaiMonDo);
-                }
+            if (!biDoi) {
+                danhSachTrenKe.push(monDo);
+                tongTienDaTieu += monDo.price || 0;
+                if (theLoai) cacTheLoaiDaCo.push(theLoai);
             }
         }
     }
@@ -154,116 +246,127 @@ function kiemKeHangCu(keLinhKienHienTai: any, cacLoaiKhachDoi: string[]) {
 }
 
 
-// CHỐT DANH SÁCH CẦN MUA 
+// ============================================================
+// 4. LẬP DANH SÁCH CẦN MUA
+// ============================================================
 function lenDanhSachDiCho(nhungMonMuonDoi: any[], cacTheLoaiDaCo: string[], cacLoaiKhachDoi: string[]) {
-    let danhSachDiCho: any[] = [];
+    const danhSachDiCho: any[] = [...nhungMonMuonDoi];
+    const TAT_CA_THE_LOAI = ["cpu", "motherboard", "ram", "gpu", "storage", "psu", "case", "cooling"];
     
-    //  Mua đồ khách đòi
-    for (let i = 0; i < nhungMonMuonDoi.length; i++) {
-         danhSachDiCho.push(nhungMonMuonDoi[i]);
-    }
-    
-    //  Mua bù đồ còn thiếu
-    const TAT_CA_THE_LOAI = ["cpu", "motherboard", "ram", "gpu", "storage", "psu", "case", "cooling"]; 
-    for (let i = 0; i < TAT_CA_THE_LOAI.length; i++) {
-        let loai = TAT_CA_THE_LOAI[i];
-        
-        let daCo = false;
-        for(let j=0; j < cacTheLoaiDaCo.length; j++) if(cacTheLoaiDaCo[j] === loai) daCo = true;
-
-        let biDoi = false;
-        for(let k=0; k < cacLoaiKhachDoi.length; k++) if(cacLoaiKhachDoi[k] === loai) biDoi = true;
-
-        if (daCo === false && biDoi === false) {
-            danhSachDiCho.push({ loai: loai, tuKhoa: "" });
+    for (const loai of TAT_CA_THE_LOAI) {
+        const daCo = cacTheLoaiDaCo.includes(loai);
+        const biDoi = cacLoaiKhachDoi.includes(loai);
+        if (!daCo && !biDoi) {
+            danhSachDiCho.push({ loai, tuKhoa: "" });
         }
     }
     return danhSachDiCho;
 }
 
-// ĐI CHỢ & RÁP THỬ
-async function diChoVaRapThu(danhSachDiCho: any[], danhSachTrenKe: any[], nganSachConLai: number, cacLoaiKhachDoi: string[]) {
+
+// ============================================================
+// 5. ĐI CHỢ & RÁP THỬ TƯƠNG THÍCH
+// ============================================================
+async function diChoVaRapThu(
+    danhSachDiCho: any[], 
+    danhSachTrenKe: any[], 
+    nganSachConLai: number, 
+    cacLoaiKhachDoi: string[]
+) {
     let doGoiYTuKho: any[] = [];
     
-    for (let i = 0; i < danhSachDiCho.length; i++) {
-        let monCanMua = danhSachDiCho[i];
+    for (const monCanMua of danhSachDiCho) {
+        const laNangCap = cacLoaiKhachDoi.includes(monCanMua.loai?.toLowerCase() || "");
         
-        //  xem món này là nâng cấp (lấy đắt) hay mua mới (lấy rẻ)
-        let laMonCanNangCap = false;
-        for(let j=0; j < cacLoaiKhachDoi.length; j++) {
-             if(monCanMua.loai != null && cacLoaiKhachDoi[j] === monCanMua.loai.toLowerCase()) laMonCanNangCap = true;
-        }
-        
-        let giaMin = null;
-        if (laMonCanNangCap === true) {
-            giaMin = monCanMua.giaLinhKienHienTai;
-        }
-        let ketQuaTrongKho = await layTop3LinhKien(monCanMua.loai, null, monCanMua.tuKhoa, laMonCanNangCap ? monCanMua.giaLinhKienHienTai : null);
+        let ketQuaTrongKho = await layTop3LinhKien(
+            monCanMua.loai, 
+            null, 
+            monCanMua.tuKhoa, 
+            laNangCap ? monCanMua.giaLinhKienHienTai : null
+        );
 
-        if (laMonCanNangCap === true) {
-            ketQuaTrongKho.sort((a, b) => (b.price || 0) - (a.price || 0)); // Rẻ đến Đắt
-        } else {
-            ketQuaTrongKho.sort((a, b) => (a.price || 0) - (b.price || 0)); // Đắt đến Rẻ
-        }
+        // Sắp xếp: nâng cấp thì lấy đắt trước, mua mới thì lấy rẻ trước
+        ketQuaTrongKho.sort((a, b) => 
+            laNangCap ? (b.price || 0) - (a.price || 0) : (a.price || 0) - (b.price || 0)
+        );
 
-        for (let j = 0; j < ketQuaTrongKho.length; j++) {
-            let monDoDuDinh = ketQuaTrongKho[j];
-            let giaTienMonDo = monDoDuDinh.price || 0;
+        for (const monDo of ketQuaTrongKho) {
+            const gia = monDo.price || 0;
+            if (gia > nganSachConLai) continue;
 
-            if (giaTienMonDo > nganSachConLai) continue; 
-
-            let keHangGiaSu = [...danhSachTrenKe, monDoDuDinh];
-            let buildGiaSu: any = {};
-            for(let k = 0; k < keHangGiaSu.length; k++) {
-                if(keHangGiaSu[k] && keHangGiaSu[k].category) buildGiaSu[keHangGiaSu[k].category] = keHangGiaSu[k];
+            // Kiểm tra tương thích
+            const keHangGiaSu = [...danhSachTrenKe, monDo];
+            const buildGiaSu: any = {};
+            for (const item of keHangGiaSu) {
+                if (item?.category) buildGiaSu[item.category] = item;
             }
 
-            let checkResult = isProductCompatibleWithBuild(monDoDuDinh, buildGiaSu, (key: string) => key);
+            const checkResult = isProductCompatibleWithBuild(monDo, buildGiaSu, (key: string) => key);
             
             if (checkResult.compatible === true) {
-                doGoiYTuKho.push(monDoDuDinh);
-                danhSachTrenKe.push(monDoDuDinh); 
-                nganSachConLai = nganSachConLai - giaTienMonDo; 
-                break; 
+                doGoiYTuKho.push(monDo);
+                danhSachTrenKe.push(monDo);
+                nganSachConLai -= gia;
+                break;
             }
         }
     }
     return { doGoiYTuKho, danhSachTrenKeNganSachMoi: danhSachTrenKe };
 }
 
+
+// ============================================================
+// MAIN EXPORT
+// ============================================================
 export async function xuLyTinNhan(tinNhanCuaKhach: string, lichSuChat: any[], keLinhKienHienTai: any) {
-    
+    // Kiểm tra API key trước
+    if (!apiKey) {
+        return {
+            tinNhanBot: "⚠️ Chatbot chưa được cấu hình API Key. Vui lòng liên hệ admin.",
+            duLieuGoiY: [],
+            hieuLenhUI: null,
+            yeuCauBuildPC: false,
+            danhSachTrenKeMoi: [],
+            chiHoiTuVan: true,
+        };
+    }
+
     const duLieuPhanTich = await phanTich(tinNhanCuaKhach, lichSuChat);
     
-    let nhungMonMuonDoi = duLieuPhanTich.nhungMonMuonDoi || [];
-    let cacLoaiKhachDoi: string[] = [];
-    for (let i = 0; i < nhungMonMuonDoi.length; i++) {
-        if (nhungMonMuonDoi[i].loai) cacLoaiKhachDoi.push(nhungMonMuonDoi[i].loai.toLowerCase());
+    const nhungMonMuonDoi = duLieuPhanTich.nhungMonMuonDoi || [];
+    const cacLoaiKhachDoi: string[] = nhungMonMuonDoi
+        .map((m: any) => m.loai?.toLowerCase())
+        .filter(Boolean);
+
+    const chiHoiTuVan = duLieuPhanTich.chiHoiTuVan === true;
+
+    const { danhSachTrenKe, cacTheLoaiDaCo, tongTienDaTieu } = kiemKeHangCu(keLinhKienHienTai, cacLoaiKhachDoi);
+
+    const nganSachHienTai = duLieuPhanTich.nganSach;
+    const thieuNganSach = (nganSachHienTai == null || nganSachHienTai === 0);
+
+    let doGoiYTuKho: any[] = [];
+    let danhSachTrenKeMoi: any[] = [...danhSachTrenKe];
+
+    // Chỉ đi chợ khi: có ngân sách VÀ không phải chỉ hỏi tư vấn
+    if (!thieuNganSach && !chiHoiTuVan) {
+        const nganSachConLai = nganSachHienTai - tongTienDaTieu;
+        const danhSachDiCho = lenDanhSachDiCho(nhungMonMuonDoi, cacTheLoaiDaCo, cacLoaiKhachDoi);
+        const ketQuaDiCho = await diChoVaRapThu(danhSachDiCho, danhSachTrenKe, nganSachConLai, cacLoaiKhachDoi);
+        doGoiYTuKho = ketQuaDiCho.doGoiYTuKho;
+        danhSachTrenKeMoi = ketQuaDiCho.danhSachTrenKeNganSachMoi;
     }
 
-    let { danhSachTrenKe, cacTheLoaiDaCo, tongTienDaTieu } = kiemKeHangCu(keLinhKienHienTai, cacLoaiKhachDoi);
-
-    let nganSachHienTai = duLieuPhanTich.nganSach;
-    let danhSachDiCho: any[] = [];
-    let nganSachConLai = 0;
-    let thieuNganSach = false;
-
-    if (nganSachHienTai == null || nganSachHienTai === 0) {
-        thieuNganSach = true; 
-    } else {
-        nganSachConLai = nganSachHienTai - tongTienDaTieu;
-        danhSachDiCho = lenDanhSachDiCho(nhungMonMuonDoi, cacTheLoaiDaCo, cacLoaiKhachDoi);
-    }
-
-    let ketQuaDiCho = await diChoVaRapThu(danhSachDiCho, danhSachTrenKe, nganSachConLai, cacLoaiKhachDoi);
-    let doGoiYTuKho = ketQuaDiCho.doGoiYTuKho;
-    let danhSachTrenKeMoi = ketQuaDiCho.danhSachTrenKeNganSachMoi;
-
-    let tinNhanBot = await messWithUser(tinNhanCuaKhach, lichSuChat, danhSachTrenKeMoi, doGoiYTuKho, thieuNganSach);
+    const tinNhanBot = await messWithUser(
+        tinNhanCuaKhach, lichSuChat, danhSachTrenKeMoi, doGoiYTuKho, thieuNganSach, chiHoiTuVan
+    );
 
     return {
-        tinNhanBot: tinNhanBot,
-        duLieuGoiY: doGoiYTuKho, 
-        hieuLenhUI: duLieuPhanTich 
+        tinNhanBot,
+        duLieuGoiY: doGoiYTuKho,
+        hieuLenhUI: duLieuPhanTich,
+        yeuCauBuildPC: duLieuPhanTich.yeuCauBuildPC === true && !chiHoiTuVan,
+        danhSachTrenKeMoi,
+        chiHoiTuVan,
     };
 }

@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
   engineType = "library"
 }
 
@@ -8,29 +8,265 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ====================== NGƯỜI DÙNG ======================
 model NguoiDung {
-  id            String   @id @default(cuid())
-  hoTen         String
-  email         String   @unique
-  matKhauHash   String
-  vaiTro        VaiTro   @default(KHACH_HANG)
-  soDienThoai   String?
-  diaChi        String?
-  diemTichLuy   Int      @default(0)
-  ngayTao       DateTime @default(now())
-  ngayCapNhat   DateTime @updatedAt
-
-  // Quan hệ
-  donHangs      DonHang[]
-  cauHinhPCs    CauHinhPC[]
-  tinNhanChats  TinNhanChat[]
-  gioHangs      GioHang[]
-  userKhuyenMais UserKhuyenMai[]
-  lichSuDiems   LichSuDiem[]
+  id               String            @id @default(cuid())
+  hoTen            String
+  email            String            @unique
+  matKhauHash      String
+  vaiTro           VaiTro            @default(KHACH_HANG)
+  soDienThoai      String?
+  diaChi           String?
+  ngayTao          DateTime          @default(now())
+  ngayCapNhat      DateTime          @updatedAt
+  diemTichLuy      Int               @default(0)
+  cauHinhPCs       CauHinhPC[]
+  donHangs         DonHang[]
+  gioHangs         GioHang?
+  lichSuDiems      LichSuDiem[]
   suDungKhuyenMais SuDungKhuyenMai[]
+  tinNhanChats     TinNhanChat[]
+  userKhuyenMais   UserKhuyenMai[]
 
   @@map("nguoi_dung")
+}
+
+model DanhMuc {
+  id         String    @id @default(cuid())
+  tenDanhMuc String
+  moTa       String?
+  sanPhams   SanPham[]
+
+  @@map("danh_muc")
+}
+
+model SanPham {
+  id                String             @id @default(cuid())
+  tenSanPham        String
+  slug              String             @unique
+  gia               Float
+  hinhAnh           String?
+  hinhAnhs          String[]           @default([])
+  moTa              String?
+  soLuongTon        Int                @default(100)
+  thongSoKyThuat    Json?
+  danhMucId         String
+  phanTramGiam      Int?
+  createdAt         DateTime           @default(now())
+  thuongHieu        String?
+  updatedAt         DateTime           @updatedAt
+  buildItems        BuildItem[]
+  chiTietDonHangs   ChiTietDonHang[]
+  gioHangItems      GioHangItem[]
+  khuyenMaiSanPhams KhuyenMaiSanPham[]
+  danhMuc           DanhMuc            @relation(fields: [danhMucId], references: [id])
+
+  @@map("san_pham")
+}
+
+model KhuyenMai {
+  id                String             @id @default(cuid())
+  maKhuyenMai       String             @unique
+  tenKhuyenMai      String
+  moTa              String?
+  phanTramGiam      Int                @default(0)
+  ngayBatDau        DateTime
+  ngayKetThuc       DateTime
+  isActive          Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  loaiGiamGia       LoaiGiamGia        @default(PHAN_TRAM)
+  giaTriGiam        Float              @default(0)
+  minOrderValue     Float?
+  gioiHanTong       Int?
+  gioiHanMoiNguoi   Int                @default(1)
+  soLuotDaDung      Int                @default(0)
+  donHangs          DonHang[]
+  khuyenMaiSanPhams KhuyenMaiSanPham[]
+  suDungKhuyenMais  SuDungKhuyenMai[]
+  userKhuyenMais    UserKhuyenMai[]
+
+  @@map("khuyen_mai")
+}
+
+model KhuyenMaiSanPham {
+  id           String     @id @default(cuid())
+  phanTramGiam Int
+  ngayBatDau   DateTime
+  ngayKetThuc  DateTime
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  khuyenMaiId  String?
+  sanPhamId    String
+  khuyenMai    KhuyenMai? @relation(fields: [khuyenMaiId], references: [id], onDelete: Cascade)
+  sanPham      SanPham    @relation(fields: [sanPhamId], references: [id], onDelete: Cascade)
+
+  @@unique([khuyenMaiId, sanPhamId])
+  @@map("khuyen_mai_san_pham")
+}
+
+model CauHinhPC {
+  id          String      @id @default(cuid())
+  tenCauHinh  String?
+  tongGia     Float       @default(0)
+  ngayTao     DateTime    @default(now())
+  nguoiDungId String
+  isCompleted Boolean     @default(false)
+  isPublic    Boolean     @default(false)
+  items       BuildItem[]
+  nguoiDung   NguoiDung   @relation(fields: [nguoiDungId], references: [id], onDelete: Cascade)
+
+  @@map("cau_hinh_pc")
+}
+
+model BuildItem {
+  id          String    @id @default(cuid())
+  soLuong     Int       @default(1)
+  cauHinhPCId String
+  sanPhamId   String
+  cauHinhPC   CauHinhPC @relation(fields: [cauHinhPCId], references: [id], onDelete: Cascade)
+  sanPham     SanPham   @relation(fields: [sanPhamId], references: [id], onDelete: Cascade)
+
+  @@unique([cauHinhPCId, sanPhamId])
+  @@map("build_item")
+}
+
+model GioHang {
+  id          String        @id @default(cuid())
+  nguoiDungId String        @unique
+  nguoiDung   NguoiDung     @relation(fields: [nguoiDungId], references: [id], onDelete: Cascade)
+  items       GioHangItem[]
+
+  @@map("gio_hang")
+}
+
+model GioHangItem {
+  id        String  @id @default(cuid())
+  soLuong   Int     @default(1)
+  gioHangId String
+  sanPhamId String
+  gioHang   GioHang @relation(fields: [gioHangId], references: [id], onDelete: Cascade)
+  sanPham   SanPham @relation(fields: [sanPhamId], references: [id], onDelete: Cascade)
+
+  @@unique([gioHangId, sanPhamId])
+  @@map("gio_hang_item")
+}
+
+model DonHang {
+  id              String           @id @default(cuid())
+  maDonHang       String           @unique
+  trangThai       TrangThaiDon     @default(CHO_XAC_NHAN)
+  tongTien        Float
+  diaChiGiaoHang  String
+  ghiChu          String?
+  ngayTao         DateTime         @default(now())
+  nguoiDungId     String
+  tamTinh         Float?
+  tienGiam        Float            @default(0)
+  khuyenMaiId     String?
+  chiTietDonHangs ChiTietDonHang[]
+  khuyenMai       KhuyenMai?       @relation(fields: [khuyenMaiId], references: [id])
+  nguoiDung       NguoiDung        @relation(fields: [nguoiDungId], references: [id], onDelete: Cascade)
+  lichSuDiem      LichSuDiem?
+  suDungKhuyenMai SuDungKhuyenMai?
+  thanhToans      ThanhToan[]
+
+  @@map("don_hang")
+}
+
+model ChiTietDonHang {
+  id           String  @id @default(cuid())
+  soLuong      Int
+  giaBanLucMua Float
+  donHangId    String
+  sanPhamId    String
+  donHang      DonHang @relation(fields: [donHangId], references: [id], onDelete: Cascade)
+  sanPham      SanPham @relation(fields: [sanPhamId], references: [id], onDelete: Cascade)
+
+  @@map("chi_tiet_don_hang")
+}
+
+model LichSuDiem {
+  id          String           @id @default(cuid())
+  diem        Int
+  loai        LoaiGiaoDichDiem
+  lyDo        String
+  ngayTao     DateTime         @default(now())
+  nguoiDungId String
+  donHangId   String?          @unique
+  donHang     DonHang?         @relation(fields: [donHangId], references: [id])
+  nguoiDung   NguoiDung        @relation(fields: [nguoiDungId], references: [id], onDelete: Cascade)
+
+  @@index([nguoiDungId, ngayTao])
+  @@map("lich_su_diem")
+}
+
+model ThanhToan {
+  id            String    @id @default(cuid())
+  maThanhToan   String    @unique
+  soTien        Float
+  phuongThuc    String
+  trangThai     String    @default("PENDING")
+  ngayThanhToan DateTime?
+  donHangId     String
+  donHang       DonHang   @relation(fields: [donHangId], references: [id], onDelete: Cascade)
+
+  @@map("thanh_toan")
+}
+
+model TinNhanChat {
+  id          String        @id @default(cuid())
+  noiDung     String
+  vaiTro      VaiTroTinNhan
+  ngayTao     DateTime      @default(now())
+  nguoiDungId String
+  nguoiDung   NguoiDung     @relation(fields: [nguoiDungId], references: [id], onDelete: Cascade)
+
+  @@map("tin_nhan_chat")
+}
+
+model UserKhuyenMai {
+  id          String    @id @default(cuid())
+  nguoiDungId String
+  khuyenMaiId String
+  daSuDung    Boolean   @default(false)
+  ngayCap     DateTime  @default(now())
+  ngaySuDung  DateTime?
+  khuyenMai   KhuyenMai @relation(fields: [khuyenMaiId], references: [id], onDelete: Cascade)
+  nguoiDung   NguoiDung @relation(fields: [nguoiDungId], references: [id], onDelete: Cascade)
+
+  @@unique([nguoiDungId, khuyenMaiId])
+  @@map("user_khuyen_mai")
+}
+
+model SuDungKhuyenMai {
+  id          String    @id @default(cuid())
+  maKhuyenMai String
+  soTienGiam  Float
+  ngaySuDung  DateTime  @default(now())
+  nguoiDungId String
+  khuyenMaiId String
+  donHangId   String    @unique
+  donHang     DonHang   @relation(fields: [donHangId], references: [id], onDelete: Cascade)
+  khuyenMai   KhuyenMai @relation(fields: [khuyenMaiId], references: [id])
+  nguoiDung   NguoiDung @relation(fields: [nguoiDungId], references: [id], onDelete: Cascade)
+
+  @@index([nguoiDungId, khuyenMaiId])
+  @@map("su_dung_khuyen_mai")
+}
+
+model MaXacNhan {
+  id        String        @id @default(cuid())
+  email     String
+  ma        String
+  loai      LoaiMaXacNhan @default(QUEN_MAT_KHAU)
+  hetHan    DateTime
+  daXacNhan Boolean       @default(false)
+  soLanThu  Int           @default(0)
+  ngayTao   DateTime      @default(now())
+
+  @@index([email, loai])
+  @@map("ma_xac_nhan")
 }
 
 enum VaiTro {
@@ -38,188 +274,9 @@ enum VaiTro {
   QUAN_TRI_VIEN
 }
 
-// ====================== SẢN PHẨM & DANH MỤC ======================
-model DanhMuc {
-  id          String    @id @default(cuid())
-  tenDanhMuc  String
-  moTa        String?
-  sanPhams    SanPham[]
-
-  @@map("danh_muc")
-}
-
-model SanPham {
-  id            String   @id @default(cuid())
-  tenSanPham    String
-  slug          String   @unique
-  gia           Float
-  phanTramGiam  Int?     // Phần trăm giảm giá cho sản phẩm này (1-100)
-  hinhAnh       String?
-  hinhAnhs      String[] @default([])
-  moTa          String?
-  soLuongTon    Int      @default(100)
-  thuongHieu    String?  // Intel, AMD, Samsung...
-  thongSoKyThuat Json?   // Lưu socket, chipset, DDR, wattage...
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  danhMucId     String
-  danhMuc       DanhMuc  @relation(fields: [danhMucId], references: [id])
-
-  // Quan hệ
-  chiTietDonHangs ChiTietDonHang[]
-  buildItems      BuildItem[]
-  gioHangItems    GioHangItem[]
-  khuyenMaiSanPhams KhuyenMaiSanPham[]
-
-  @@map("san_pham")
-}
-
-// ====================== KHUYẾN MÃI ======================
-model KhuyenMai {
-  id            String   @id @default(cuid())
-  maKhuyenMai   String   @unique
-  tenKhuyenMai  String
-  moTa          String?
-  phanTramGiam  Int      @default(0) // Giu tuong thich voi UI cu
-  loaiGiamGia   LoaiGiamGia @default(PHAN_TRAM)
-  giaTriGiam    Float    @default(0)
-  minOrderValue Float?
-  gioiHanTong   Int?
-  gioiHanMoiNguoi Int    @default(1)
-  soLuotDaDung  Int      @default(0)
-  ngayBatDau    DateTime
-  ngayKetThuc   DateTime
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  // Quan hệ
-  khuyenMaiSanPhams KhuyenMaiSanPham[]
-  userKhuyenMais     UserKhuyenMai[]
-  suDungKhuyenMais   SuDungKhuyenMai[]
-  donHangs           DonHang[]
-
-  @@map("khuyen_mai")
-}
-
 enum LoaiGiamGia {
   PHAN_TRAM
   SO_TIEN
-}
-
-model KhuyenMaiSanPham {
-  id              String   @id @default(cuid())
-  phanTramGiam    Int      // Phần trăm giảm riêng cho sản phẩm này (1-100)
-  ngayBatDau      DateTime
-  ngayKetThuc     DateTime
-  isActive        Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  khuyenMaiId     String?
-  khuyenMai       KhuyenMai?  @relation(fields: [khuyenMaiId], references: [id], onDelete: Cascade)
-
-  sanPhamId       String
-  sanPham         SanPham    @relation(fields: [sanPhamId], references: [id], onDelete: Cascade)
-
-  @@unique([khuyenMaiId, sanPhamId])
-  @@map("khuyen_mai_san_pham")
-}
-
-// ====================== BUILD PC ======================
-model CauHinhPC {
-  id              String      @id @default(cuid())
-  tenCauHinh      String?
-  tongGia         Float       @default(0)
-  isCompleted     Boolean     @default(false)
-  isPublic        Boolean     @default(false)
-  ngayTao         DateTime    @default(now())
-
-  nguoiDungId     String
-  nguoiDung       NguoiDung   @relation(fields: [nguoiDungId], references: [id], onDelete: Cascade)
-
-  items           BuildItem[]
-
-  @@map("cau_hinh_pc")
-}
-
-model BuildItem {
-  id            String   @id @default(cuid())
-  soLuong       Int      @default(1)
-
-  cauHinhPCId   String
-  sanPhamId     String
-
-  cauHinhPC     CauHinhPC @relation(fields: [cauHinhPCId], references: [id], onDelete: Cascade)
-  sanPham       SanPham   @relation(fields: [sanPhamId], references: [id], onDelete: Cascade)
-
-  @@unique([cauHinhPCId, sanPhamId])
-  @@map("build_item")
-}
-
-// ====================== GIỎ HÀNG ======================
-model GioHang {
-  id            String       @id @default(cuid())
-  nguoiDungId   String       @unique
-  nguoiDung     NguoiDung    @relation(fields: [nguoiDungId], references: [id], onDelete: Cascade)
-
-  items         GioHangItem[]
-
-  @@map("gio_hang")
-}
-
-model GioHangItem {
-  id            String   @id @default(cuid())
-  soLuong       Int      @default(1)
-
-  gioHangId     String
-  sanPhamId     String
-
-  gioHang       GioHang  @relation(fields: [gioHangId], references: [id], onDelete: Cascade)
-  sanPham       SanPham  @relation(fields: [sanPhamId], references: [id], onDelete: Cascade)
-
-  @@unique([gioHangId, sanPhamId])
-  @@map("gio_hang_item")
-}
-
-// ====================== ĐƠN HÀNG ======================
-model DonHang {
-  id                String         @id @default(cuid())
-  maDonHang         String         @unique
-  trangThai         TrangThaiDon   @default(CHO_XAC_NHAN)
-  tongTien          Float
-  tamTinh           Float?
-  tienGiam          Float          @default(0)
-  diaChiGiaoHang    String
-  ghiChu            String?
-  ngayTao           DateTime       @default(now())
-
-  nguoiDungId       String
-  nguoiDung         NguoiDung      @relation(fields: [nguoiDungId], references: [id], onDelete: Cascade)
-  khuyenMaiId       String?
-  khuyenMai         KhuyenMai?     @relation(fields: [khuyenMaiId], references: [id], onDelete: SetNull)
-
-  chiTietDonHangs   ChiTietDonHang[]
-  thanhToans        ThanhToan[]
-  lichSuDiem        LichSuDiem?
-  suDungKhuyenMai   SuDungKhuyenMai?
-
-  @@map("don_hang")
-}
-
-model ChiTietDonHang {
-  id            String   @id @default(cuid())
-  soLuong       Int
-  giaBanLucMua  Float
-
-  donHangId     String
-  sanPhamId     String
-
-  donHang       DonHang  @relation(fields: [donHangId], references: [id], onDelete: Cascade)
-  sanPham       SanPham  @relation(fields: [sanPhamId], references: [id], onDelete: Cascade)
-
-  @@map("chi_tiet_don_hang")
 }
 
 enum TrangThaiDon {
@@ -230,110 +287,14 @@ enum TrangThaiDon {
   DA_HUY
 }
 
-// ====================== DIEM THANH VIEN ======================
-model LichSuDiem {
-  id            String   @id @default(cuid())
-  diem          Int
-  loai          LoaiGiaoDichDiem
-  lyDo          String
-  ngayTao       DateTime @default(now())
-
-  nguoiDungId   String
-  nguoiDung     NguoiDung @relation(fields: [nguoiDungId], references: [id], onDelete: Cascade)
-
-  donHangId     String?  @unique
-  donHang       DonHang? @relation(fields: [donHangId], references: [id], onDelete: SetNull)
-
-  @@index([nguoiDungId, ngayTao])
-  @@map("lich_su_diem")
-}
-
 enum LoaiGiaoDichDiem {
   CONG
   TRU
 }
 
-// ====================== THANH TOÁN ======================
-model ThanhToan {
-  id            String      @id @default(cuid())
-  maThanhToan   String      @unique
-  soTien        Float
-  phuongThuc    String      // VNPAY, MOMO, COD...
-  trangThai     String      @default("PENDING")
-  ngayThanhToan DateTime?
-
-  donHangId     String
-  donHang       DonHang     @relation(fields: [donHangId], references: [id], onDelete: Cascade)
-
-  @@map("thanh_toan")
-}
-
-// ====================== AI CHAT ======================
-model TinNhanChat {
-  id            String   @id @default(cuid())
-  noiDung       String
-  vaiTro        VaiTroTinNhan   // USER hoặc AI
-  ngayTao       DateTime @default(now())
-
-  nguoiDungId   String
-  nguoiDung     NguoiDung @relation(fields: [nguoiDungId], references: [id], onDelete: Cascade)
-
-  @@map("tin_nhan_chat")
-}
-
 enum VaiTroTinNhan {
   USER
   AI
-}
-
-// ====================== USER PROMOTIONS ======================
-model UserKhuyenMai {
-  id            String   @id @default(cuid())
-  nguoiDungId   String
-  khuyenMaiId   String
-  daSuDung      Boolean  @default(false)
-  ngayCap       DateTime @default(now())
-  ngaySuDung    DateTime?
-
-  nguoiDung     NguoiDung @relation(fields: [nguoiDungId], references: [id], onDelete: Cascade)
-  khuyenMai     KhuyenMai @relation(fields: [khuyenMaiId], references: [id], onDelete: Cascade)
-
-  @@unique([nguoiDungId, khuyenMaiId])
-  @@map("user_khuyen_mai")
-}
-
-model SuDungKhuyenMai {
-  id            String   @id @default(cuid())
-  maKhuyenMai   String
-  soTienGiam    Float
-  ngaySuDung    DateTime @default(now())
-
-  nguoiDungId   String
-  nguoiDung     NguoiDung @relation(fields: [nguoiDungId], references: [id], onDelete: Cascade)
-
-  khuyenMaiId   String
-  khuyenMai     KhuyenMai @relation(fields: [khuyenMaiId], references: [id], onDelete: Restrict)
-
-  donHangId     String   @unique
-  donHang       DonHang  @relation(fields: [donHangId], references: [id], onDelete: Cascade)
-
-  @@index([nguoiDungId, khuyenMaiId])
-  @@map("su_dung_khuyen_mai")
-}
-
-// ====================== MÃ XÁC NHẬN (QUÊN MẬT KHẨU) ======================
-model MaXacNhan {
-  id          String   @id @default(cuid())
-  email       String
-  ma          String   // 6-digit OTP
-  loai        LoaiMaXacNhan @default(QUEN_MAT_KHAU)
-  hetHan      DateTime
-  daXacNhan   Boolean  @default(false)
-  soLanThu    Int      @default(0) // Số lần thử nhập sai
-  ngayTao     DateTime @default(now())
-
-  @@index([email, loai])
-  @@map("ma_xac_nhan")
 }
 
 enum LoaiMaXacNhan {

@@ -26,6 +26,7 @@ type BuilderStore = {
   setProduct: (product: Product) => void
   removeProduct: (category: Category) => void
   resetBuild: () => void
+  setBuildFromAI: (products: Product[]) => void
   saveCurrentBuild: (name: string, totalPrice: number) => SavedBuild | null
   loadSavedBuild: (id: string) => void
   deleteSavedBuild: (id: string) => void
@@ -58,6 +59,14 @@ export const useBuilderStore = create<BuilderStore>()(
           return { build: nextBuild }
         }),
       resetBuild: () => set({ build: {}, activeSlot: null, searchQuery: '' }),
+      setBuildFromAI: (products) =>
+        set(() => {
+          const newBuild: Build = {}
+          products.forEach((p) => {
+            if (p.category) newBuild[p.category] = p
+          })
+          return { build: newBuild, activeSlot: null, searchQuery: '' }
+        }),
       saveCurrentBuild: (name, totalPrice) => {
         const currentBuild = get().build
 
