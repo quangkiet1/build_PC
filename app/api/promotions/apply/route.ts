@@ -1,120 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { authorizeRoles } from '@/lib/auth'
+import { validateCouponForCheckout } from '@/lib/coupons'
 
 export async function POST(request: NextRequest) {
   try {
     const auth = await authorizeRoles(request, ['KHACH_HANG', 'QUAN_TRI_VIEN'])
     if (!auth.user) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
-    const body = await request.json() as {
-      maKhuyenMai: string
-      sanPhamIds?: string[]
-    }
-
-    const maKhuyenMai = String(body.maKhuyenMai || '').trim().toUpperCase()
-    if (!maKhuyenMai) {
-      return NextResponse.json({ error: 'Mã khuyến mãi không được để trống' }, { status: 400 })
-    }
-
-    // Find promotion by code
-    const promotion = await prisma.khuyenMai.findUnique({
-      where: { maKhuyenMai },
+    const body = await request.json() as { maKhuyenMai: string; orderTotal?: number }
+    const cart = await prisma.gioHang.findUnique({
+      where: { nguoiDungId: auth.user.id },
+      include: { items: { include: { sanPham: true } } },
     })
 
-    if (!promotion) {
-      return NextResponse.json({ error: 'Mã khuyến mãi không hợp lệ' }, { status: 404 })
-    }
-
-    if (!promotion.isActive) {
-      return NextResponse.json({ error: 'Mã khuyến mãi đã hết hạn' }, { status: 400 })
-    }
-
-    // Check date range
-    const now = new Date()
-    if (now < promotion.ngayBatDau || now > promotion.ngayKetThuc) {
-      return NextResponse.json({ error: 'Mã khuyến mãi đã hết hạn' }, { status: 400 })
-    }
-
-    // Check if user already used this promotion (for single-use promos, if needed)
-    const existingUserPromo = await prisma.userKhuyenMai.findUnique({
-      where: {
-        nguoiDungId_khuyenMaiId: {
-          nguoiDungId: auth.user.id,
-          khuyenMaiId: promotion.id,
-        },
-      },
+    const subtotal = cart?.items.reduce((sum, item) => sum + item.soLuong * item.sanPham.gia, 0) || Number(body.orderTotal || 0)
+    const result = await validateCouponForCheckout({
+      code: body.maKhuyenMai,
+      userId: auth.user.id,
+      subtotal,
     })
 
-    if (existingUserPromo?.daSuDung) {
-      return NextResponse.json({ error: 'Bạn đã sử dụng mã khuyến mãi này rồi' }, { status: 400 })
-    }
-
-    // Get applicable products (if specific products for this promo)
-    let applicableProducts: { id: string; phanTramGiam: number }[] = []
-
-    if (body.sanPhamIds && body.sanPhamIds.length > 0) {
-      // Check if products have specific discounts for this promotion
-      const productDiscounts = await prisma.khuyenMaiSanPham.findMany({
-        where: {
-          khuyenMaiId: promotion.id,
-          sanPhamId: { in: body.sanPhamIds },
-          isActive: true,
-          ngayBatDau: { lte: now },
-          ngayKetThuc: { gte: now },
-        },
-        select: {
-          sanPhamId: true,
-          phanTramGiam: true,
-        },
-      })
-
-      if (productDiscounts.length > 0) {
-        applicableProducts = productDiscounts.map(pd => ({
-          id: pd.sanPhamId,
-          phanTramGiam: pd.phanTramGiam,
-        }))
-      } else {
-        // If no specific product discounts, apply global promo to all requested products
-        applicableProducts = body.sanPhamIds.map(id => ({
-          id,
-          phanTramGiam: promotion.phanTramGiam,
-        }))
-      }
-    }
-
-    // Mark promotion as used by user (if this is their first use)
-    if (!existingUserPromo) {
-      await prisma.userKhuyenMai.create({
-        data: {
-          nguoiDungId: auth.user.id,
-          khuyenMaiId: promotion.id,
-          daSuDung: applicableProducts.length > 0,
-          ngaySuDung: applicableProducts.length > 0 ? now : null,
-        },
-      })
-    } else {
-      // Update if they had it but haven't used it yet
-      await prisma.userKhuyenMai.update({
-        where: {
-          id: existingUserPromo.id,
-        },
-        data: {
-          daSuDung: true,
-          ngaySuDung: now,
-        },
-      })
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: result.status })
     }
 
     return NextResponse.json({
       success: true,
-      promotion: {
-        id: promotion.id,
-        maKhuyenMai: promotion.maKhuyenMai,
-        tenKhuyenMai: promotion.tenKhuyenMai,
-        phanTramGiam: promotion.phanTramGiam,
-      },
-      applicableProducts,
+      promotion: result.coupon,
+      discount: result.discount,
+      finalTotal: result.finalTotal,
     })
   } catch (error) {
     console.error('POST /api/promotions/apply:', error)

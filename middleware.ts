@@ -16,9 +16,13 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
 
 function redirectWithAuthReason(request: NextRequest, reason: 'required' | 'forbidden') {
   const url = request.nextUrl.clone()
-  url.pathname = '/'
-  url.searchParams.set('auth', reason)
-  url.searchParams.set('next', `${request.nextUrl.pathname}${request.nextUrl.search}`)
+  if (reason === 'forbidden') {
+    url.pathname = '/'
+    url.searchParams.set('auth', 'forbidden')
+  } else {
+    url.pathname = '/login'
+    url.searchParams.set('next', `${request.nextUrl.pathname}${request.nextUrl.search}`)
+  }
   return NextResponse.redirect(url)
 }
 

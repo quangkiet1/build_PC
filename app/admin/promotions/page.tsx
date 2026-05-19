@@ -11,10 +11,18 @@ interface Promotion {
   id: string
   maKhuyenMai: string
   tenKhuyenMai: string
+  moTa?: string | null
   phanTramGiam: number
+  loaiGiamGia: 'PHAN_TRAM' | 'SO_TIEN'
+  giaTriGiam: number
+  minOrderValue?: number | null
+  gioiHanTong?: number | null
+  gioiHanMoiNguoi: number
+  soLuotDaDung: number
   ngayBatDau: string
   ngayKetThuc: string
   isActive: boolean
+  _count?: { suDungKhuyenMais: number }
 }
 
 export default function AdminPromotions() {
@@ -29,15 +37,17 @@ export default function AdminPromotions() {
   const [formData, setFormData] = useState({
     maKhuyenMai: '',
     tenKhuyenMai: '',
+    moTa: '',
+    loaiGiamGia: 'PHAN_TRAM' as 'PHAN_TRAM' | 'SO_TIEN',
+    giaTriGiam: 10,
     phanTramGiam: 10,
+    minOrderValue: '',
+    gioiHanTong: '',
+    gioiHanMoiNguoi: 1,
     ngayBatDau: '',
     ngayKetThuc: '',
     isActive: true,
   })
-
-  useEffect(() => {
-    fetchData()
-  }, [])
 
   const fetchData = async () => {
     try {
@@ -49,15 +59,23 @@ export default function AdminPromotions() {
         return
       }
 
+      if (!response.ok) {
+        throw new Error('Failed to fetch promotions')
+      }
+
       const data = await response.json()
       setPromotions(data.promotions || [])
     } catch (error) {
       console.error('Error fetching promotions:', error)
-      addToast('Không thể tải dữ liệu khuyến mãi', 'error')
+      addToast('Lỗi khi tải danh sách khuyến mãi', 'error')
     } finally {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
 
   const openForm = (promotion?: Promotion) => {
     if (promotion) {
@@ -65,7 +83,13 @@ export default function AdminPromotions() {
       setFormData({
         maKhuyenMai: promotion.maKhuyenMai,
         tenKhuyenMai: promotion.tenKhuyenMai,
+        moTa: promotion.moTa || '',
+        loaiGiamGia: promotion.loaiGiamGia || 'PHAN_TRAM',
+        giaTriGiam: promotion.giaTriGiam || promotion.phanTramGiam,
         phanTramGiam: promotion.phanTramGiam,
+        minOrderValue: promotion.minOrderValue ? String(promotion.minOrderValue) : '',
+        gioiHanTong: promotion.gioiHanTong ? String(promotion.gioiHanTong) : '',
+        gioiHanMoiNguoi: promotion.gioiHanMoiNguoi || 1,
         ngayBatDau: promotion.ngayBatDau.substring(0, 16),
         ngayKetThuc: promotion.ngayKetThuc.substring(0, 16),
         isActive: promotion.isActive,
@@ -76,7 +100,13 @@ export default function AdminPromotions() {
       setFormData({
         maKhuyenMai: '',
         tenKhuyenMai: '',
+        moTa: '',
+        loaiGiamGia: 'PHAN_TRAM',
+        giaTriGiam: 10,
         phanTramGiam: 10,
+        minOrderValue: '',
+        gioiHanTong: '',
+        gioiHanMoiNguoi: 1,
         ngayBatDau: now,
         ngayKetThuc: now,
         isActive: true,
@@ -98,7 +128,7 @@ export default function AdminPromotions() {
       return
     }
 
-    if (formData.phanTramGiam < 1 || formData.phanTramGiam > 100) {
+    if (formData.giaTriGiam <= 0 || (formData.loaiGiamGia === 'PHAN_TRAM' && (formData.giaTriGiam < 1 || formData.giaTriGiam > 100))) {
       addToast('Phần trăm giảm phải từ 1 đến 100', 'error')
       return
     }
@@ -115,6 +145,9 @@ export default function AdminPromotions() {
         credentials: 'include',
         body: JSON.stringify({
           ...formData,
+          phanTramGiam: formData.loaiGiamGia === 'PHAN_TRAM' ? formData.giaTriGiam : 0,
+          minOrderValue: formData.minOrderValue ? Number(formData.minOrderValue) : null,
+          gioiHanTong: formData.gioiHanTong ? Number(formData.gioiHanTong) : null,
           ngayBatDau: new Date(formData.ngayBatDau).toISOString(),
           ngayKetThuc: new Date(formData.ngayKetThuc).toISOString(),
         }),
@@ -162,6 +195,10 @@ export default function AdminPromotions() {
   }
 
   const formatDate = (dateString: string) => new Date(dateString).toLocaleString('vi-VN')
+  const formatDiscount = (promo: Promotion) =>
+    promo.loaiGiamGia === 'SO_TIEN'
+      ? `${promo.giaTriGiam.toLocaleString('vi-VN')} VND`
+      : `${promo.giaTriGiam || promo.phanTramGiam}%`
 
   const filtered = promotions.filter((p) =>
     p.maKhuyenMai.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -170,8 +207,9 @@ export default function AdminPromotions() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#07080d] text-white flex items-center justify-center">
-        <div className="text-center">
+      <div className="min-h-screen bg-[#07080d] text-white flex items-center justify-center relative">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.08),transparent_50%)] pointer-events-none" />
+        <div className="text-center relative z-10">
           <Loader2 className="w-8 h-8 text-indigo-400 animate-spin mx-auto mb-3" />
           <p className="text-slate-400">Đang tải khuyến mãi...</p>
         </div>
@@ -180,9 +218,10 @@ export default function AdminPromotions() {
   }
 
   return (
-    <div className="min-h-screen bg-[#07080d] text-white">
+    <div className="min-h-screen bg-[#07080d] text-white relative">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.08),transparent_50%)] pointer-events-none" />
       {/* Header */}
-      <div className="bg-[#0a0b10] border-b border-[#1e2535]">
+      <div className="bg-black/40 backdrop-blur-2xl border-b border-white/10 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <Link href="/admin" className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-indigo-300 transition mb-4">
             <ArrowLeft className="w-4 h-4" /> Quay lại Dashboard
@@ -207,7 +246,7 @@ export default function AdminPromotions() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Search */}
-        <div className="mb-5">
+        <div className="mb-5 relative z-10">
           <div className="relative max-w-md">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4" />
             <input
@@ -215,20 +254,21 @@ export default function AdminPromotions() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Tìm theo mã hoặc tên..."
-              className="w-full rounded-xl border border-[#1e2535] bg-[#0f1117] py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-slate-600 focus:border-indigo-500/50 focus:outline-none"
+              className="w-full rounded-[16px] border border-white/10 bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 focus:border-indigo-500/50 focus:outline-none transition hover:bg-black/20"
             />
           </div>
         </div>
 
         {/* Table */}
-        <div className="bg-[#0f1117] border border-[#1e2535] rounded-2xl overflow-hidden">
+        <div className="bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl border border-white/10 rounded-[24px] overflow-hidden shadow-xl relative z-10">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#1e2535]">
+                <tr className="border-b border-white/10 bg-black/20">
                   <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500">Mã</th>
                   <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500">Tên</th>
                   <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500">Giảm</th>
+                  <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500">Da dung</th>
                   <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500 hidden md:table-cell">Bắt đầu</th>
                   <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500 hidden md:table-cell">Kết thúc</th>
                   <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500">Trạng thái</th>
@@ -238,20 +278,24 @@ export default function AdminPromotions() {
               <tbody>
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-5 py-10 text-center text-slate-500">
+                    <td colSpan={8} className="px-5 py-10 text-center text-slate-500">
                       <Percent className="w-8 h-8 mx-auto mb-2 text-slate-700" />
                       Không có khuyến mãi nào
                     </td>
                   </tr>
                 ) : (
                   filtered.map((promo) => (
-                    <tr key={promo.id} className="border-b border-[#1e2535] last:border-b-0 hover:bg-[#141a26] transition">
+                    <tr key={promo.id} className="border-b border-white/10 last:border-b-0 hover:bg-white/5 transition">
                       <td className="px-5 py-3.5">
                         <span className="font-mono text-sm text-indigo-400 font-medium">{promo.maKhuyenMai}</span>
                       </td>
                       <td className="px-5 py-3.5 text-sm text-white">{promo.tenKhuyenMai}</td>
                       <td className="px-5 py-3.5">
-                        <span className="px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-semibold">{promo.phanTramGiam}%</span>
+                        <span className="px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-semibold">{formatDiscount(promo)}</span>
+                      </td>
+                      <td className="px-5 py-3.5 text-sm text-slate-300">
+                        {promo._count?.suDungKhuyenMais ?? promo.soLuotDaDung ?? 0}
+                        {promo.gioiHanTong ? ` / ${promo.gioiHanTong}` : ''}
                       </td>
                       <td className="px-5 py-3.5 text-xs text-slate-400 hidden md:table-cell">{formatDate(promo.ngayBatDau)}</td>
                       <td className="px-5 py-3.5 text-xs text-slate-400 hidden md:table-cell">{formatDate(promo.ngayKetThuc)}</td>
@@ -291,8 +335,8 @@ export default function AdminPromotions() {
 
       {/* Form Modal */}
       {isFormOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#0f1117] border border-[#1e2535] rounded-2xl shadow-2xl shadow-indigo-950/20 max-w-md w-full">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
+          <div className="bg-[linear-gradient(180deg,rgba(20,25,40,0.9),rgba(10,15,25,0.95))] backdrop-blur-2xl border border-white/10 rounded-[24px] shadow-2xl max-w-2xl w-full overflow-hidden">
             <div className="flex items-center justify-between p-5 border-b border-[#1e2535]">
               <h2 className="text-lg font-semibold text-white">
                 {selectedPromotion ? 'Sửa Khuyến mãi' : 'Thêm Khuyến mãi'}
@@ -329,16 +373,78 @@ export default function AdminPromotions() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1.5">Phần trăm giảm (%)</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="100"
-                  value={formData.phanTramGiam}
-                  onChange={(e) => setFormData({ ...formData, phanTramGiam: parseInt(e.target.value) })}
-                  className="w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white focus:border-indigo-500/50 focus:outline-none"
-                  required
+                <label className="block text-sm font-medium text-slate-400 mb-1.5">Mo ta</label>
+                <textarea
+                  value={formData.moTa}
+                  onChange={(e) => setFormData({ ...formData, moTa: e.target.value })}
+                  rows={2}
+                  className="w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:border-indigo-500/50 focus:outline-none"
+                  placeholder="Dieu kien hoac ghi chu ngan"
                 />
+              </div>
+
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="block text-sm font-medium text-slate-400 mb-1.5">Loai giam</label>
+                  <select
+                    value={formData.loaiGiamGia}
+                    onChange={(e) => setFormData({ ...formData, loaiGiamGia: e.target.value as 'PHAN_TRAM' | 'SO_TIEN' })}
+                    className="scheme-dark w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white focus:border-indigo-500/50 focus:outline-none"
+                  >
+                    <option value="PHAN_TRAM">Phan tram</option>
+                    <option value="SO_TIEN">So tien co dinh</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-400 mb-1.5">
+                    Gia tri giam {formData.loaiGiamGia === 'PHAN_TRAM' ? '(%)' : '(VND)'}
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max={formData.loaiGiamGia === 'PHAN_TRAM' ? 100 : undefined}
+                    value={formData.giaTriGiam}
+                    onChange={(e) => setFormData({ ...formData, giaTriGiam: Number(e.target.value) })}
+                    className="w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white focus:border-indigo-500/50 focus:outline-none"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <div>
+                  <label className="block text-sm font-medium text-slate-400 mb-1.5">Don toi thieu</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={formData.minOrderValue}
+                    onChange={(e) => setFormData({ ...formData, minOrderValue: e.target.value })}
+                    placeholder="Khong bat buoc"
+                    className="w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:border-indigo-500/50 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-400 mb-1.5">Tong luot</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={formData.gioiHanTong}
+                    onChange={(e) => setFormData({ ...formData, gioiHanTong: e.target.value })}
+                    placeholder="Khong gioi han"
+                    className="w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:border-indigo-500/50 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-400 mb-1.5">Luot/tai khoan</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={formData.gioiHanMoiNguoi}
+                    onChange={(e) => setFormData({ ...formData, gioiHanMoiNguoi: Number(e.target.value) })}
+                    className="w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white focus:border-indigo-500/50 focus:outline-none"
+                    required
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">

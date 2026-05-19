@@ -19,7 +19,7 @@ export function AddressPickerMap({
   const searchInputRef = useRef<HTMLInputElement>(null)
   const [searchResults, setSearchResults] = useState<any[]>([])
   const [isSearching, setIsSearching] = useState(false)
-  const debounceTimer = useRef<NodeJS.Timeout>()
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null)
 
   // Search using Nominatim (OpenStreetMap free API)
   const searchAddress = async (query: string) => {

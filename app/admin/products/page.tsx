@@ -3,9 +3,18 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Plus, Edit2, Trash2, X, ArrowLeft, Search, Package, Loader2, Upload, Image as ImageIcon } from 'lucide-react'
 import { useToast } from '@/app/providers/toast-provider'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+
+// Hàm tự động thay thế ảnh lỗi/trống thành ảnh demo trên mạng
+const getSafeDemoImage = (url?: string | null, fallbackName: string = 'Product') => {
+  if (!url || url.includes('via.placeholder.com')) {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackName)}&background=random&color=fff&size=300`
+  }
+  return url
+}
 
 interface Product {
   id: string
@@ -17,7 +26,7 @@ interface Product {
   hinhAnhs: string[]
   moTa?: string | null
   soLuongTon: number
-  thongSoKyThuat?: any
+  thongSoKyThuat?: Record<string, unknown> | null
   danhMuc: {
     id: string
     tenDanhMuc: string
@@ -127,19 +136,22 @@ export default function AdminProductsPage() {
       const uploadedUrls: string[] = []
 
       for (const file of Array.from(files)) {
-        const formDataUpload = new FormData()
-        formDataUpload.append('file', file)
+        // Kiểm tra dung lượng ảnh (giới hạn 2MB để tránh lỗi Payload Too Large khi lưu DB)
+        if (file.size > 2 * 1024 * 1024) {
+          addToast(`Ảnh "${file.name}" quá lớn. Vui lòng chọn ảnh nhỏ hơn 2MB`, 'error')
+          continue
+        }
 
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formDataUpload,
-          credentials: 'include',
+        // Chuyển đổi file ảnh thành chuỗi Base64 để lưu trực tiếp vào database
+        // Cách này giúp bỏ qua bước gọi API /api/upload (thường gây lỗi nếu chưa setup server lưu trữ)
+        const base64Data = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader()
+          reader.readAsDataURL(file)
+          reader.onload = () => resolve(reader.result as string)
+          reader.onerror = (error) => reject(error)
         })
-
-        if (!response.ok) throw new Error('Upload failed')
-
-        const data = await response.json()
-        uploadedUrls.push(data.url)
+        
+        uploadedUrls.push(base64Data)
       }
 
       setFormData(prev => ({
@@ -171,9 +183,11 @@ export default function AdminProductsPage() {
       return
     }
 
-    if (formData.hinhAnhs.length === 0) {
-      addToast('Vui lòng thêm ít nhất một hình ảnh sản phẩm', 'error')
-      return
+    let finalImages = formData.hinhAnhs
+    if (finalImages.length === 0) {
+      // Tự động tạo ảnh từ tên sản phẩm nếu không upload thủ công
+      const autoImageUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.tenSanPham)}&background=random&color=fff&size=300&bold=true`
+      finalImages = [autoImageUrl]
     }
 
     if (formData.gia <= 0) {
@@ -189,6 +203,8 @@ export default function AdminProductsPage() {
 
       const submitData = {
         ...formData,
+        hinhAnh: finalImages[0], // Cập nhật ảnh chính
+        hinhAnhs: finalImages,   // Cập nhật danh sách ảnh
         thongSoKyThuat: formData.thongSoKyThuat ? JSON.parse(formData.thongSoKyThuat) : null,
       }
 
@@ -327,10 +343,12 @@ export default function AdminProductsPage() {
                       <td className="px-5 py-4 text-sm text-white">
                         <div className="flex items-center gap-3">
                           {product.hinhAnhs.length > 0 ? (
-                            <img
-                              src={product.hinhAnhs[0]}
+                            <Image
+                              src={getSafeDemoImage(product.hinhAnhs[0], product.tenSanPham)}
                               alt={product.tenSanPham}
-                              className="w-10 h-10 rounded-lg object-cover"
+                              width={40}
+                              height={40}
+                              className="rounded-lg object-cover"
                             />
                           ) : (
                             <div className="w-10 h-10 rounded-lg bg-slate-700 flex items-center justify-center">
@@ -391,9 +409,13 @@ export default function AdminProductsPage() {
 
       {/* Form Modal */}
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-800 bg-[#0f1117] p-6">
-            <div className="flex items-center justify-between mb-6">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm sm:p-6">
+          
+          {/* CHUẨN HOÁ: Dùng thẻ div bọc ngoài để Flexbox tính toán chiều cao max-h-[90vh] chính xác trên mọi trình duyệt */}
+          <div className="flex w-full max-w-2xl max-h-[90vh] flex-col overflow-hidden rounded-2xl border border-slate-800 bg-[#0f1117] shadow-2xl">
+            
+            {/* Header Modal */}
+            <div className="flex shrink-0 items-center justify-between border-b border-slate-800 p-5 sm:p-6 bg-[#0f1117]">
               <h2 className="text-xl font-bold text-white">
                 {selectedProduct ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}
               </h2>
@@ -406,12 +428,12 @@ export default function AdminProductsPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {/* Vùng cuộn độc lập */}
+            <div className="flex-1 overflow-y-auto p-5 sm:p-6 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-700 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-600">
+              <form id="product-form" onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Tên sản phẩm *
-                  </label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Tên sản phẩm *</label>
                   <input
                     type="text"
                     value={formData.tenSanPham}
@@ -423,9 +445,7 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Danh mục *
-                  </label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Danh mục *</label>
                   <select
                     value={formData.danhMucId}
                     onChange={(e) => setFormData(prev => ({ ...prev, danhMucId: e.target.value }))}
@@ -442,9 +462,7 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Giá (VND) *
-                  </label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Giá (VND) *</label>
                   <input
                     type="number"
                     value={formData.gia}
@@ -457,9 +475,7 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Giảm giá (%)
-                  </label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Giảm giá (%)</label>
                   <input
                     type="number"
                     value={formData.phanTramGiam}
@@ -472,9 +488,7 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Số lượng tồn kho
-                  </label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Số lượng tồn kho</label>
                   <input
                     type="number"
                     value={formData.soLuongTon}
@@ -487,9 +501,7 @@ export default function AdminProductsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Mô tả
-                </label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Mô tả</label>
                 <textarea
                   value={formData.moTa}
                   onChange={(e) => setFormData(prev => ({ ...prev, moTa: e.target.value }))}
@@ -500,9 +512,7 @@ export default function AdminProductsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Thông số kỹ thuật (JSON)
-                </label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Thông số kỹ thuật (JSON)</label>
                 <textarea
                   value={formData.thongSoKyThuat}
                   onChange={(e) => setFormData(prev => ({ ...prev, thongSoKyThuat: e.target.value }))}
@@ -513,9 +523,7 @@ export default function AdminProductsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Hình ảnh sản phẩm
-                </label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Hình ảnh sản phẩm</label>
                 <div className="space-y-4">
                   <div className="flex items-center gap-4">
                     <input
@@ -531,11 +539,7 @@ export default function AdminProductsPage() {
                       htmlFor="image-upload"
                       className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-slate-300 transition hover:border-indigo-500/40 hover:text-white cursor-pointer"
                     >
-                      {uploadingImages ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Upload className="h-4 w-4" />
-                      )}
+                      {uploadingImages ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
                       {uploadingImages ? 'Đang tải lên...' : 'Chọn hình ảnh'}
                     </label>
                   </div>
@@ -544,9 +548,11 @@ export default function AdminProductsPage() {
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                       {formData.hinhAnhs.map((url, index) => (
                         <div key={index} className="relative group">
-                          <img
+                          <Image
                             src={url}
                             alt={`Product ${index + 1}`}
+                            width={96}
+                            height={96}
                             className="w-full h-24 rounded-lg object-cover border border-slate-700"
                           />
                           <button
@@ -562,23 +568,26 @@ export default function AdminProductsPage() {
                   )}
                 </div>
               </div>
+              </form>
+            </div>
 
-              <div className="flex justify-end gap-3 pt-6 border-t border-slate-800">
-                <button
-                  type="button"
-                  onClick={closeForm}
-                  className="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-slate-600 hover:text-white"
-                >
-                  Hủy
-                </button>
-                <button
-                  type="submit"
-                  className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
-                >
-                  {selectedProduct ? 'Cập nhật' : 'Thêm sản phẩm'}
-                </button>
-              </div>
-            </form>
+            {/* Footer Modal - Gọi submit qua form="product-form" */}
+            <div className="flex shrink-0 justify-end gap-3 border-t border-slate-800 bg-[#0f1117] p-5 sm:p-6">
+              <button
+                type="button"
+                onClick={closeForm}
+                className="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-slate-600 hover:text-white"
+              >
+                Hủy
+              </button>
+              <button
+                type="submit"
+                form="product-form"
+                className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
+              >
+                {selectedProduct ? 'Cập nhật' : 'Thêm sản phẩm'}
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -10,40 +10,64 @@ interface AddressInputProps {
   error?: string
 }
 
+interface GoogleMapsAutocomplete {
+  addListener: (event: string, callback: () => void) => void
+  getPlace: () => { formatted_address?: string; geometry?: object; address_components?: object[] }
+}
+
+interface GoogleMapsPlaces {
+  Autocomplete: new (element: HTMLInputElement, options: object) => GoogleMapsAutocomplete
+}
+
+interface GoogleMaps {
+  maps: {
+    places: GoogleMapsPlaces
+  }
+}
+
 declare global {
   interface Window {
-    google?: any
+    google?: GoogleMaps
   }
 }
 
 export function AddressInput({ value, onChange, placeholder, error }: AddressInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const autocompleteRef = useRef<any>(null)
+  const autocompleteRef = useRef<GoogleMapsAutocomplete | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
   const [apiKeyMissing, setApiKeyMissing] = useState(false)
   const [apiError, setApiError] = useState(false)
   const loadingRef = useRef(false)
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    
-    // If Google Maps already loaded, initialize autocomplete
-    if (window.google && !autocompleteRef.current && inputRef.current) {
-      try {
-        initializeAutocomplete()
-        setIsLoaded(true)
-      } catch (error) {
-        setApiError(true)
-        console.warn('Google Maps autocomplete not available (billing not enabled)')
-      }
-      return
+  const initializeAutocomplete = () => {
+    if (!inputRef.current || !window.google) return
+
+    // Prevent duplicate initialization
+    if (autocompleteRef.current) return
+
+    const options = {
+      componentRestrictions: { country: 'vn' },
+      types: ['address'],
+      fields: ['formatted_address', 'geometry', 'address_components'],
     }
 
-    // If already loading or loaded, skip
-    if (isLoaded || loadingRef.current || apiKeyMissing || apiError) return
+    try {
+      autocompleteRef.current = new window.google.maps.places.Autocomplete(
+        inputRef.current,
+        options
+      )
 
-    loadGoogleMapsScript()
-  }, [isLoaded, apiKeyMissing, apiError])
+      autocompleteRef.current.addListener('place_changed', () => {
+        const place = autocompleteRef.current?.getPlace()
+        if (place && place.formatted_address) {
+          onChange(place.formatted_address)
+        }
+      })
+    } catch (err) {
+      setApiError(true)
+      console.warn('Autocomplete initialization failed:', err)
+    }
+  }
 
   const loadGoogleMapsScript = () => {
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
@@ -70,43 +94,34 @@ export function AddressInput({ value, onChange, placeholder, error }: AddressInp
       loadingRef.current = false
       setIsLoaded(true)
     }
-    script.onerror = (error) => {
+    script.onerror = (err) => {
       loadingRef.current = false
       setApiError(true)
-      console.warn('Google Maps API not available:', error)
+      console.warn('Google Maps API not available:', err)
     }
     document.head.appendChild(script)
   }
 
-  const initializeAutocomplete = () => {
-    if (!inputRef.current || !window.google) return
+  useEffect(() => {
+    if (typeof window === 'undefined') return
 
-    // Prevent duplicate initialization
-    if (autocompleteRef.current) return
-
-    const options = {
-      componentRestrictions: { country: 'vn' },
-      types: ['address'],
-      fields: ['formatted_address', 'geometry', 'address_components'],
+    // If Google Maps already loaded, initialize autocomplete
+    if (window.google && !autocompleteRef.current && inputRef.current) {
+      try {
+        initializeAutocomplete()
+        setIsLoaded(true)
+      } catch (err) {
+        setApiError(true)
+        console.warn('Google Maps autocomplete not available (billing not enabled)')
+      }
+      return
     }
 
-    try {
-      autocompleteRef.current = new window.google.maps.places.Autocomplete(
-        inputRef.current,
-        options
-      )
+    // If already loading or loaded, skip
+    if (isLoaded || loadingRef.current || apiKeyMissing || apiError) return
 
-      autocompleteRef.current.addListener('place_changed', () => {
-        const place = autocompleteRef.current.getPlace()
-        if (place && place.formatted_address) {
-          onChange(place.formatted_address)
-        }
-      })
-    } catch (error) {
-      setApiError(true)
-      console.warn('Autocomplete initialization failed:', error)
-    }
-  }
+    loadGoogleMapsScript()
+  }, [isLoaded, apiKeyMissing, apiError])
 
   return (
     <div className="space-y-2">

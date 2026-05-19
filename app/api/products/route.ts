@@ -3,7 +3,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { authorizeRoles } from '@/lib/auth'
 import { Prisma } from '@prisma/client'
 
-function buildWhere(search: string, category: string): Prisma.SanPhamWhereInput {
+function buildWhere(
+  search: string,
+  category: string,
+  brand: string,
+  socket: string
+): Prisma.SanPhamWhereInput {
   return {
     ...(search
       ? {
@@ -17,6 +22,19 @@ function buildWhere(search: string, category: string): Prisma.SanPhamWhereInput 
       ? {
           danhMuc: { tenDanhMuc: { equals: category, mode: 'insensitive' } }
         }
+      : {}),
+    ...(brand && brand.toLowerCase() !== 'all'
+      ? {
+          thuongHieu: { equals: brand, mode: 'insensitive' }
+        }
+      : {}),
+    ...(socket && socket.toLowerCase() !== 'all'
+      ? {
+          thongSoKyThuat: {
+            path: ['socket'],
+            string_contains: socket
+          }
+        }
       : {})
   }
 }
@@ -28,10 +46,12 @@ export async function GET(request: Request) {
     const limit = Number(searchParams.get('limit') || '12')
     const search = searchParams.get('search') || ''
     const category = searchParams.get('category') || ''
+    const brand = searchParams.get('brand') || ''
+    const socket = searchParams.get('socket') || ''
     const sort = searchParams.get('sort') || 'newest'
     const skip = (page - 1) * limit
 
-    const where = buildWhere(search, category)
+    const where = buildWhere(search, category, brand, socket)
     const orderBy =
       sort === 'price-asc'
         ? ({ gia: 'asc' } as const)
@@ -80,7 +100,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json()
-  const { tenSanPham, slug, gia, moTa, danhMucId, thongSoKyThuat, hinhAnh, hinhAnhs, soLuongTon } = body
+  const { tenSanPham, slug, gia, moTa, danhMucId, thongSoKyThuat, hinhAnh, hinhAnhs, soLuongTon, thuongHieu } = body
 
   if (!tenSanPham || !slug || !gia || !danhMucId) {
     return NextResponse.json({ error: 'Thieu thong tin san pham' }, { status: 400 })
@@ -93,6 +113,7 @@ export async function POST(request: NextRequest) {
       gia: Number(gia),
       moTa: moTa || '',
       danhMucId,
+      thuongHieu: thuongHieu || null,
       thongSoKyThuat: thongSoKyThuat || {},
       hinhAnh: hinhAnh || null,
       hinhAnhs: hinhAnhs || [],

@@ -104,7 +104,52 @@
     "builderFeatureCompatibility": "Kiểm tra tương thích thời gian thực",
     "openBuilder": "Mở PC Builder",
     "brandsTitle": "Thương hiệu đáng tin cậy",
-    "brandsDescription": "Linh kiện từ những thương hiệu phổ biến cho gaming và công việc chuyên sâu."
+    "brandsDescription": "Linh kiện từ những thương hiệu phổ biến cho gaming và công việc chuyên sâu.",
+    "launchBadge": "PC Builder 2026 đã ra mắt",
+    "heroMetricOrders": "Lựa chọn nổi bật",
+    "heroMetricRating": "Đánh giá trung bình",
+    "heroMetricAuthentic": "Linh kiện chính hãng",
+    "categorySubtitles": {
+      "cpu": "Intel và AMD",
+      "gpu": "RTX và RX Series",
+      "ram": "DDR4 và DDR5",
+      "mainboard": "Intel và AMD",
+      "storage": "SSD và HDD",
+      "psu": "Gold và Platinum",
+      "case": "ATX và ITX",
+      "cooling": "Air và AIO"
+    },
+    "countdownLabel": "Kết thúc: 05:23:17",
+    "builderBadge": "Công cụ PC Builder",
+    "builderHeadline": "Build PC hoàn hảo",
+    "builderHeadlineAccent": "chỉ trong 5 phút",
+    "builderDescription": "Công cụ build PC thông minh giúp bạn chọn linh kiện phù hợp, cân đối ngân sách và đi đến bước mua hàng nhanh hơn.",
+    "builderSteps": {
+      "step1Title": "Chọn mục đích sử dụng",
+      "step1Description": "Gaming, làm việc, stream hay một cấu hình cân bằng hàng ngày.",
+      "step2Title": "Chọn linh kiện phù hợp",
+      "step2Description": "Hệ thống tự động kiểm tra tương thích và cảnh báo những kết hợp rủi ro.",
+      "step3Title": "Lưu, so sánh và đặt hàng",
+      "step3Description": "Lưu nhiều build, so sánh nhanh và chốt cấu hình để thanh toán."
+    },
+    "mockupLabel": "Tổng giá cấu hình",
+    "mockupStatus": "Tương thích",
+    "promoCards": {
+      "gpuEyebrow": "Card đồ họa mới nhất",
+      "gpuTitle": "RTX 40 Series",
+      "gpuCta": "Khám phá ngay",
+      "builderEyebrow": "Tư vấn theo ngân sách",
+      "builderTitle": "Build PC theo ngân sách",
+      "builderCta": "Build ngay"
+    },
+    "trust": {
+      "authenticTitle": "Linh kiện chính hãng",
+      "authenticDescription": "Lựa chọn từ các thương hiệu uy tín với linh kiện phù hợp cho gaming và workstation.",
+      "shippingTitle": "Giao hàng nhanh",
+      "shippingDescription": "Danh sách sản phẩm sẵn có và luồng build gọn giúp bạn chốt đơn nhanh hơn.",
+      "supportTitle": "Tư vấn tương thích",
+      "supportDescription": "Kiểm tra thời gian thực và build đã lưu giúp bạn tinh chỉnh cấu hình trước khi mua."
+    }
   },
   "builder": {
     "breadcrumbHome": "Trang chủ",
@@ -266,12 +311,23 @@
   },
   "cartPage": {
     "paymentMethods": {
-      "COD": { "label": "Thanh toán khi nhận hàng", "desc": "Trả tiền mặt khi giao hàng" },
-      "VNPAY": { "label": "VNPay", "desc": "Thanh toán qua ví VNPay" },
-      "MOMO": { "label": "MoMo", "desc": "Thanh toán qua ví MoMo" }
+      "COD": {
+        "label": "Thanh toán khi nhận hàng",
+        "desc": "Trả tiền mặt khi giao hàng"
+      },
+      "VNPAY": {
+        "label": "VNPay",
+        "desc": "Thanh toán qua ví VNPay"
+      },
+      "MOMO": {
+        "label": "MoMo",
+        "desc": "Thanh toán qua ví MoMo"
+      }
     },
     "couponTitle": "Mã giảm giá",
     "couponPlaceholder": "Nhập mã giảm giá",
+    "couponRequired": "Vui lòng nhập mã giảm giá",
+    "couponError": "Không thể kiểm tra mã giảm giá. Vui lòng thử lại.",
     "applyCoupon": "Áp dụng",
     "needLogin": "Bạn cần đăng nhập để xem giỏ hàng.",
     "loadError": "Không thể tải giỏ hàng. Vui lòng thử lại sau.",

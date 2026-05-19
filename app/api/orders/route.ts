@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { authorizeRoles } from '@/lib/auth'
 import { createOrderCode, validateOrderInput } from '@/lib/orders'
-
-const ALLOWED_PAYMENT_METHODS = ['COD', 'VNPAY', 'MOMO'] as const
+import { normalizeCouponCode, recordCouponUsage, validateCouponForCheckout } from '@/lib/coupons'
 
 export async function GET(request: NextRequest) {
   const auth = await authorizeRoles(request, ['KHACH_HANG', 'QUAN_TRI_VIEN'])
@@ -26,6 +25,7 @@ export async function POST(request: NextRequest) {
   if (!auth.user) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
   const body = await request.json()
+  const couponCode = normalizeCouponCode(body.maKhuyenMai || body.couponCode)
   const validated = validateOrderInput({
     shippingAddress: String(body.shippingAddress || ''),
     paymentMethod: String(body.paymentMethod || 'COD')
@@ -58,6 +58,22 @@ export async function POST(request: NextRequest) {
   const total = cart.items.reduce((sum, item) => sum + item.soLuong * item.sanPham.gia, 0)
   try {
     const order = await prisma.$transaction(async (tx) => {
+      const couponResult = couponCode
+        ? await validateCouponForCheckout({
+            code: couponCode,
+            userId: auth.user.id,
+            subtotal: total,
+            db: tx,
+          })
+        : null
+
+      if (couponResult && !couponResult.ok) {
+        throw new Error(`COUPON_INVALID:${couponResult.error}`)
+      }
+
+      const discount = couponResult?.ok ? couponResult.discount : 0
+      const finalTotal = Math.max(0, total - discount)
+
       for (const item of cart.items) {
         const updated = await tx.sanPham.updateMany({
           where: {
@@ -78,10 +94,15 @@ export async function POST(request: NextRequest) {
         data: {
           maDonHang: createOrderCode('DH'),
           trangThai: 'CHO_XAC_NHAN',
-          tongTien: total,
+          tongTien: finalTotal,
+          tamTinh: total,
+          tienGiam: discount,
           diaChiGiaoHang: validated.data.shippingAddress,
-          ghiChu: 'Don hang tu website PC Builder',
+          ghiChu: couponResult?.ok
+            ? `Don hang tu website PC Builder. Ma khuyen mai: ${couponResult.coupon.maKhuyenMai}`
+            : 'Don hang tu website PC Builder',
           nguoiDungId: auth.user.id,
+          khuyenMaiId: couponResult?.ok ? couponResult.coupon.id : null,
           chiTietDonHangs: {
             create: cart.items.map((item) => ({
               soLuong: item.soLuong,
@@ -92,7 +113,7 @@ export async function POST(request: NextRequest) {
           thanhToans: {
             create: {
               maThanhToan: createOrderCode('TT'),
-              soTien: total,
+              soTien: finalTotal,
               phuongThuc: validated.data.paymentMethod,
               trangThai: 'PENDING'
             }
@@ -104,6 +125,16 @@ export async function POST(request: NextRequest) {
         }
       })
 
+      if (couponResult?.ok) {
+        await recordCouponUsage({
+          tx,
+          coupon: couponResult.coupon,
+          userId: auth.user.id,
+          orderId: createdOrder.id,
+          discount,
+        })
+      }
+
       await tx.gioHangItem.deleteMany({ where: { gioHangId: cart.id } })
 
       return createdOrder
@@ -114,6 +145,20 @@ export async function POST(request: NextRequest) {
     if (error instanceof Error && error.message.startsWith('OUT_OF_STOCK:')) {
       return NextResponse.json(
         { error: `So luong ton kho cua san pham ${error.message.slice('OUT_OF_STOCK:'.length)} khong du` },
+        { status: 409 }
+      )
+    }
+
+    if (error instanceof Error && error.message.startsWith('COUPON_INVALID:')) {
+      return NextResponse.json(
+        { error: error.message.slice('COUPON_INVALID:'.length) },
+        { status: 400 }
+      )
+    }
+
+    if (error instanceof Error && error.message === 'COUPON_LIMIT_REACHED') {
+      return NextResponse.json(
+        { error: 'Ma khuyen mai da het luot su dung' },
         { status: 409 }
       )
     }

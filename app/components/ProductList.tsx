@@ -44,7 +44,7 @@ export function ProductList({ limit = 12, showPagination = false }: ProductListP
     }
 
     fetchProducts()
-  }, [page, limit])
+  }, [page, limit, t])
 
   const handleAddToCart = async (product: Product) => {
     await addItem(product.id, 1)

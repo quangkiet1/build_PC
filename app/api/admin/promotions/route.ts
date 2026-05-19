@@ -9,6 +9,9 @@ export async function GET(request: NextRequest) {
 
     const promotions = await prisma.khuyenMai.findMany({
       orderBy: { createdAt: 'desc' },
+      include: {
+        _count: { select: { suDungKhuyenMais: true } },
+      },
     })
 
     return NextResponse.json({ promotions })
@@ -24,16 +27,42 @@ export async function POST(request: NextRequest) {
     if (!auth.user) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
     const body = await request.json()
-    const { maKhuyenMai, tenKhuyenMai, phanTramGiam, ngayBatDau, ngayKetThuc, isActive } = body
+    const {
+      maKhuyenMai,
+      tenKhuyenMai,
+      moTa,
+      loaiGiamGia = 'PHAN_TRAM',
+      giaTriGiam,
+      phanTramGiam,
+      minOrderValue,
+      gioiHanTong,
+      gioiHanMoiNguoi,
+      ngayBatDau,
+      ngayKetThuc,
+      isActive,
+    } = body
 
-    if (!maKhuyenMai || !tenKhuyenMai || !phanTramGiam || !ngayBatDau || !ngayKetThuc) {
+    if (!maKhuyenMai || !tenKhuyenMai || !ngayBatDau || !ngayKetThuc) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // Check percentage validity
-    const percent = parseInt(phanTramGiam)
-    if (percent < 1 || percent > 100) {
+    if (!['PHAN_TRAM', 'SO_TIEN'].includes(String(loaiGiamGia))) {
+      return NextResponse.json({ error: 'Discount type is invalid' }, { status: 400 })
+    }
+
+    const discountValue = Number(giaTriGiam ?? phanTramGiam)
+    if (!Number.isFinite(discountValue) || discountValue <= 0) {
+      return NextResponse.json({ error: 'Discount value must be greater than 0' }, { status: 400 })
+    }
+
+    if (loaiGiamGia === 'PHAN_TRAM' && (discountValue < 1 || discountValue > 100)) {
       return NextResponse.json({ error: 'Percentage must be between 1 and 100' }, { status: 400 })
+    }
+
+    const startDate = new Date(ngayBatDau)
+    const endDate = new Date(ngayKetThuc)
+    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime()) || startDate >= endDate) {
+      return NextResponse.json({ error: 'Date range is invalid' }, { status: 400 })
     }
 
     // Check if promo code already exists (for new promotions)
@@ -49,9 +78,15 @@ export async function POST(request: NextRequest) {
       data: {
         maKhuyenMai: maKhuyenMai.toUpperCase(),
         tenKhuyenMai: tenKhuyenMai.trim(),
-        phanTramGiam: percent,
-        ngayBatDau: new Date(ngayBatDau),
-        ngayKetThuc: new Date(ngayKetThuc),
+        moTa: moTa?.trim() || null,
+        phanTramGiam: loaiGiamGia === 'PHAN_TRAM' ? Math.round(discountValue) : 0,
+        loaiGiamGia,
+        giaTriGiam: discountValue,
+        minOrderValue: minOrderValue ? Number(minOrderValue) : null,
+        gioiHanTong: gioiHanTong ? Number(gioiHanTong) : null,
+        gioiHanMoiNguoi: Math.max(1, Number(gioiHanMoiNguoi || 1)),
+        ngayBatDau: startDate,
+        ngayKetThuc: endDate,
         isActive: isActive !== false,
       },
     })
