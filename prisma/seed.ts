@@ -72,6 +72,7 @@ async function main() {
       tenSanPham: 'Intel Core i9-14900KS',
       slug: 'intel-core-i9-14900ks',
       gia: 24500000,
+      hinhAnh: 'https://www.intel.com/content/dam/support/us/en/images/processors/97035-img11.png',
       moTa: 'CPU flagship Intel phiên bản K Special Edition, 24 cores/32 threads',
       thuongHieu: 'Intel',
       thongSoKyThuat: {
@@ -87,6 +88,7 @@ async function main() {
       tenSanPham: 'Intel Core i9-14900K',
       slug: 'intel-core-i9-14900k',
       gia: 22500000,
+      hinhAnh: 'https://hoanghapccdn.com/media/product/4720_core_i9_14900k_sale_t4_2026.jpg',
       moTa: 'CPU cao cấp Intel thế hệ 14, 24 cores/32 threads',
       thuongHieu: 'Intel',
       thongSoKyThuat: {
@@ -102,6 +104,7 @@ async function main() {
       tenSanPham: 'Intel Core i7-14700K',
       slug: 'intel-core-i7-14700k',
       gia: 18500000,
+      hinhAnh: 'https://hoanghapccdn.com/media/product/4636_core_i7_14700k_sale_t4_2026.jpg',
       moTa: 'CPU cao cấp Intel thế hệ 14 cho gaming và xử lý đa nhiệm',
       thuongHieu: 'Intel',
       thongSoKyThuat: {
@@ -117,6 +120,7 @@ async function main() {
       tenSanPham: 'Intel Core i7-14700',
       slug: 'intel-core-i7-14700',
       gia: 16000000,
+      hinhAnh: 'https://hoanghapccdn.com/media/product/4550_core_i7_14700_sale_t4_2026.jpg',
       moTa: 'Intel Core i7 phiên bản tiêu chuẩn, 20 cores/28 threads',
       thuongHieu: 'Intel',
       thongSoKyThuat: {
@@ -225,7 +229,7 @@ async function main() {
     await prisma.sanPham.create({
       data: {
         ...cpu,
-        hinhAnh: `https://via.placeholder.com/300x300?text=${cpu.slug}`,
+        hinhAnh: (cpu as any).hinhAnh || `https://via.placeholder.com/300x300?text=${cpu.slug}`,
         soLuongTon: 50,
         danhMucId: cpuCat.id
       }
@@ -344,7 +348,7 @@ async function main() {
     await prisma.sanPham.create({
       data: {
         ...gpu,
-        hinhAnh: `https://via.placeholder.com/300x300?text=${gpu.slug}`,
+        hinhAnh: (gpu as any).hinhAnh || `https://via.placeholder.com/300x300?text=${gpu.slug}`,
         soLuongTon: 30,
         danhMucId: gpuCat.id
       }
@@ -437,7 +441,7 @@ async function main() {
     await prisma.sanPham.create({
       data: {
         ...ram,
-        hinhAnh: `https://via.placeholder.com/300x300?text=${ram.slug}`,
+        hinhAnh: (ram as any).hinhAnh || `https://via.placeholder.com/300x300?text=${ram.slug}`,
         soLuongTon: 100,
         danhMucId: ramCat.id
       }
@@ -530,7 +534,7 @@ async function main() {
     await prisma.sanPham.create({
       data: {
         ...storage,
-        hinhAnh: `https://via.placeholder.com/300x300?text=${storage.slug}`,
+        hinhAnh: (storage as any).hinhAnh || `https://via.placeholder.com/300x300?text=${storage.slug}`,
         soLuongTon: 75,
         danhMucId: storageCat.id
       }
@@ -605,7 +609,7 @@ async function main() {
     await prisma.sanPham.create({
       data: {
         ...psu,
-        hinhAnh: `https://via.placeholder.com/300x300?text=${psu.slug}`,
+        hinhAnh: (psu as any).hinhAnh || `https://via.placeholder.com/300x300?text=${psu.slug}`,
         soLuongTon: 60,
         danhMucId: psuCat.id
       }
@@ -685,7 +689,7 @@ async function main() {
     await prisma.sanPham.create({
       data: {
         ...mobo,
-        hinhAnh: `https://via.placeholder.com/300x300?text=${mobo.slug}`,
+        hinhAnh: (mobo as any).hinhAnh || `https://via.placeholder.com/300x300?text=${mobo.slug}`,
         soLuongTon: 40,
         danhMucId: mainboardCat.id
       }
