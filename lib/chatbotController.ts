@@ -1,13 +1,36 @@
-import fs from 'fs';
-import path from 'path';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { layTop3LinhKien } from './chatbotModel'; 
 import { isProductCompatibleWithBuild } from '@/app/lib/builder-utils';
 
 const apiKey = process.env.GEMINI_API_KEY || "";
 const genAI = new GoogleGenerativeAI(apiKey);
-const TEN_MODEL_AI = "gemini-2.0-flash";
-const MODEL_DU_PHONG = "gemini-1.5-flash"; // Fallback khi 2.0-flash hết quota
+const TEN_MODEL_AI = "gemini-2.5-flash";
+const MODEL_DU_PHONG = "gemini-2.5-flash-lite"; // Fallback khi model chính hết quota
+const TAT_CA_THE_LOAI = ["cpu", "mainboard", "ram", "gpu", "storage", "psu", "case", "cooling"];
+
+function chuanHoaLoaiLinhKien(loai: unknown) {
+    const value = String(loai || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+
+    if (!value) return "";
+    if (value.includes("cpu") || value.includes("processor")) return "cpu";
+    if (value.includes("mainboard") || value.includes("motherboard") || value.includes("bo mach") || value === "main") {
+        return "mainboard";
+    }
+    if (value.includes("ram") || value.includes("memory")) return "ram";
+    if (value.includes("gpu") || value.includes("vga") || value.includes("card do hoa")) return "gpu";
+    if (value.includes("storage") || value.includes("ssd") || value.includes("hdd") || value.includes("o cung")) {
+        return "storage";
+    }
+    if (value.includes("psu") || value.includes("nguon")) return "psu";
+    if (value.includes("case") || value.includes("vo may")) return "case";
+    if (value.includes("cool") || value.includes("tan nhiet") || value.includes("fan")) return "cooling";
+
+    return value;
+}
 
 // ─── Retry helper: tự chờ và thử lại khi bị 429/503, fallback sang model dự phòng ──
 async function generateWithRetry(
@@ -104,7 +127,8 @@ async function phanTich(tinNhanKhach: string, lichSuChat: any[]) {
       "chiHoiTuVan": <true hoac false>
     }
 
-    Quy uoc "loai": cpu, motherboard, ram, gpu, storage, psu, case, cooling.
+    Quy uoc "loai": cpu, mainboard, ram, gpu, storage, psu, case, cooling.
+    Neu khach noi motherboard/main/bo mach chu thi tra ve "mainboard".
     
     PHAN TICH NHU SAU:
     - "nganSach": doc trong [LICH SU CHAT] neu [TIN NHAN MOI] khong co so tien.
@@ -141,14 +165,11 @@ async function messWithUser(
     thieuNganSach: boolean,
     chiHoiTuVan: boolean
 ) {
-    // Đọc system prompt từ AGENTS.md
-    const duongDanFileLuat = path.join(process.cwd(), 'AGENTS.md');
-    let promptAgent = "";
-    try {
-        promptAgent = fs.readFileSync(duongDanFileLuat, 'utf-8');
-    } catch {
-        promptAgent = "Ban la chuyen gia tu van PC. Tra loi bang tieng Viet, ngan gon, than thien.";
-    }
+    const promptAgent = `Ban la AI tu van PCStore, chuyen build PC va nang cap linh kien.
+Tra loi bang tieng Viet, ngan gon, than thien.
+Chi dua ra nhan xet dua tren [TRANG THAI KE HANG HIEN TAI CUA KHACH] va [HE THONG VUA LAY THEM LINH KIEN MOI].
+Khong hoi lai nhung thong tin he thong da cung cap.
+Neu cau hinh chua du linh kien vi ngan sach hoac kho hang, noi ro dang thieu mon nao va goi y tang ngan sach.`;
 
     // Định dạng kệ hàng hiện tại
     let chuoiDangChon = danhSachTrenKe.length > 0
@@ -251,7 +272,6 @@ function kiemKeHangCu(keLinhKienHienTai: any, cacLoaiKhachDoi: string[]) {
 // ============================================================
 function lenDanhSachDiCho(nhungMonMuonDoi: any[], cacTheLoaiDaCo: string[], cacLoaiKhachDoi: string[]) {
     const danhSachDiCho: any[] = [...nhungMonMuonDoi];
-    const TAT_CA_THE_LOAI = ["cpu", "motherboard", "ram", "gpu", "storage", "psu", "case", "cooling"];
     
     for (const loai of TAT_CA_THE_LOAI) {
         const daCo = cacTheLoaiDaCo.includes(loai);
@@ -333,7 +353,14 @@ export async function xuLyTinNhan(tinNhanCuaKhach: string, lichSuChat: any[], ke
 
     const duLieuPhanTich = await phanTich(tinNhanCuaKhach, lichSuChat);
     
-    const nhungMonMuonDoi = duLieuPhanTich.nhungMonMuonDoi || [];
+    const nhungMonMuonDoi = Array.isArray(duLieuPhanTich.nhungMonMuonDoi)
+        ? duLieuPhanTich.nhungMonMuonDoi
+            .map((m: any) => {
+                const loai = chuanHoaLoaiLinhKien(typeof m === "string" ? m : m?.loai);
+                return { ...(typeof m === "object" && m != null ? m : {}), loai };
+            })
+            .filter((m: any) => TAT_CA_THE_LOAI.includes(m.loai))
+        : [];
     const cacLoaiKhachDoi: string[] = nhungMonMuonDoi
         .map((m: any) => m.loai?.toLowerCase())
         .filter(Boolean);

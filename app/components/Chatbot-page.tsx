@@ -15,7 +15,7 @@ const QUICK_ACTIONS = [
 ];
 
 const CAT_LABELS: Record<string, string> = {
-  cpu: 'CPU', motherboard: 'Mainboard', ram: 'RAM',
+  cpu: 'CPU', mainboard: 'Mainboard', motherboard: 'Mainboard', ram: 'RAM',
   gpu: 'GPU', storage: 'Ổ cứng', psu: 'Nguồn', case: 'Vỏ case', cooling: 'Tản nhiệt',
 };
 
