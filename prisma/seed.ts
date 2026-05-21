@@ -120,7 +120,7 @@ async function main() {
       tenSanPham: 'Intel Core i7-14700',
       slug: 'intel-core-i7-14700',
       gia: 16000000,
-      hinhAnh: '../public/images/56f13-17052559829935-1920.jpg',
+      hinhAnh: '../public/images/4.jpg',
       moTa: 'Intel Core i7 phiên bản tiêu chuẩn, 20 cores/28 threads',
       thuongHieu: 'Intel',
       thongSoKyThuat: {
@@ -136,7 +136,7 @@ async function main() {
       tenSanPham: 'Intel Core i5-14600K',
       slug: 'intel-core-i5-14600k',
       gia: 8500000,
-      hinhAnh: '../public/images/4.jpg',
+      hinhAnh: '../public/images/5.jpg',
       moTa: 'CPU mid-range Intel đa năng cho gaming và công việc',
       thuongHieu: 'Intel',
       thongSoKyThuat: {
@@ -169,7 +169,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 9 7950X',
       slug: 'amd-ryzen-9-7950x',
       gia: 20000000,
-      hinhAnh: '../public/images/6.jpg',
+      hinhAnh: '../public/images/',
       moTa: 'AMD Ryzen 9 phiên bản X, 16 cores/32 threads',
       thuongHieu: 'AMD',
       thongSoKyThuat: {
@@ -225,6 +225,377 @@ async function main() {
         socket: 'AM5',
         tdp: '65W'
       }
+    }
+    ,
+    {
+      tenSanPham: 'AMD Ryzen 9 9950X3D (Tray)',
+      slug: 'amd-ryzen-9-9950x3d',
+      gia: 19990000,
+      hinhAnh: '../public/images/',
+      moTa: '16 nhân, 32 luồng, 5.7 GHz, Socket AM5',
+      thuongHieu: 'AMD',
+      thongSoKyThuat: { cores: 16, threads: 32, boostFreq: '5.7 GHz', socket: 'AM5' }
+    },
+    {
+      tenSanPham: 'AMD Ryzen 5 7600X',
+      slug: 'amd-ryzen-5-7600x',
+      gia: 6490000,
+      hinhAnh: '../public/images/',
+      moTa: '6 nhân, 12 luồng, 4.7 GHz, Socket AM5',
+      thuongHieu: 'AMD',
+      thongSoKyThuat: { cores: 6, threads: 12, boostFreq: '4.7 GHz', socket: 'AM5' }
+    },
+    {
+      tenSanPham: 'AMD Ryzen 7 7700X (WOF)',
+      slug: 'amd-ryzen-7-7700x-wof',
+      gia: 9190000,
+      hinhAnh: '../public/images/',
+      moTa: '8 nhân, 16 luồng, 4.5 GHz, Socket AM5',
+      thuongHieu: 'AMD',
+      thongSoKyThuat: { cores: 8, threads: 16, boostFreq: '4.5 GHz', socket: 'AM5' }
+    },
+    {
+      tenSanPham: 'AMD Ryzen 5 5500GT',
+      slug: 'amd-ryzen-5-5500gt',
+      gia: 3590000,
+      hinhAnh: '../public/images/',
+      moTa: '6 nhân, 12 luồng, 4.4 GHz, Socket AM4',
+      thuongHieu: 'AMD',
+      thongSoKyThuat: { cores: 6, threads: 12, boostFreq: '4.4 GHz', socket: 'AM4' }
+    },
+    {
+      tenSanPham: 'AMD Ryzen 9 9950X',
+      slug: 'amd-ryzen-9-9950x',
+      gia: 16690000,
+      hinhAnh: '../public/images/',
+      moTa: '16 nhân, 32 luồng, 5.7 GHz, Socket AM5',
+      thuongHieu: 'AMD',
+      thongSoKyThuat: { cores: 16, threads: 32, boostFreq: '5.7 GHz', socket: 'AM5' }
+    },
+    {
+      tenSanPham: 'AMD Ryzen 7 7800X3D (Tray)',
+      slug: 'amd-ryzen-7-7800x3d',
+      gia: 9290000,
+      hinhAnh: '../public/images/',
+      moTa: '8 nhân, 16 luồng, 5.0 GHz, Socket AM5',
+      thuongHieu: 'AMD',
+      thongSoKyThuat: { cores: 8, threads: 16, boostFreq: '5.0 GHz', socket: 'AM5' }
+    },
+    {
+      tenSanPham: 'AMD Ryzen 7 5700X (Tray)',
+      slug: 'amd-ryzen-7-5700x',
+      gia: 5490000,
+      hinhAnh: '../public/images/',
+      moTa: '8 nhân, 16 luồng, 4.6 GHz, Socket AM4',
+      thuongHieu: 'AMD',
+      thongSoKyThuat: { cores: 8, threads: 16, boostFreq: '4.6 GHz', socket: 'AM4' }
+    },
+    {
+      tenSanPham: 'AMD Ryzen 5 5500',
+      slug: 'amd-ryzen-5-5500',
+      gia: 2490000,
+      hinhAnh: '../public/images/',
+      moTa: '6 nhân, 12 luồng, 3.6 GHz, Socket AM4',
+      thuongHieu: 'AMD',
+      thongSoKyThuat: { cores: 6, threads: 12, baseFreq: '3.6 GHz', socket: 'AM4' }
+    },
+    {
+      tenSanPham: 'AMD Ryzen 5 5600X',
+      slug: 'amd-ryzen-5-5600x',
+      gia: 4090000,
+      hinhAnh: '../public/images/',
+      moTa: '6 nhân, 12 luồng, 3.7 GHz, Socket AM4',
+      thuongHieu: 'AMD',
+      thongSoKyThuat: { cores: 6, threads: 12, baseFreq: '3.7 GHz', socket: 'AM4' }
+    },
+    {
+      tenSanPham: 'AMD Ryzen 3 3200G (MPK)',
+      slug: 'amd-ryzen-3-3200g',
+      gia: 1990000,
+      hinhAnh: '../public/images/',
+      moTa: '4 nhân, 4 luồng, 4.0 GHz, Socket AM4',
+      thuongHieu: 'AMD',
+      thongSoKyThuat: { cores: 4, threads: 4, baseFreq: '4.0 GHz', socket: 'AM4' }
+    },
+    {
+      tenSanPham: 'AMD Ryzen 5 5600GT (MPK)',
+      slug: 'amd-ryzen-5-5600gt',
+      gia: 3990000,
+      hinhAnh: '../public/images/',
+      moTa: '6 nhân, 12 luồng, 5.2 GHz, Socket AM4',
+      thuongHieu: 'AMD',
+      thongSoKyThuat: { cores: 6, threads: 12, boostFreq: '5.2 GHz', socket: 'AM4' }
+    },
+    {
+      tenSanPham: 'AMD Ryzen 5 3400G (MPK)',
+      slug: 'amd-ryzen-5-3400g',
+      gia: 2090000,
+      hinhAnh: '../public/images/',
+      moTa: '4 nhân, 8 luồng, 4.2 GHz, Socket AM4',
+      thuongHieu: 'AMD',
+      thongSoKyThuat: { cores: 4, threads: 8, baseFreq: '4.2 GHz', socket: 'AM4' }
+    },
+    {
+      tenSanPham: 'AMD Ryzen 5 7600',
+      slug: 'amd-ryzen-5-7600',
+      gia: 5490000,
+      hinhAnh: '../public/images/',
+      moTa: '6 nhân, 12 luồng, 3.8 GHz, Socket AM5',
+      thuongHieu: 'AMD',
+      thongSoKyThuat: { cores: 6, threads: 12, baseFreq: '3.8 GHz', socket: 'AM5' }
+    },
+    {
+      tenSanPham: 'AMD Ryzen 3 4300G',
+      slug: 'amd-ryzen-3-4300g',
+      gia: 2390000,
+      hinhAnh: '../public/images/',
+      moTa: '4 nhân, 8 luồng, 3.8 GHz, Socket AM4',
+      thuongHieu: 'AMD',
+      thongSoKyThuat: { cores: 4, threads: 8, baseFreq: '3.8 GHz', socket: 'AM4' }
+    },
+    {
+      tenSanPham: 'AMD Athlon 3000G',
+      slug: 'amd-athlon-3000g',
+      gia: 1290000,
+      hinhAnh: '../public/images/',
+      moTa: '2 nhân, 4 luồng, 3.5 GHz, Socket AM4',
+      thuongHieu: 'AMD',
+      thongSoKyThuat: { cores: 2, threads: 4, baseFreq: '3.5 GHz', socket: 'AM4' }
+    },
+    {
+      tenSanPham: 'AMD Ryzen 7 9800X3D (WOF)',
+      slug: 'amd-ryzen-7-9800x3d',
+      gia: 13990000,
+      hinhAnh: '../public/images/',
+      moTa: '8 nhân, 16 luồng, 5.2 GHz, Socket AM5',
+      thuongHieu: 'AMD',
+      thongSoKyThuat: { cores: 8, threads: 16, boostFreq: '5.2 GHz', socket: 'AM5' }
+    },
+    // Intel CPUs from provided list
+    {
+      tenSanPham: 'Intel Core i5 14600KF',
+      slug: 'intel-core-i5-14600kf',
+      gia: 6990000,
+      hinhAnh: '../public/images/',
+      moTa: '14 nhân, 20 luồng, 3.4 GHz, Socket LGA 1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 14, threads: 20, baseFreq: '3.4 GHz', socket: 'LGA 1700' }
+    },
+    {
+      tenSanPham: 'Intel Core i7 14700',
+      slug: 'intel-core-i7-14700',
+      gia: 11990000,
+      hinhAnh: '../public/images/',
+      moTa: '20 nhân, 28 luồng, 2.1 GHz, Socket LGA 1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 20, threads: 28, baseFreq: '2.1 GHz', socket: 'LGA 1700' }
+    },
+    {
+      tenSanPham: 'Intel Core i5-12400F (TRAY)',
+      slug: 'intel-core-i5-12400f',
+      gia: 3990000,
+      hinhAnh: '../public/images/',
+      moTa: '6 nhân, 12 luồng, 4.40 GHz, Socket FCLGA1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 6, threads: 12, boostFreq: '4.4 GHz', socket: 'FCLGA1700' }
+    },
+    {
+      tenSanPham: 'Intel Core i7 14700K',
+      slug: 'intel-core-i7-14700k',
+      gia: 12290000,
+      hinhAnh: '../public/images/',
+      moTa: '20 nhân, 28 luồng, 3.4 GHz, Socket LGA 1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 20, threads: 28, baseFreq: '3.4 GHz', socket: 'LGA 1700' }
+    },
+    {
+      tenSanPham: 'Intel Core i5 14500',
+      slug: 'intel-core-i5-14500',
+      gia: 8990000,
+      hinhAnh: '../public/images/',
+      moTa: '14 nhân, 20 luồng, 2.6 GHz, Socket LGA 1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 14, threads: 20, baseFreq: '2.6 GHz', socket: 'LGA 1700' }
+    },
+    {
+      tenSanPham: 'Intel Core i5 13400F (Tray)',
+      slug: 'intel-core-i5-13400f',
+      gia: 4290000,
+      hinhAnh: '../public/images/',
+      moTa: '10 nhân, 16 luồng, 4.6 GHz, Socket LGA 1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 10, threads: 16, boostFreq: '4.6 GHz', socket: 'LGA 1700' }
+    },
+    {
+      tenSanPham: 'Intel Core Ultra 9 285K',
+      slug: 'intel-core-ultra-9-285k',
+      gia: 16990000,
+      hinhAnh: '../public/images/',
+      moTa: '24 nhân, 24 luồng, 5.7 GHz, Socket FCLGA1851',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 24, threads: 24, boostFreq: '5.7 GHz', socket: 'FCLGA1851' }
+    },
+    {
+      tenSanPham: 'Intel Core i5 14600K (Tray)',
+      slug: 'intel-core-i5-14600k',
+      gia: 7690000,
+      hinhAnh: '../public/images/',
+      moTa: '14 nhân, 20 luồng, 5.3 GHz, Socket LGA 1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 14, threads: 20, boostFreq: '5.3 GHz', socket: 'LGA 1700' }
+    },
+    {
+      tenSanPham: 'Intel Core i7 14700F',
+      slug: 'intel-core-i7-14700f',
+      gia: 10490000,
+      hinhAnh: '../public/images/',
+      moTa: '20 nhân, 28 luồng, 2.1 GHz, Socket LGA 1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 20, threads: 28, baseFreq: '2.1 GHz', socket: 'LGA 1700' }
+    },
+    {
+      tenSanPham: 'Intel Core i5 14400F (Tray)',
+      slug: 'intel-core-i5-14400f',
+      gia: 5990000,
+      hinhAnh: '../public/images/',
+      moTa: '10 nhân, 16 luồng, 4.7 GHz, Socket LGA 1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 10, threads: 16, boostFreq: '4.7 GHz', socket: 'LGA 1700' }
+    },
+    {
+      tenSanPham: 'Intel Core i3 13100F',
+      slug: 'intel-core-i3-13100f',
+      gia: 2990000,
+      hinhAnh: '../public/images/',
+      moTa: '4 nhân, 8 luồng, 3.4 GHz, Socket LGA 1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 4, threads: 8, baseFreq: '3.4 GHz', socket: 'LGA 1700' }
+    },
+    {
+      tenSanPham: 'Intel Core i3 14100F',
+      slug: 'intel-core-i3-14100f',
+      gia: 3290000,
+      hinhAnh: '../public/images/',
+      moTa: '4 nhân, 8 luồng, 3.5 GHz, Socket LGA 1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 4, threads: 8, baseFreq: '3.5 GHz', socket: 'LGA 1700' }
+    },
+    {
+      tenSanPham: 'Intel Core i5-12500',
+      slug: 'intel-core-i5-12500',
+      gia: 5990000,
+      hinhAnh: '../public/images/',
+      moTa: '6 nhân, 12 luồng, 4.6 GHz, Socket FCLGA1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 6, threads: 12, boostFreq: '4.6 GHz', socket: 'FCLGA1700' }
+    },
+    {
+      tenSanPham: 'Intel Core i9 14900',
+      slug: 'intel-core-i9-14900',
+      gia: 19990000,
+      hinhAnh: '../public/images/',
+      moTa: '24 nhân, 32 luồng, 2.0 GHz, Socket LGA 1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 24, threads: 32, baseFreq: '2.0 GHz', socket: 'LGA 1700' }
+    },
+    {
+      tenSanPham: 'Intel Core i5 12400 (Tray)',
+      slug: 'intel-core-i5-12400',
+      gia: 5690000,
+      hinhAnh: '../public/images/',
+      moTa: '6 nhân, 12 luồng, 4.4 GHz, Socket LGA 1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 6, threads: 12, boostFreq: '4.4 GHz', socket: 'LGA 1700' }
+    },
+    {
+      tenSanPham: 'Intel Pentium Gold G6405',
+      slug: 'intel-pentium-g6405',
+      gia: 1990000,
+      hinhAnh: '../public/images/',
+      moTa: '2 nhân, 4 luồng, 4.1 GHz, Socket LGA 1200',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 2, threads: 4, baseFreq: '4.1 GHz', socket: 'LGA 1200' }
+    },
+    {
+      tenSanPham: 'Intel Core Ultra 5 225 (Tray)',
+      slug: 'intel-core-ultra-5-225',
+      gia: 4690000,
+      hinhAnh: '../public/images/',
+      moTa: '10 nhân, 10 luồng, 4.9 GHz, Socket FCLGA1851',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 10, threads: 10, boostFreq: '4.9 GHz', socket: 'FCLGA1851' }
+    },
+    {
+      tenSanPham: 'Intel Core i3 14100 (Tray)',
+      slug: 'intel-core-i3-14100',
+      gia: 4490000,
+      hinhAnh: '../public/images/',
+      moTa: '4 nhân, 8 luồng, 4.7 GHz, Socket FCLGA1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 4, threads: 8, boostFreq: '4.7 GHz', socket: 'FCLGA1700' }
+    },
+    {
+      tenSanPham: 'Intel Core i7 12700 (Tray)',
+      slug: 'intel-core-i7-12700',
+      gia: 9290000,
+      hinhAnh: '../public/images/',
+      moTa: '12 nhân, 20 luồng, 4.9 GHz, Socket LGA 1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 12, threads: 20, boostFreq: '4.9 GHz', socket: 'LGA 1700' }
+    },
+    {
+      tenSanPham: 'Intel Core i3 12100 (Tray)',
+      slug: 'intel-core-i3-12100',
+      gia: 4490000,
+      hinhAnh: '../public/images/',
+      moTa: '4 nhân, 8 luồng, 4.3 GHz, Socket LGA 1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 4, threads: 8, boostFreq: '4.3 GHz', socket: 'LGA 1700' }
+    },
+    {
+      tenSanPham: 'Intel Core Ultra 5 225F (Tray)',
+      slug: 'intel-core-ultra-5-225f',
+      gia: 4290000,
+      hinhAnh: '../public/images/',
+      moTa: '10 nhân, 10 luồng, 4.9 GHz, Socket LGA 1851',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 10, threads: 10, boostFreq: '4.9 GHz', socket: 'LGA 1851' }
+    },
+    {
+      tenSanPham: 'Intel Core Ultra 5 245K',
+      slug: 'intel-core-ultra-5-245k',
+      gia: 8290000,
+      hinhAnh: '../public/images/',
+      moTa: '14 nhân, 14 luồng, 5.2 GHz, Socket FCLGA1851',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 14, threads: 14, boostFreq: '5.2 GHz', socket: 'FCLGA1851' }
+    },
+    {
+      tenSanPham: 'Intel Core Ultra 5 245KF',
+      slug: 'intel-core-ultra-5-245kf',
+      gia: 7990000,
+      hinhAnh: '../public/images/',
+      moTa: '14 nhân, 14 luồng, 5.2 GHz, Socket FCLGA1851',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 14, threads: 14, boostFreq: '5.2 GHz', socket: 'FCLGA1851' }
+    },
+    {
+      tenSanPham: 'Intel Core i7 14700KF',
+      slug: 'intel-core-i7-14700kf',
+      gia: 10990000,
+      hinhAnh: '../public/images/',
+      moTa: '20 nhân, 28 luồng, 3.4 GHz, Socket LGA 1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 20, threads: 28, baseFreq: '3.4 GHz', socket: 'LGA 1700' }
+    },
+    {
+      tenSanPham: 'Intel Core i9 14900KF',
+      slug: 'intel-core-i9-14900kf',
+      gia: 15990000,
+      hinhAnh: '../public/images/',
+      moTa: '24 nhân, 32 luồng, 3.2 GHz, Socket LGA 1700',
+      thuongHieu: 'Intel',
+      thongSoKyThuat: { cores: 24, threads: 32, baseFreq: '3.2 GHz', socket: 'LGA 1700' }
     }
   ]
 
@@ -437,6 +808,385 @@ async function main() {
         speed: '7200MHz',
         latency: 'CL34'
       }
+    },
+    {
+      tenSanPham: 'RAM Laptop Kingston 1.2V 8GB 3200MHz',
+      slug: 'ram-laptop-kingston-1-2v-8gb-3200mhz',
+      gia: 2490000,
+      moTa: 'RAM Laptop Kingston 1.2V 8GB 3200MHz DDR4',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '8GB',
+        type: 'DDR4',
+        speed: '3200MHz',
+        voltage: '1.2V',
+        formFactor: 'SO-DIMM'
+      }
+    },
+    {
+      tenSanPham: 'RAM Laptop Kingston Sodimm 1.2V 16GB 3200MHz',
+      slug: 'ram-laptop-kingston-sodimm-1-2v-16gb-3200mhz',
+      gia: 3990000,
+      moTa: 'RAM Laptop Kingston Sodimm 1.2V 16GB 3200MHz DDR4',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '16GB',
+        type: 'DDR4',
+        speed: '3200MHz',
+        voltage: '1.2V',
+        formFactor: 'SO-DIMM'
+      }
+    },
+    {
+      tenSanPham: 'RAM Laptop Kingston DDR4 3200MHz 8GB',
+      slug: 'ram-laptop-kingston-ddr4-3200mhz-8gb',
+      gia: 2490000,
+      moTa: 'RAM Laptop Kingston DDR4 3200MHz 8GB',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '8GB',
+        type: 'DDR4',
+        speed: '3200MHz',
+        formFactor: 'SO-DIMM'
+      }
+    },
+    {
+      tenSanPham: 'RAM Laptop Kingston DDR5 5600MHz 16GB',
+      slug: 'ram-laptop-kingston-ddr5-5600mhz-16gb',
+      gia: 6490000,
+      moTa: 'RAM Laptop Kingston DDR5 5600MHz 16GB',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '16GB',
+        type: 'DDR5',
+        speed: '5600MHz',
+        formFactor: 'SO-DIMM'
+      }
+    },
+    {
+      tenSanPham: 'RAM PC Kingston Fury Beast DDR4 3200MHz 16GB',
+      slug: 'ram-pc-kingston-fury-beast-ddr4-3200mhz-16gb',
+      gia: 3990000,
+      moTa: 'RAM PC Kingston Fury Beast DDR4 3200MHz 16GB',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '16GB',
+        type: 'DDR4',
+        speed: '3200MHz',
+        formFactor: 'DIMM'
+      }
+    },
+    {
+      tenSanPham: 'RAM Laptop Kingston DDR5 5600MHz 8GB',
+      slug: 'ram-laptop-kingston-ddr5-5600mhz-8gb',
+      gia: 3490000,
+      moTa: 'RAM Laptop Kingston DDR5 5600MHz 8GB',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '8GB',
+        type: 'DDR5',
+        speed: '5600MHz',
+        formFactor: 'SO-DIMM'
+      }
+    },
+    {
+      tenSanPham: 'RAM Laptop Kingston DDR4 3200MHz 16GB',
+      slug: 'ram-laptop-kingston-ddr4-3200mhz-16gb',
+      gia: 3990000,
+      moTa: 'RAM Laptop Kingston DDR4 3200MHz 16GB',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '16GB',
+        type: 'DDR4',
+        speed: '3200MHz',
+        formFactor: 'SO-DIMM'
+      }
+    },
+    {
+      tenSanPham: 'RAM Laptop Kingston 1.2V 3200MHz KVR32S22D8/32',
+      slug: 'ram-laptop-kingston-kvr32s22d8-32-3200mhz',
+      gia: 10990000,
+      moTa: 'RAM Laptop Kingston 1.2V 3200MHz KVR32S22D8/32, 32GB DDR4',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '32GB',
+        type: 'DDR4',
+        speed: '3200MHz',
+        voltage: '1.2V',
+        formFactor: 'SO-DIMM',
+        model: 'KVR32S22D8/32'
+      }
+    },
+    {
+      tenSanPham: 'RAM PC Kingston Fury DDR5 5600MHz 32GB (2x16GB)',
+      slug: 'ram-pc-kingston-fury-ddr5-5600mhz-32gb-2x16',
+      gia: 13990000,
+      moTa: 'RAM PC Kingston Fury DDR5 5600MHz 32GB (2x16GB)',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '32GB (2x16GB)',
+        type: 'DDR5',
+        speed: '5600MHz',
+        formFactor: 'DIMM'
+      }
+    },
+    {
+      tenSanPham: 'RAM PC Kingston Fury DDR5 5600MHz 16GB (1x16GB)',
+      slug: 'ram-pc-kingston-fury-ddr5-5600mhz-16gb-1x16',
+      gia: 7290000,
+      moTa: 'RAM PC Kingston Fury DDR5 5600MHz 16GB (1x16GB)',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '16GB (1x16GB)',
+        type: 'DDR5',
+        speed: '5600MHz',
+        formFactor: 'DIMM'
+      }
+    },
+    {
+      tenSanPham: 'RAM PC Kingston Fury DDR5 6000MHz 16GB (1x16GB)',
+      slug: 'ram-pc-kingston-fury-ddr5-6000mhz-16gb-1x16',
+      gia: 7290000,
+      moTa: 'RAM PC Kingston Fury DDR5 6000MHz 16GB (1x16GB)',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '16GB (1x16GB)',
+        type: 'DDR5',
+        speed: '6000MHz',
+        formFactor: 'DIMM'
+      }
+    },
+    {
+      tenSanPham: 'RAM PC Kingston Fury 8GB 3200MHz KF432C16BB/8',
+      slug: 'ram-pc-kingston-fury-8gb-3200mhz-kf432c16bb-8',
+      gia: 2490000,
+      moTa: 'RAM PC Kingston Fury 8GB 3200MHz KF432C16BB/8',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '8GB',
+        type: 'DDR4',
+        speed: '3200MHz',
+        formFactor: 'DIMM',
+        model: 'KF432C16BB/8'
+      }
+    },
+    {
+      tenSanPham: 'RAM PC Kingston Fury RGB DDR5 6000MHz 64GB (2x32GB)',
+      slug: 'ram-pc-kingston-fury-rgb-ddr5-6000mhz-64gb-2x32',
+      gia: 26990000,
+      moTa: 'RAM PC Kingston Fury RGB DDR5 6000MHz 64GB (2x32GB)',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '64GB (2x32GB)',
+        type: 'DDR5',
+        speed: '6000MHz',
+        formFactor: 'DIMM',
+        rgb: true
+      }
+    },
+    {
+      tenSanPham: 'RAM PC Kingston Fury RGB DDR5 6000MHz 32GB (2x16GB)',
+      slug: 'ram-pc-kingston-fury-rgb-ddr5-6000mhz-32gb-2x16',
+      gia: 14490000,
+      moTa: 'RAM PC Kingston Fury RGB DDR5 6000MHz 32GB (2x16GB)',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '32GB (2x16GB)',
+        type: 'DDR5',
+        speed: '6000MHz',
+        formFactor: 'DIMM',
+        rgb: true
+      }
+    },
+    {
+      tenSanPham: 'RAM PC Kingston Fury DDR5 6000MHz 32GB (2x16GB)',
+      slug: 'ram-pc-kingston-fury-ddr5-6000mhz-32gb-2x16',
+      gia: 14490000,
+      moTa: 'RAM PC Kingston Fury DDR5 6000MHz 32GB (2x16GB)',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '32GB (2x16GB)',
+        type: 'DDR5',
+        speed: '6000MHz',
+        formFactor: 'DIMM'
+      }
+    },
+    {
+      tenSanPham: 'RAM PC Kingston Fury Beast RGB DDR5 5600MHz 64GB (2x32GB)',
+      slug: 'ram-pc-kingston-fury-beast-rgb-ddr5-5600mhz-64gb-2x32',
+      gia: 26990000,
+      moTa: 'RAM PC Kingston Fury Beast RGB DDR5 5600MHz 64GB (2x32GB)',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '64GB (2x32GB)',
+        type: 'DDR5',
+        speed: '5600MHz',
+        formFactor: 'DIMM',
+        rgb: true
+      }
+    },
+    {
+      tenSanPham: 'RAM PC Kingston Fury RGB DDR5 6000MHz 32GB (1x32GB)',
+      slug: 'ram-pc-kingston-fury-rgb-ddr5-6000mhz-32gb-1x32',
+      gia: 14490000,
+      moTa: 'RAM PC Kingston Fury RGB DDR5 6000MHz 32GB (1x32GB)',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '32GB (1x32GB)',
+        type: 'DDR5',
+        speed: '6000MHz',
+        formFactor: 'DIMM',
+        rgb: true
+      }
+    },
+    {
+      tenSanPham: 'RAM Kingston DDR5 5600MT/s 32GB',
+      slug: 'ram-kingston-ddr5-5600mt-s-32gb',
+      gia: 14990000,
+      moTa: 'RAM Kingston DDR5 5600MT/s 32GB',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '32GB',
+        type: 'DDR5',
+        speed: '5600MT/s',
+        formFactor: 'DIMM'
+      }
+    },
+    {
+      tenSanPham: 'RAM PC Kingston Fury Beast Black 16GB 3200MHz DDR4',
+      slug: 'ram-pc-kingston-fury-beast-black-ddr4-3200mhz-16gb',
+      gia: 3990000,
+      moTa: 'RAM PC Kingston Fury Beast Black 16GB 3200MHz DDR4',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '16GB',
+        type: 'DDR4',
+        speed: '3200MHz',
+        formFactor: 'DIMM'
+      }
+    },
+    {
+      tenSanPham: 'RAM PC Kingston Fury Beast DDR4 3200MHz 8GB',
+      slug: 'ram-pc-kingston-fury-beast-ddr4-3200mhz-8gb',
+      gia: 2490000,
+      moTa: 'RAM PC Kingston Fury Beast DDR4 3200MHz 8GB',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '8GB',
+        type: 'DDR4',
+        speed: '3200MHz',
+        formFactor: 'DIMM'
+      }
+    },
+    {
+      tenSanPham: 'RAM PC ADATA XPG D50 RGB 16GB (1x16GB) 3200MHz',
+      slug: 'ram-pc-adata-xpg-d50-rgb-16gb-1x16-3200mhz',
+      gia: 4290000,
+      moTa: 'RAM PC ADATA XPG D50 RGB 16GB (1x16GB) 3200MHz DDR4',
+      thuongHieu: 'ADATA',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '16GB (1x16GB)',
+        type: 'DDR4',
+        speed: '3200MHz',
+        formFactor: 'DIMM',
+        rgb: true
+      }
+    },
+    {
+      tenSanPham: 'RAM PC ADATA XPG D50 RGB 8GB (1x8GB) 3200MHz DDR4',
+      slug: 'ram-pc-adata-xpg-d50-rgb-8gb-1x8-3200mhz',
+      gia: 2690000,
+      moTa: 'RAM PC ADATA XPG D50 RGB 8GB (1x8GB) 3200MHz DDR4',
+      thuongHieu: 'ADATA',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '8GB (1x8GB)',
+        type: 'DDR4',
+        speed: '3200MHz',
+        formFactor: 'DIMM',
+        rgb: true
+      }
+    },
+    {
+      tenSanPham: 'RAM PC ADATA XPG LANCER RGB 16GB (1x16GB) 6000MHz',
+      slug: 'ram-pc-adata-xpg-lancer-rgb-16gb-1x16-6000mhz',
+      gia: 7690000,
+      moTa: 'RAM PC ADATA XPG LANCER RGB 16GB (1x16GB) 6000MHz DDR5',
+      thuongHieu: 'ADATA',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '16GB (1x16GB)',
+        type: 'DDR5',
+        speed: '6000MHz',
+        formFactor: 'DIMM',
+        rgb: true
+      }
+    },
+    {
+      tenSanPham: 'RAM PC ADATA XPG D35G RGB 16GB (1x16GB) 3200MHz',
+      slug: 'ram-pc-adata-xpg-d35g-rgb-16gb-1x16-3200mhz',
+      gia: 4290000,
+      moTa: 'RAM PC ADATA XPG D35G RGB 16GB (1x16GB) 3200MHz DDR4',
+      thuongHieu: 'ADATA',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '16GB (1x16GB)',
+        type: 'DDR4',
+        speed: '3200MHz',
+        formFactor: 'DIMM',
+        rgb: true
+      }
+    },
+    {
+      tenSanPham: 'RAM PC ADATA XPG D35G RGB 8GB (1x8GB) 3200MHz',
+      slug: 'ram-pc-adata-xpg-d35g-rgb-8gb-1x8-3200mhz',
+      gia: 2690000,
+      moTa: 'RAM PC ADATA XPG D35G RGB 8GB (1x8GB) 3200MHz DDR4',
+      thuongHieu: 'ADATA',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '8GB (1x8GB)',
+        type: 'DDR4',
+        speed: '3200MHz',
+        formFactor: 'DIMM',
+        rgb: true
+      }
+    },
+    {
+      tenSanPham: 'RAM PNY XLR8 DDR4 3200MHz Heatsink RGB 8GB',
+      slug: 'ram-pny-xlr8-ddr4-3200mhz-heatsink-rgb-8gb',
+      gia: 2690000,
+      moTa: 'RAM PNY XLR8 DDR4 3200MHz Heatsink RGB 8GB',
+      thuongHieu: 'PNY',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '8GB',
+        type: 'DDR4',
+        speed: '3200MHz',
+        formFactor: 'DIMM',
+        rgb: true
+      }
     }
   ]
 
@@ -621,70 +1371,372 @@ async function main() {
 
   // ============== THÊM NHIỀU MAINBOARD ==============
   const motherboardProducts = [
+    // ASUS
     {
-      tenSanPham: 'ASUS ROG MAXIMUS Z890-E',
-      slug: 'asus-rog-maximus-z890-e',
-      gia: 8500000,
-      moTa: 'Bo mạch chủ ASUS ROG MAXIMUS Z890-E Socket LGA 1700',
+      tenSanPham: 'Asus TUF Gaming B760M-PLUS Wifi D4',
+      slug: 'asus-tuf-b760m-plus-wifi-d4',
+      gia: 3790000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'ASUS',
-      thongSoKyThuat: {
-        socket: 'LGA 1700',
-        chipset: 'Z890',
-        formFactor: 'ATX',
-        memory: 'DDR5'
-      }
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
     },
     {
-      tenSanPham: 'MSI MPG Z890 CARBON WiFi',
-      slug: 'msi-mpg-z890-carbon-wifi',
-      gia: 7500000,
-      moTa: 'Bo mạch chủ MSI MPG Z890 Carbon WiFi LGA 1700',
-      thuongHieu: 'MSI',
-      thongSoKyThuat: {
-        socket: 'LGA 1700',
-        chipset: 'Z890',
-        formFactor: 'ATX',
-        memory: 'DDR5'
-      }
+      tenSanPham: 'Asus PRIME H610M-K D4',
+      slug: 'asus-prime-h610m-k-d4',
+      gia: 1790000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, M-ATX, DDR4',
+      thuongHieu: 'ASUS',
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
     },
     {
-      tenSanPham: 'Gigabyte Z890 MASTER',
-      slug: 'gigabyte-z890-master',
-      gia: 6800000,
-      moTa: 'Bo mạch chủ Gigabyte Z890 Master Socket LGA 1700',
+      tenSanPham: 'Asus Prime B760M-A DDR4',
+      slug: 'asus-prime-b760m-a-ddr4',
+      gia: 2790000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, PCIe 4.0, DDR4',
+      thuongHieu: 'ASUS',
+      thongSoKyThuat: { socket: 'LGA 1700', pcie: 'PCIe 4.0', memory: 'DDR4' }
+    },
+    {
+      tenSanPham: 'Asus TUF Gaming B760M-PLUS WIFI D5',
+      slug: 'asus-tuf-b760m-plus-wifi-d5',
+      gia: 4290000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, ATX, DDR5',
+      thuongHieu: 'ASUS',
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'ATX', memory: 'DDR5' }
+    },
+    {
+      tenSanPham: 'Asus Prime B760M-K D4',
+      slug: 'asus-prime-b760m-k-d4',
+      gia: 2490000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, M-ATX, DDR4',
+      thuongHieu: 'ASUS',
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
+    },
+    {
+      tenSanPham: 'ASUS TUF Gaming X870-PLUS WIFI',
+      slug: 'asus-tuf-x870-plus-wifi',
+      gia: 8990000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket AM5, ATX, DDR5',
+      thuongHieu: 'ASUS',
+      thongSoKyThuat: { socket: 'AM5', formFactor: 'ATX', memory: 'DDR5' }
+    },
+    {
+      tenSanPham: 'ASUS TUF Gaming Z890-PLUS WIFI',
+      slug: 'asus-tuf-z890-plus-wifi',
+      gia: 7590000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA1851, ATX, DDR5',
+      thuongHieu: 'ASUS',
+      thongSoKyThuat: { socket: 'LGA1851', formFactor: 'ATX', memory: 'DDR5' }
+    },
+    {
+      tenSanPham: 'Asus Prime B860M-K DDR5',
+      slug: 'asus-prime-b860m-k-ddr5',
+      gia: 3590000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA1851, micro-ATX, DDR5',
+      thuongHieu: 'ASUS',
+      thongSoKyThuat: { socket: 'LGA1851', formFactor: 'Micro ATX', memory: 'DDR5' }
+    },
+    {
+      tenSanPham: 'ASUS PRIME B650M-K',
+      slug: 'asus-prime-b650m-k',
+      gia: 3290000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket AM5, Micro ATX, DDR5',
+      thuongHieu: 'ASUS',
+      thongSoKyThuat: { socket: 'AM5', formFactor: 'Micro ATX', memory: 'DDR5' }
+    },
+    {
+      tenSanPham: 'Asus TUF Gaming B760M-PLUS D4',
+      slug: 'asus-tuf-b760m-plus-d4',
+      gia: 3690000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, M-ATX, DDR4',
+      thuongHieu: 'ASUS',
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
+    },
+
+    // GIGABYTE
+    {
+      tenSanPham: 'Gigabyte B760M Gaming Plus Wifi D4',
+      slug: 'gigabyte-b760m-gaming-plus-wifi-d4',
+      gia: 3190000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, Micro ATX, DDR4',
       thuongHieu: 'Gigabyte',
-      thongSoKyThuat: {
-        socket: 'LGA 1700',
-        chipset: 'Z890',
-        formFactor: 'ATX',
-        memory: 'DDR5'
-      }
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
     },
     {
-      tenSanPham: 'ASUS ROG STRIX X870-E-E GAMING WiFi',
-      slug: 'asus-rog-strix-x870-e-gaming',
-      gia: 9200000,
-      moTa: 'Bo mạch chủ ASUS ROG STRIX X870-E Socket AM5',
-      thuongHieu: 'ASUS',
-      thongSoKyThuat: {
-        socket: 'AM5',
-        chipset: 'X870-E',
-        formFactor: 'ATX',
-        memory: 'DDR5'
-      }
+      tenSanPham: 'Gigabyte B550M H ARGB AM4 D4',
+      slug: 'gigabyte-b550m-h-argb-am4-d4',
+      gia: 2090000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket AM4, Micro ATX, DDR4',
+      thuongHieu: 'Gigabyte',
+      thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
     },
     {
-      tenSanPham: 'MSI MPG B850 EDGE WiFi',
-      slug: 'msi-mpg-b850-edge-wifi',
-      gia: 5500000,
-      moTa: 'Bo mạch chủ MSI MPG B850 Edge WiFi Socket AM5',
+      tenSanPham: 'Gigabyte B760M DS3H DDR4',
+      slug: 'gigabyte-b760m-ds3h-ddr4',
+      gia: 3090000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, M-ATX, DDR4',
+      thuongHieu: 'Gigabyte',
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
+    },
+    {
+      tenSanPham: 'Gigabyte B860M Eagle WIFI6 V2 D5',
+      slug: 'gigabyte-b860m-eagle-wifi6-v2-d5',
+      gia: 3790000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA1851, Micro ATX, DDR5',
+      thuongHieu: 'Gigabyte',
+      thongSoKyThuat: { socket: 'LGA1851', formFactor: 'Micro ATX', memory: 'DDR5' }
+    },
+    {
+      tenSanPham: 'Gigabyte H810M H D5',
+      slug: 'gigabyte-h810m-h-d5',
+      gia: 2690000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA1851, Micro ATX, DDR5',
+      thuongHieu: 'Gigabyte',
+      thongSoKyThuat: { socket: 'LGA1851', formFactor: 'Micro ATX', memory: 'DDR5' }
+    },
+    {
+      tenSanPham: 'Gigabyte Z790M Aorus Elite AX D5',
+      slug: 'gigabyte-z790m-aorus-elite-ax-d5',
+      gia: 6490000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, M-ATX, DDR5',
+      thuongHieu: 'Gigabyte',
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR5' }
+    },
+    {
+      tenSanPham: 'Gigabyte B860M K DDR5',
+      slug: 'gigabyte-b860m-k-ddr5',
+      gia: 3390000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA1851, Micro-ATX, DDR5',
+      thuongHieu: 'Gigabyte',
+      thongSoKyThuat: { socket: 'LGA1851', formFactor: 'Micro ATX', memory: 'DDR5' }
+    },
+    {
+      tenSanPham: 'Gigabyte Z790 A Elite AX DDR4',
+      slug: 'gigabyte-z790-a-elite-ax-ddr4',
+      gia: 8200000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, ATX, DDR4',
+      thuongHieu: 'Gigabyte',
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'ATX', memory: 'DDR4' }
+    },
+
+    // MSI
+    {
+      tenSanPham: 'MSI Pro H610M-S DDR4',
+      slug: 'msi-pro-h610m-s-ddr4',
+      gia: 1690000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'MSI',
-      thongSoKyThuat: {
-        socket: 'AM5',
-        chipset: 'B850',
-        formFactor: 'ATX',
-        memory: 'DDR5'
-      }
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
+    },
+    {
+      tenSanPham: 'MSI Pro B760M-E DDR4',
+      slug: 'msi-pro-b760m-e-ddr4',
+      gia: 2490000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, M-ATX, DDR4',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
+    },
+    {
+      tenSanPham: 'MSI PRO B760M-A WIFI DDR4',
+      slug: 'msi-pro-b760m-a-wifi-ddr4',
+      gia: 3290000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, M-ATX, DDR4',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
+    },
+    {
+      tenSanPham: 'MSI B760M Gaming WIFI DDR5',
+      slug: 'msi-b760m-gaming-wifi-ddr5',
+      gia: 3190000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, M-ATX, DDR5',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR5' }
+    },
+    {
+      tenSanPham: 'MSI B650M Gaming Wifi DDR5',
+      slug: 'msi-b650m-gaming-wifi-ddr5',
+      gia: 3690000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket AM5, M-ATX, DDR5',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { socket: 'AM5', formFactor: 'Micro ATX', memory: 'DDR5' }
+    },
+    {
+      tenSanPham: 'MSI A520M-A Pro D4 AM4',
+      slug: 'msi-a520m-a-pro-d4-am4',
+      gia: 1490000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket AM4, M-ATX, DDR4',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
+    },
+    {
+      tenSanPham: 'MSI Z790 Gaming Plus WF DDR5',
+      slug: 'msi-z790-gaming-plus-wf-ddr5',
+      gia: 5990000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, ATX, DDR5',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'ATX', memory: 'DDR5' }
+    },
+    {
+      tenSanPham: 'MSI B450M-A PRO MAX II',
+      slug: 'msi-b450m-a-pro-max-ii',
+      gia: 1790000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket AM4, M-ATX, DDR4',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
+    },
+
+    // ASRock
+    {
+      tenSanPham: 'ASRock A520M/AC D4 AM4 Wifi',
+      slug: 'asrock-a520m-ac-d4-am4-wifi',
+      gia: 1590000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket AM4, M-ATX, DDR4',
+      thuongHieu: 'ASRock',
+      thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
+    },
+    {
+      tenSanPham: 'ASRock H610M-HVS/M.2 R2.0',
+      slug: 'asrock-h610m-hvs-m2-r2-0',
+      gia: 1690000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, M-ATX, DDR4',
+      thuongHieu: 'ASRock',
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
+    },
+    {
+      tenSanPham: 'Asrock B760M Pro RS/D4',
+      slug: 'asrock-b760m-pro-rs-d4',
+      gia: 2890000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, M-ATX, DDR4',
+      thuongHieu: 'ASRock',
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
+    },
+    {
+      tenSanPham: 'ASRock A520M-HVS D4 AM4',
+      slug: 'asrock-a520m-hvs-d4-am4',
+      gia: 1490000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket AM4, M-ATX, DDR4',
+      thuongHieu: 'ASRock',
+      thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
+    },
+    {
+      tenSanPham: 'ASRock H610M-HD/M.2 D4',
+      slug: 'asrock-h610m-hd-m2-d4',
+      gia: 1690000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, M-ATX, DDR4',
+      thuongHieu: 'ASRock',
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
+    },
+    {
+      tenSanPham: 'ASRock B450M HDV R4',
+      slug: 'asrock-b450m-hdv-r4',
+      gia: 1650000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket AM4, M-ATX, DDR4',
+      thuongHieu: 'ASRock',
+      thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
+    },
+    {
+      tenSanPham: 'Asrock B760M Pro RS/D4 Wifi',
+      slug: 'asrock-b760m-pro-rs-d4-wifi',
+      gia: 3190000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, M-ATX, DDR4',
+      thuongHieu: 'ASRock',
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
+    },
+    {
+      tenSanPham: 'ASRock B550M Pro 4 DDR4',
+      slug: 'asrock-b550m-pro-4-ddr4',
+      gia: 2790000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket AM4, M-ATX, DDR4',
+      thuongHieu: 'ASRock',
+      thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
+    },
+    {
+      tenSanPham: 'ASRock B650M Pro RS WiFi D5',
+      slug: 'asrock-b650m-pro-rs-wifi-d5',
+      gia: 3890000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket AM5, Micro ATX, DDR5',
+      thuongHieu: 'ASRock',
+      thongSoKyThuat: { socket: 'AM5', formFactor: 'Micro ATX', memory: 'DDR5' }
+    },
+    {
+      tenSanPham: 'Asrock X870 Pro RS Wifi D5',
+      slug: 'asrock-x870-pro-rs-wifi-d5',
+      gia: 6690000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket AM5, ATX, DDR5',
+      thuongHieu: 'ASRock',
+      thongSoKyThuat: { socket: 'AM5', formFactor: 'ATX', memory: 'DDR5' }
+    },
+    {
+      tenSanPham: 'ASRock B660M Pro RS',
+      slug: 'asrock-b660m-pro-rs',
+      gia: 2890000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, M-ATX, DDR4',
+      thuongHieu: 'ASRock',
+      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
+    },
+    {
+      tenSanPham: 'ASRock Z790 Pro RS Wifi D5',
+      slug: 'asrock-z790-pro-rs-wifi-d5',
+      gia: 5490000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1700, PCIe 5.0, DDR5',
+      thuongHieu: 'ASRock',
+      thongSoKyThuat: { socket: 'LGA 1700', pcie: 'PCIe 5.0', memory: 'DDR5' }
+    },
+    {
+      tenSanPham: 'ASRock A620AM-HVS DDR5',
+      slug: 'asrock-a620am-hvs-ddr5',
+      gia: 1990000,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket AM5, Micro ATX, DDR5',
+      thuongHieu: 'ASRock',
+      thongSoKyThuat: { socket: 'AM5', formFactor: 'Micro ATX', memory: 'DDR5' }
+    },
+    {
+      tenSanPham: 'ASRock Z890 Pro RS Wifi D5',
+      slug: 'asrock-z890-pro-rs-wifi-d5',
+      gia: 0,
+      hinhAnh: '../public/images/',
+      moTa: 'Socket LGA 1851RL-ILM, ATX, DDR5 - Giá liên hệ',
+      thuongHieu: 'ASRock',
+      thongSoKyThuat: { socket: 'LGA 1851RL-ILM', formFactor: 'ATX', memory: 'DDR5' }
     }
   ]
 
@@ -726,11 +1778,11 @@ async function main() {
   console.log('   - 6 danh mục')
   console.log('   - 10 CPU')
   console.log('   - 8 GPU')
-  console.log('   - 6 RAM')
+  console.log('   - 26 RAM')
   console.log('   - 6 Storage')
   console.log('   - 5 PSU')
   console.log('   - 5 Motherboard')
-  console.log('   = 45 sản phẩm')
+  console.log('   = 65 sản phẩm')
 }
 
 // Tạo user admin nếu chưa tồn tại, rồi cập nhật vai trò
