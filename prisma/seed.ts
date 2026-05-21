@@ -72,7 +72,7 @@ async function main() {
       tenSanPham: 'Intel Core i9-14900KS',
       slug: 'intel-core-i9-14900ks',
       gia: 24500000,
-      hinhAnh: 'https://www.intel.com/content/dam/support/us/en/images/processors/97035-img11.png',
+      hinhAnh: '../public/images/1.jpg',
       moTa: 'CPU flagship Intel phiên bản K Special Edition, 24 cores/32 threads',
       thuongHieu: 'Intel',
       thongSoKyThuat: {
@@ -88,7 +88,7 @@ async function main() {
       tenSanPham: 'Intel Core i9-14900K',
       slug: 'intel-core-i9-14900k',
       gia: 22500000,
-      hinhAnh: 'https://hoanghapccdn.com/media/product/4720_core_i9_14900k_sale_t4_2026.jpg',
+      hinhAnh: '../public/images/2.jpg',
       moTa: 'CPU cao cấp Intel thế hệ 14, 24 cores/32 threads',
       thuongHieu: 'Intel',
       thongSoKyThuat: {
@@ -104,7 +104,7 @@ async function main() {
       tenSanPham: 'Intel Core i7-14700K',
       slug: 'intel-core-i7-14700k',
       gia: 18500000,
-      hinhAnh: 'https://hoanghapccdn.com/media/product/4636_core_i7_14700k_sale_t4_2026.jpg',
+      hinhAnh: '../public/images/3.jpg',
       moTa: 'CPU cao cấp Intel thế hệ 14 cho gaming và xử lý đa nhiệm',
       thuongHieu: 'Intel',
       thongSoKyThuat: {
@@ -120,7 +120,7 @@ async function main() {
       tenSanPham: 'Intel Core i7-14700',
       slug: 'intel-core-i7-14700',
       gia: 16000000,
-      hinhAnh: 'https://hoanghapccdn.com/media/product/4550_core_i7_14700_sale_t4_2026.jpg',
+      hinhAnh: '../public/images/56f13-17052559829935-1920.jpg',
       moTa: 'Intel Core i7 phiên bản tiêu chuẩn, 20 cores/28 threads',
       thuongHieu: 'Intel',
       thongSoKyThuat: {
@@ -136,6 +136,7 @@ async function main() {
       tenSanPham: 'Intel Core i5-14600K',
       slug: 'intel-core-i5-14600k',
       gia: 8500000,
+      hinhAnh: '../public/images/4.jpg',
       moTa: 'CPU mid-range Intel đa năng cho gaming và công việc',
       thuongHieu: 'Intel',
       thongSoKyThuat: {
@@ -152,6 +153,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 9 7950X3D',
       slug: 'amd-ryzen-9-7950x3d',
       gia: 22000000,
+      hinhAnh: '../public/images/5.jpg',
       moTa: 'Ryzen 9 cao cấp với công nghệ 3D V-Cache, 16 cores/32 threads',
       thuongHieu: 'AMD',
       thongSoKyThuat: {
@@ -167,6 +169,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 9 7950X',
       slug: 'amd-ryzen-9-7950x',
       gia: 20000000,
+      hinhAnh: '../public/images/6.jpg',
       moTa: 'AMD Ryzen 9 phiên bản X, 16 cores/32 threads',
       thuongHieu: 'AMD',
       thongSoKyThuat: {

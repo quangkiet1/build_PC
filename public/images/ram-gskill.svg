@@ -1,9 +1,0 @@
-﻿<svg width='300' height='300' xmlns='http://www.w3.org/2000/svg'>
-  <rect width='300' height='300' fill='#1f2937'/>
-  <text x='150' y='130' text-anchor='middle' fill='#f59e0b' font-family='Arial' font-size='20' font-weight='bold'>RAM</text>
-  <text x='150' y='160' text-anchor='middle' fill='#6b7280' font-family='Arial' font-size='16'>G.SKILL</text>
-  <text x='150' y='180' text-anchor='middle' fill='#6b7280' font-family='Arial' font-size='14'>32GB DDR5</text>
-  <rect x='80' y='200' width='140' height='40' fill='#374151' stroke='#f59e0b' stroke-width='2'/>
-  <rect x='85' y='205' width='130' height='30' fill='#1f2937'/>
-  <text x='150' y='225' text-anchor='middle' fill='#f59e0b' font-family='Arial' font-size='12'>5600MHz</text>
-</svg>

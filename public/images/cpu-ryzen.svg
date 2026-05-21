@@ -1,6 +1,0 @@
-<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
-  <rect width="300" height="300" fill="#1f2937"/>
-  <text x="150" y="140" text-anchor="middle" fill="#dc2626" font-family="Arial" font-size="24" font-weight="bold">CPU</text>
-  <text x="150" y="170" text-anchor="middle" fill="#6b7280" font-family="Arial" font-size="16">AMD Ryzen 7</text>
-  <text x="150" y="190" text-anchor="middle" fill="#6b7280" font-family="Arial" font-size="14">7700X</text>
-</svg>
