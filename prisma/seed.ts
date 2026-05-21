@@ -1280,6 +1280,409 @@ async function main() {
         rpm: '5400 RPM',
         cache: '256MB'
       }
+    },
+    {
+      tenSanPham: 'Kingston NV3 PCIe 4.0 NVMe 1TB',
+      slug: 'kingston-nv3-pcie-4-0-nvme-1tb',
+      gia: 4990000,
+      moTa: 'SSD Kingston NV3 PCIe 4.0 NVMe 1TB',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '1TB',
+        interface: 'M.2 PCIe Gen 4x4',
+        readSpeed: '6000MB/s',
+        writeSpeed: '4000MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Kingston NV3 PCIe 4.0 NVMe 500GB',
+      slug: 'kingston-nv3-pcie-4-0-nvme-500gb',
+      gia: 3190000,
+      moTa: 'SSD Kingston NV3 PCIe 4.0 NVMe 500GB',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '500GB',
+        interface: 'M.2 PCIe Gen 4x4',
+        readSpeed: '5000MB/s',
+        writeSpeed: '3000MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Samsung 990 PRO PCIe Gen 4.0 x4 NVMe 1TB',
+      slug: 'samsung-990-pro-pcie-gen-4-x4-nvme-1tb',
+      gia: 8990000,
+      moTa: 'SSD Samsung 990 PRO PCIe Gen 4.0 x4 NVMe 1TB',
+      thuongHieu: 'Samsung',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '1TB',
+        interface: 'M.2 PCIe Gen 4x4',
+        readSpeed: '7450MB/s',
+        writeSpeed: '6900MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Transcend 110S NVMe PCIe Gen3 x4 512GB',
+      slug: 'transcend-110s-nvme-pcie-gen3-x4-512gb',
+      gia: 2890000,
+      moTa: 'SSD Transcend 110S NVMe PCIe Gen3 x4 512GB',
+      thuongHieu: 'Transcend',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '512GB',
+        interface: 'M.2 PCIe Gen3 x4',
+        readSpeed: '1700MB/s',
+        writeSpeed: '1500MB/s'
+      }
+    },
+    {
+      tenSanPham: 'VSP 860G SATA III 2.5" 256GB',
+      slug: 'vsp-860g-sata-iii-2-5-256gb',
+      gia: 1690000,
+      moTa: 'SSD VSP 860G SATA III 2.5" 256GB',
+      thuongHieu: 'VSP',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '256GB',
+        interface: 'SATA III 2.5"',
+        readSpeed: '560MB/s',
+        writeSpeed: '500MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Samsung 990 PRO PCIe Gen 4.0 x4 NVMe 2TB',
+      slug: 'samsung-990-pro-pcie-gen-4-x4-nvme-2tb',
+      gia: 16990000,
+      moTa: 'SSD Samsung 990 PRO PCIe Gen 4.0 x4 NVMe 2TB',
+      thuongHieu: 'Samsung',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '2TB',
+        interface: 'M.2 PCIe Gen 4x4',
+        readSpeed: '7450MB/s',
+        writeSpeed: '6900MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Kingston NV3 PCIe 4.0 NVMe 2TB',
+      slug: 'kingston-nv3-pcie-4-0-nvme-2tb',
+      gia: 8490000,
+      moTa: 'SSD Kingston NV3 PCIe 4.0 NVMe 2TB',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '2TB',
+        interface: 'M.2 PCIe Gen 4x4',
+        readSpeed: '6000MB/s',
+        writeSpeed: '5000MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Transcend 110S NVMe PCIe Gen3 x4 256GB',
+      slug: 'transcend-110s-nvme-pcie-gen3-x4-256gb',
+      gia: 1790000,
+      moTa: 'SSD Transcend 110S NVMe PCIe Gen3 x4 256GB',
+      thuongHieu: 'Transcend',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '256GB',
+        interface: 'M.2 PCIe Gen3 x4',
+        readSpeed: '1600MB/s',
+        writeSpeed: '1100MB/s'
+      }
+    },
+    {
+      tenSanPham: 'ADATA SU650 SATA III 2.5" 512GB',
+      slug: 'adata-su650-sata-iii-2-5-512gb',
+      gia: 2890000,
+      moTa: 'SSD ADATA SU650 SATA III 2.5" 512GB',
+      thuongHieu: 'ADATA',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '512GB',
+        interface: 'SATA III 2.5"',
+        readSpeed: '520MB/s',
+        writeSpeed: '450MB/s'
+      }
+    },
+    {
+      tenSanPham: 'WD Blue SN5000 NVMe PCIe Gen4 x4 500GB',
+      slug: 'wd-blue-sn5000-nvme-pcie-gen4-x4-500gb',
+      gia: 3190000,
+      moTa: 'SSD WD Blue SN5000 NVMe PCIe Gen4 x4 500GB',
+      thuongHieu: 'WD',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '500GB',
+        interface: 'M.2 PCIe Gen4 x4',
+        readSpeed: '5000MB/s',
+        writeSpeed: '4000MB/s'
+      }
+    },
+    {
+      tenSanPham: 'WD Blue SN5000 NVMe PCIe Gen4 x4 1TB',
+      slug: 'wd-blue-sn5000-nvme-pcie-gen4-x4-1tb',
+      gia: 4990000,
+      moTa: 'SSD WD Blue SN5000 NVMe PCIe Gen4 x4 1TB',
+      thuongHieu: 'WD',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '1TB',
+        interface: 'M.2 PCIe Gen4 x4',
+        readSpeed: '5150MB/s',
+        writeSpeed: '4900MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Sandisk E61 Extreme Portable 1TB',
+      slug: 'sandisk-e61-extreme-portable-1tb',
+      gia: 5790000,
+      moTa: 'SSD di động Sandisk E61 Extreme Portable 1TB USB 3.2 Gen 2',
+      thuongHieu: 'Sandisk',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '1TB',
+        interface: 'USB 3.2 Gen 2',
+        readSpeed: '1050MB/s',
+        writeSpeed: '1000MB/s',
+        formFactor: 'Portable'
+      }
+    },
+    {
+      tenSanPham: 'Transcend MTE410S M.2 2242 PCIe Gen4 x4 1TB',
+      slug: 'transcend-mte410s-m2-2242-pcie-gen4-x4-1tb',
+      gia: 4990000,
+      moTa: 'SSD Transcend MTE410S M.2 2242 PCIe Gen4 x4 1TB',
+      thuongHieu: 'Transcend',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '1TB',
+        interface: 'M.2 PCIe Gen4 x4',
+        formFactor: '2242',
+        readSpeed: '5000MB/s',
+        writeSpeed: '3500MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Transcend MTE410S M.2 2242 PCIe Gen4 x4 512GB',
+      slug: 'transcend-mte410s-m2-2242-pcie-gen4-x4-512gb',
+      gia: 3190000,
+      moTa: 'SSD Transcend MTE410S M.2 2242 PCIe Gen4 x4 512GB',
+      thuongHieu: 'Transcend',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '512GB',
+        interface: 'M.2 PCIe Gen4 x4',
+        formFactor: '2242',
+        readSpeed: '5000MB/s',
+        writeSpeed: '3200MB/s'
+      }
+    },
+    {
+      tenSanPham: 'ADATA LEGEND 860 PCIe Gen4 x4 M.2 2280 1TB',
+      slug: 'adata-legend-860-pcie-gen4-x4-m2-2280-1tb',
+      gia: 4990000,
+      moTa: 'SSD ADATA LEGEND 860 PCIe Gen4 x4 M.2 2280 1TB',
+      thuongHieu: 'ADATA',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '1TB',
+        interface: 'M.2 PCIe Gen4 x4',
+        formFactor: '2280',
+        readSpeed: '6000MB/s',
+        writeSpeed: '5000MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Patriot P400 Lite M.2 PCIe Gen 4x4 1TB',
+      slug: 'patriot-p400-lite-m2-pcie-gen-4x4-1tb',
+      gia: 4490000,
+      moTa: 'SSD Patriot P400 Lite M.2 PCIe Gen 4x4 1TB',
+      thuongHieu: 'Patriot',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '1TB',
+        interface: 'M.2 PCIe Gen4 x4',
+        readSpeed: '3500MB/s',
+        writeSpeed: '2700MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Sandisk E61 Extreme Portable 2TB',
+      slug: 'sandisk-e61-extreme-portable-2tb',
+      gia: 8690000,
+      moTa: 'SSD di động Sandisk E61 Extreme Portable 2TB USB 3.2 Gen 2',
+      thuongHieu: 'Sandisk',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '2TB',
+        interface: 'USB 3.2 Gen 2',
+        readSpeed: '1050MB/s',
+        writeSpeed: '1000MB/s',
+        formFactor: 'Portable'
+      }
+    },
+    {
+      tenSanPham: 'ADATA LEGEND 860 PCIe Gen4 x4 M.2 2280 500GB',
+      slug: 'adata-legend-860-pcie-gen4-x4-m2-2280-500gb',
+      gia: 3190000,
+      moTa: 'SSD ADATA LEGEND 860 PCIe Gen4 x4 M.2 2280 500GB',
+      thuongHieu: 'ADATA',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '500GB',
+        interface: 'M.2 PCIe Gen4 x4',
+        formFactor: '2280',
+        readSpeed: '6000MB/s',
+        writeSpeed: '4000MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Transcend MTE310S M.2 2230 PCIe Gen4 x4 512GB',
+      slug: 'transcend-mte310s-m2-2230-pcie-gen4-x4-512gb',
+      gia: 3190000,
+      moTa: 'SSD Transcend MTE310S M.2 2230 PCIe Gen4 x4 512GB',
+      thuongHieu: 'Transcend',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '512GB',
+        interface: 'M.2 PCIe Gen4 x4',
+        formFactor: '2230',
+        readSpeed: '5000MB/s',
+        writeSpeed: '3500MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Transcend MTE310S M.2 2230 PCIe Gen4 x4 1TB',
+      slug: 'transcend-mte310s-m2-2230-pcie-gen4-x4-1tb',
+      gia: 4990000,
+      moTa: 'SSD Transcend MTE310S M.2 2230 PCIe Gen4 x4 1TB',
+      thuongHieu: 'Transcend',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '1TB',
+        interface: 'M.2 PCIe Gen4 x4',
+        formFactor: '2230',
+        readSpeed: '5000MB/s',
+        writeSpeed: '4000MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Kingston SKC3000 M.2 PCIe NVMe 1TB',
+      slug: 'kingston-skc3000-m2-pcie-nvme-1tb',
+      gia: 8990000,
+      moTa: 'SSD Kingston SKC3000 M.2 PCIe NVMe 1TB',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '1TB',
+        interface: 'M.2 PCIe Gen4 x4',
+        readSpeed: '7000MB/s',
+        writeSpeed: '6000MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Kingston Fury Renegade G5 PCIe 5.0 NVMe 1TB',
+      slug: 'kingston-fury-renegade-g5-pcie-5-0-nvme-1tb',
+      gia: 10990000,
+      moTa: 'SSD Kingston Fury Renegade G5 PCIe 5.0 NVMe 1TB',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '1TB',
+        interface: 'M.2 PCIe Gen 5x4',
+        readSpeed: '14200MB/s',
+        writeSpeed: '10200MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Kingston Fury Renegade G5 PCIe 5.0 NVMe 2TB',
+      slug: 'kingston-fury-renegade-g5-pcie-5-0-nvme-2tb',
+      gia: 18990000,
+      moTa: 'SSD Kingston Fury Renegade G5 PCIe 5.0 NVMe 2TB',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '2TB',
+        interface: 'M.2 PCIe Gen 5x4',
+        readSpeed: '14700MB/s',
+        writeSpeed: '12000MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Samsung 990 EVO Plus PCIe Gen 4.0 x4 1TB',
+      slug: 'samsung-990-evo-plus-pcie-gen-4-x4-1tb',
+      gia: 4990000,
+      moTa: 'SSD Samsung 990 EVO Plus PCIe Gen 4.0 x4 1TB',
+      thuongHieu: 'Samsung',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '1TB',
+        interface: 'M.2 PCIe Gen 4x4',
+        readSpeed: '7250MB/s',
+        writeSpeed: '6300MB/s'
+      }
+    },
+    {
+      tenSanPham: 'Kingston SA400S37 SATA 2.5 inch 240GB',
+      slug: 'kingston-sa400s37-sata-2-5-240gb',
+      gia: 1090000,
+      moTa: 'SSD Kingston SA400S37 SATA 2.5 inch 240GB',
+      thuongHieu: 'Kingston',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '240GB',
+        interface: 'SATA III 2.5"',
+        readSpeed: '500MB/s',
+        writeSpeed: '350MB/s',
+        formFactor: '2.5 inch'
+      }
+    },
+    {
+      tenSanPham: 'ADATA LEGEND 710 PCIe Gen3 x4 M.2 2280 256GB',
+      slug: 'adata-legend-710-pcie-gen3-x4-m2-2280-256gb',
+      gia: 1790000,
+      moTa: 'SSD ADATA LEGEND 710 PCIe Gen3 x4 M.2 2280 256GB',
+      thuongHieu: 'ADATA',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '256GB',
+        interface: 'M.2 PCIe Gen 3x4',
+        formFactor: '2280',
+        readSpeed: '2400MB/s',
+        writeSpeed: '1000MB/s'
+      }
+    },
+    {
+      tenSanPham: 'ADATA LEGEND 710 PCIe Gen3 x4 M.2 2280 512GB',
+      slug: 'adata-legend-710-pcie-gen3-x4-m2-2280-512gb',
+      gia: 2890000,
+      moTa: 'SSD ADATA LEGEND 710 PCIe Gen3 x4 M.2 2280 512GB',
+      thuongHieu: 'ADATA',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '512GB',
+        interface: 'M.2 PCIe Gen 3x4',
+        formFactor: '2280',
+        readSpeed: '2400MB/s',
+        writeSpeed: '1600MB/s'
+      }
+    },
+    {
+      tenSanPham: 'SanDisk Creator Desk Drive 8TB',
+      slug: 'sandisk-creator-desk-drive-8tb',
+      gia: 22990000,
+      moTa: 'SSD SanDisk Creator Desk Drive 8TB USB 3.2 Gen 1 Type-C',
+      thuongHieu: 'SanDisk',
+      hinhAnh: '../public/images/',
+      thongSoKyThuat: {
+        capacity: '8TB',
+        interface: 'USB 3.2 Gen 1 Type-C',
+        readSpeed: '1000MB/s',
+        formFactor: 'Portable'
+      }
     }
   ]
 
@@ -1776,13 +2179,13 @@ async function main() {
   console.log('✅ Seeding hoàn tất!')
   console.log('📊 Tổng cộng:')
   console.log('   - 6 danh mục')
-  console.log('   - 10 CPU')
+  console.log('   - 51 CPU')
   console.log('   - 8 GPU')
-  console.log('   - 26 RAM')
-  console.log('   - 6 Storage')
+  console.log('   - 32 RAM')
+  console.log('   - 34 Storage')
   console.log('   - 5 PSU')
-  console.log('   - 5 Motherboard')
-  console.log('   = 65 sản phẩm')
+  console.log('   - 40 Motherboard')
+  console.log('   = 170 sản phẩm')
 }
 
 // Tạo user admin nếu chưa tồn tại, rồi cập nhật vai trò
