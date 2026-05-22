@@ -72,7 +72,7 @@ async function main() {
       tenSanPham: 'Intel Core i9-14900KS',
       slug: 'intel-core-i9-14900ks',
       gia: 24500000,
-      hinhAnh: '../public/images/1.jpg',
+      hinhAnh: '/images/1.jpg',
       moTa: 'CPU flagship Intel phiên bản K Special Edition, 24 cores/32 threads',
       thuongHieu: 'Intel',
       thongSoKyThuat: {
@@ -88,7 +88,7 @@ async function main() {
       tenSanPham: 'Intel Core i9-14900K',
       slug: 'intel-core-i9-14900k',
       gia: 22500000,
-      hinhAnh: '../public/images/2.jpg',
+      hinhAnh: '/images/2.jpg',
       moTa: 'CPU cao cấp Intel thế hệ 14, 24 cores/32 threads',
       thuongHieu: 'Intel',
       thongSoKyThuat: {
@@ -104,7 +104,7 @@ async function main() {
       tenSanPham: 'Intel Core i7-14700K',
       slug: 'intel-core-i7-14700k',
       gia: 18500000,
-      hinhAnh: '../public/images/3.jpg',
+      hinhAnh: '/images/3.jpg',
       moTa: 'CPU cao cấp Intel thế hệ 14 cho gaming và xử lý đa nhiệm',
       thuongHieu: 'Intel',
       thongSoKyThuat: {
@@ -120,7 +120,7 @@ async function main() {
       tenSanPham: 'Intel Core i7-14700',
       slug: 'intel-core-i7-14700',
       gia: 16000000,
-      hinhAnh: '../public/images/4.jpg',
+      hinhAnh: '/images/4.jpg',
       moTa: 'Intel Core i7 phiên bản tiêu chuẩn, 20 cores/28 threads',
       thuongHieu: 'Intel',
       thongSoKyThuat: {
@@ -136,7 +136,7 @@ async function main() {
       tenSanPham: 'Intel Core i5-14600K',
       slug: 'intel-core-i5-14600k',
       gia: 8500000,
-      hinhAnh: '../public/images/5.jpg',
+      hinhAnh: '/images/5.jpg',
       moTa: 'CPU mid-range Intel đa năng cho gaming và công việc',
       thuongHieu: 'Intel',
       thongSoKyThuat: {
@@ -153,7 +153,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 9 7950X3D',
       slug: 'amd-ryzen-9-7950x3d',
       gia: 22000000,
-      hinhAnh: '../public/images/5.jpg',
+      hinhAnh: '/images/6.jpg',
       moTa: 'Ryzen 9 cao cấp với công nghệ 3D V-Cache, 16 cores/32 threads',
       thuongHieu: 'AMD',
       thongSoKyThuat: {
@@ -169,7 +169,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 9 7950X',
       slug: 'amd-ryzen-9-7950x',
       gia: 20000000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '/images/7.jpg',
       moTa: 'AMD Ryzen 9 phiên bản X, 16 cores/32 threads',
       thuongHieu: 'AMD',
       thongSoKyThuat: {
@@ -182,24 +182,10 @@ async function main() {
       }
     },
     {
-      tenSanPham: 'AMD Ryzen 9 7900X',
-      slug: 'amd-ryzen-9-7900x',
-      gia: 15500000,
-      moTa: 'Ryzen 9 phiên bản X, 12 cores/24 threads',
-      thuongHieu: 'AMD',
-      thongSoKyThuat: {
-        cores: 12,
-        threads: 24,
-        baseFreq: '4.7 GHz',
-        boostFreq: '5.6 GHz',
-        socket: 'AM5',
-        tdp: '120W'
-      }
-    },
-    {
       tenSanPham: 'AMD Ryzen 7 7700X',
       slug: 'amd-ryzen-7-7700x',
       gia: 11500000,
+      hinhAnh: '/images/8.jpg',
       moTa: 'Ryzen 7 bản X cho gaming và xử lý nội dung',
       thuongHieu: 'AMD',
       thongSoKyThuat: {
@@ -215,6 +201,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 5 7500F',
       slug: 'amd-ryzen-5-7500f',
       gia: 4500000,
+      hinhAnh: '/images/9.jpg',
       moTa: 'Ryzen 5 phiên bản F (không có GPU tích hợp), 6 cores/12 threads',
       thuongHieu: 'AMD',
       thongSoKyThuat: {
@@ -231,7 +218,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 9 9950X3D (Tray)',
       slug: 'amd-ryzen-9-9950x3d',
       gia: 19990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '/images/10.jpg',
       moTa: '16 nhân, 32 luồng, 5.7 GHz, Socket AM5',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 16, threads: 32, boostFreq: '5.7 GHz', socket: 'AM5' }
@@ -240,7 +227,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 5 7600X',
       slug: 'amd-ryzen-5-7600x',
       gia: 6490000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '/images/11.jpg',
       moTa: '6 nhân, 12 luồng, 4.7 GHz, Socket AM5',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 6, threads: 12, boostFreq: '4.7 GHz', socket: 'AM5' }
@@ -249,7 +236,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 7 7700X (WOF)',
       slug: 'amd-ryzen-7-7700x-wof',
       gia: 9190000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '/images/12.jpg',
       moTa: '8 nhân, 16 luồng, 4.5 GHz, Socket AM5',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 8, threads: 16, boostFreq: '4.5 GHz', socket: 'AM5' }
@@ -258,7 +245,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 5 5500GT',
       slug: 'amd-ryzen-5-5500gt',
       gia: 3590000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '/images/13.jpg',
       moTa: '6 nhân, 12 luồng, 4.4 GHz, Socket AM4',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 6, threads: 12, boostFreq: '4.4 GHz', socket: 'AM4' }
@@ -267,7 +254,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 9 9950X',
       slug: 'amd-ryzen-9-9950x',
       gia: 16690000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '/images/14.jpg',
       moTa: '16 nhân, 32 luồng, 5.7 GHz, Socket AM5',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 16, threads: 32, boostFreq: '5.7 GHz', socket: 'AM5' }
@@ -276,7 +263,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 7 7800X3D (Tray)',
       slug: 'amd-ryzen-7-7800x3d',
       gia: 9290000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '/images/15.jpg',
       moTa: '8 nhân, 16 luồng, 5.0 GHz, Socket AM5',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 8, threads: 16, boostFreq: '5.0 GHz', socket: 'AM5' }
@@ -285,7 +272,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 7 5700X (Tray)',
       slug: 'amd-ryzen-7-5700x',
       gia: 5490000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '/images/16.jpg',
       moTa: '8 nhân, 16 luồng, 4.6 GHz, Socket AM4',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 8, threads: 16, boostFreq: '4.6 GHz', socket: 'AM4' }
@@ -294,7 +281,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 5 5500',
       slug: 'amd-ryzen-5-5500',
       gia: 2490000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '/images/17.jpg',
       moTa: '6 nhân, 12 luồng, 3.6 GHz, Socket AM4',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 6, threads: 12, baseFreq: '3.6 GHz', socket: 'AM4' }
@@ -303,7 +290,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 5 5600X',
       slug: 'amd-ryzen-5-5600x',
       gia: 4090000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '6 nhân, 12 luồng, 3.7 GHz, Socket AM4',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 6, threads: 12, baseFreq: '3.7 GHz', socket: 'AM4' }
@@ -312,7 +299,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 3 3200G (MPK)',
       slug: 'amd-ryzen-3-3200g',
       gia: 1990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '4 nhân, 4 luồng, 4.0 GHz, Socket AM4',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 4, threads: 4, baseFreq: '4.0 GHz', socket: 'AM4' }
@@ -321,7 +308,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 5 5600GT (MPK)',
       slug: 'amd-ryzen-5-5600gt',
       gia: 3990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '6 nhân, 12 luồng, 5.2 GHz, Socket AM4',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 6, threads: 12, boostFreq: '5.2 GHz', socket: 'AM4' }
@@ -330,7 +317,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 5 3400G (MPK)',
       slug: 'amd-ryzen-5-3400g',
       gia: 2090000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '4 nhân, 8 luồng, 4.2 GHz, Socket AM4',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 4, threads: 8, baseFreq: '4.2 GHz', socket: 'AM4' }
@@ -339,7 +326,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 5 7600',
       slug: 'amd-ryzen-5-7600',
       gia: 5490000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '6 nhân, 12 luồng, 3.8 GHz, Socket AM5',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 6, threads: 12, baseFreq: '3.8 GHz', socket: 'AM5' }
@@ -348,7 +335,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 3 4300G',
       slug: 'amd-ryzen-3-4300g',
       gia: 2390000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '4 nhân, 8 luồng, 3.8 GHz, Socket AM4',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 4, threads: 8, baseFreq: '3.8 GHz', socket: 'AM4' }
@@ -357,7 +344,7 @@ async function main() {
       tenSanPham: 'AMD Athlon 3000G',
       slug: 'amd-athlon-3000g',
       gia: 1290000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '2 nhân, 4 luồng, 3.5 GHz, Socket AM4',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 2, threads: 4, baseFreq: '3.5 GHz', socket: 'AM4' }
@@ -366,7 +353,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 7 9800X3D (WOF)',
       slug: 'amd-ryzen-7-9800x3d',
       gia: 13990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '8 nhân, 16 luồng, 5.2 GHz, Socket AM5',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 8, threads: 16, boostFreq: '5.2 GHz', socket: 'AM5' }
@@ -376,43 +363,25 @@ async function main() {
       tenSanPham: 'Intel Core i5 14600KF',
       slug: 'intel-core-i5-14600kf',
       gia: 6990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '14 nhân, 20 luồng, 3.4 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 14, threads: 20, baseFreq: '3.4 GHz', socket: 'LGA 1700' }
     },
     {
-      tenSanPham: 'Intel Core i7 14700',
-      slug: 'intel-core-i7-14700',
-      gia: 11990000,
-      hinhAnh: '../public/images/',
-      moTa: '20 nhân, 28 luồng, 2.1 GHz, Socket LGA 1700',
-      thuongHieu: 'Intel',
-      thongSoKyThuat: { cores: 20, threads: 28, baseFreq: '2.1 GHz', socket: 'LGA 1700' }
-    },
-    {
       tenSanPham: 'Intel Core i5-12400F (TRAY)',
       slug: 'intel-core-i5-12400f',
       gia: 3990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '6 nhân, 12 luồng, 4.40 GHz, Socket FCLGA1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 6, threads: 12, boostFreq: '4.4 GHz', socket: 'FCLGA1700' }
     },
     {
-      tenSanPham: 'Intel Core i7 14700K',
-      slug: 'intel-core-i7-14700k',
-      gia: 12290000,
-      hinhAnh: '../public/images/',
-      moTa: '20 nhân, 28 luồng, 3.4 GHz, Socket LGA 1700',
-      thuongHieu: 'Intel',
-      thongSoKyThuat: { cores: 20, threads: 28, baseFreq: '3.4 GHz', socket: 'LGA 1700' }
-    },
-    {
       tenSanPham: 'Intel Core i5 14500',
       slug: 'intel-core-i5-14500',
       gia: 8990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '14 nhân, 20 luồng, 2.6 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 14, threads: 20, baseFreq: '2.6 GHz', socket: 'LGA 1700' }
@@ -421,7 +390,7 @@ async function main() {
       tenSanPham: 'Intel Core i5 13400F (Tray)',
       slug: 'intel-core-i5-13400f',
       gia: 4290000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '10 nhân, 16 luồng, 4.6 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 10, threads: 16, boostFreq: '4.6 GHz', socket: 'LGA 1700' }
@@ -430,25 +399,16 @@ async function main() {
       tenSanPham: 'Intel Core Ultra 9 285K',
       slug: 'intel-core-ultra-9-285k',
       gia: 16990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '24 nhân, 24 luồng, 5.7 GHz, Socket FCLGA1851',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 24, threads: 24, boostFreq: '5.7 GHz', socket: 'FCLGA1851' }
     },
     {
-      tenSanPham: 'Intel Core i5 14600K (Tray)',
-      slug: 'intel-core-i5-14600k',
-      gia: 7690000,
-      hinhAnh: '../public/images/',
-      moTa: '14 nhân, 20 luồng, 5.3 GHz, Socket LGA 1700',
-      thuongHieu: 'Intel',
-      thongSoKyThuat: { cores: 14, threads: 20, boostFreq: '5.3 GHz', socket: 'LGA 1700' }
-    },
-    {
       tenSanPham: 'Intel Core i7 14700F',
       slug: 'intel-core-i7-14700f',
       gia: 10490000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '20 nhân, 28 luồng, 2.1 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 20, threads: 28, baseFreq: '2.1 GHz', socket: 'LGA 1700' }
@@ -457,7 +417,7 @@ async function main() {
       tenSanPham: 'Intel Core i5 14400F (Tray)',
       slug: 'intel-core-i5-14400f',
       gia: 5990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '10 nhân, 16 luồng, 4.7 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 10, threads: 16, boostFreq: '4.7 GHz', socket: 'LGA 1700' }
@@ -466,7 +426,7 @@ async function main() {
       tenSanPham: 'Intel Core i3 13100F',
       slug: 'intel-core-i3-13100f',
       gia: 2990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '4 nhân, 8 luồng, 3.4 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 4, threads: 8, baseFreq: '3.4 GHz', socket: 'LGA 1700' }
@@ -475,7 +435,7 @@ async function main() {
       tenSanPham: 'Intel Core i3 14100F',
       slug: 'intel-core-i3-14100f',
       gia: 3290000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '4 nhân, 8 luồng, 3.5 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 4, threads: 8, baseFreq: '3.5 GHz', socket: 'LGA 1700' }
@@ -484,7 +444,7 @@ async function main() {
       tenSanPham: 'Intel Core i5-12500',
       slug: 'intel-core-i5-12500',
       gia: 5990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '6 nhân, 12 luồng, 4.6 GHz, Socket FCLGA1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 6, threads: 12, boostFreq: '4.6 GHz', socket: 'FCLGA1700' }
@@ -493,7 +453,7 @@ async function main() {
       tenSanPham: 'Intel Core i9 14900',
       slug: 'intel-core-i9-14900',
       gia: 19990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '24 nhân, 32 luồng, 2.0 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 24, threads: 32, baseFreq: '2.0 GHz', socket: 'LGA 1700' }
@@ -502,7 +462,7 @@ async function main() {
       tenSanPham: 'Intel Core i5 12400 (Tray)',
       slug: 'intel-core-i5-12400',
       gia: 5690000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '6 nhân, 12 luồng, 4.4 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 6, threads: 12, boostFreq: '4.4 GHz', socket: 'LGA 1700' }
@@ -511,7 +471,7 @@ async function main() {
       tenSanPham: 'Intel Pentium Gold G6405',
       slug: 'intel-pentium-g6405',
       gia: 1990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '2 nhân, 4 luồng, 4.1 GHz, Socket LGA 1200',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 2, threads: 4, baseFreq: '4.1 GHz', socket: 'LGA 1200' }
@@ -520,7 +480,7 @@ async function main() {
       tenSanPham: 'Intel Core Ultra 5 225 (Tray)',
       slug: 'intel-core-ultra-5-225',
       gia: 4690000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '10 nhân, 10 luồng, 4.9 GHz, Socket FCLGA1851',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 10, threads: 10, boostFreq: '4.9 GHz', socket: 'FCLGA1851' }
@@ -529,7 +489,7 @@ async function main() {
       tenSanPham: 'Intel Core i3 14100 (Tray)',
       slug: 'intel-core-i3-14100',
       gia: 4490000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '4 nhân, 8 luồng, 4.7 GHz, Socket FCLGA1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 4, threads: 8, boostFreq: '4.7 GHz', socket: 'FCLGA1700' }
@@ -538,7 +498,7 @@ async function main() {
       tenSanPham: 'Intel Core i7 12700 (Tray)',
       slug: 'intel-core-i7-12700',
       gia: 9290000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '12 nhân, 20 luồng, 4.9 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 12, threads: 20, boostFreq: '4.9 GHz', socket: 'LGA 1700' }
@@ -547,7 +507,7 @@ async function main() {
       tenSanPham: 'Intel Core i3 12100 (Tray)',
       slug: 'intel-core-i3-12100',
       gia: 4490000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '4 nhân, 8 luồng, 4.3 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 4, threads: 8, boostFreq: '4.3 GHz', socket: 'LGA 1700' }
@@ -556,7 +516,7 @@ async function main() {
       tenSanPham: 'Intel Core Ultra 5 225F (Tray)',
       slug: 'intel-core-ultra-5-225f',
       gia: 4290000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '10 nhân, 10 luồng, 4.9 GHz, Socket LGA 1851',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 10, threads: 10, boostFreq: '4.9 GHz', socket: 'LGA 1851' }
@@ -565,7 +525,7 @@ async function main() {
       tenSanPham: 'Intel Core Ultra 5 245K',
       slug: 'intel-core-ultra-5-245k',
       gia: 8290000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '14 nhân, 14 luồng, 5.2 GHz, Socket FCLGA1851',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 14, threads: 14, boostFreq: '5.2 GHz', socket: 'FCLGA1851' }
@@ -574,7 +534,7 @@ async function main() {
       tenSanPham: 'Intel Core Ultra 5 245KF',
       slug: 'intel-core-ultra-5-245kf',
       gia: 7990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '14 nhân, 14 luồng, 5.2 GHz, Socket FCLGA1851',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 14, threads: 14, boostFreq: '5.2 GHz', socket: 'FCLGA1851' }
@@ -583,7 +543,7 @@ async function main() {
       tenSanPham: 'Intel Core i7 14700KF',
       slug: 'intel-core-i7-14700kf',
       gia: 10990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '20 nhân, 28 luồng, 3.4 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 20, threads: 28, baseFreq: '3.4 GHz', socket: 'LGA 1700' }
@@ -592,21 +552,28 @@ async function main() {
       tenSanPham: 'Intel Core i9 14900KF',
       slug: 'intel-core-i9-14900kf',
       gia: 15990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: '24 nhân, 32 luồng, 3.2 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 24, threads: 32, baseFreq: '3.2 GHz', socket: 'LGA 1700' }
     }
   ]
 
+  const intelCpuImages = ['/images/1.jpg', '/images/2.jpg', '/images/3.jpg', '/images/4.jpg', '/images/5.jpg'];
+  const amdCpuImages = ['/images/6.jpg', '/images/7.jpg', '/images/8.jpg', '/images/9.jpg', '/images/10.jpg', '/images/11.jpg', '/images/12.jpg', '/images/13.jpg', '/images/14.jpg', '/images/15.jpg'];
+  let intelCpuIdx = 0; let amdCpuIdx = 0;
   for (const cpu of cpuProducts) {
+    const existingImg = (cpu as any).hinhAnh && (cpu as any).hinhAnh.startsWith('/') ? (cpu as any).hinhAnh : null;
+    let img: string;
+    if (existingImg) {
+      img = existingImg;
+    } else if ((cpu as any).thuongHieu?.toLowerCase() === 'amd') {
+      img = amdCpuImages[amdCpuIdx % amdCpuImages.length]; amdCpuIdx++;
+    } else {
+      img = intelCpuImages[intelCpuIdx % intelCpuImages.length]; intelCpuIdx++;
+    }
     await prisma.sanPham.create({
-      data: {
-        ...cpu,
-        hinhAnh: (cpu as any).hinhAnh || `https://via.placeholder.com/300x300?text=${cpu.slug}`,
-        soLuongTon: 50,
-        danhMucId: cpuCat.id
-      }
+      data: { ...cpu, hinhAnh: img, soLuongTon: 50, danhMucId: cpuCat.id }
     })
   }
 
@@ -718,14 +685,12 @@ async function main() {
     }
   ]
 
+  const gpuImages = ['/images/1.jpg', '/images/2.jpg', '/images/3.jpg', '/images/4.jpg', '/images/5.jpg', '/images/6.jpg', '/images/7.jpg', '/images/8.jpg'];
+  let gpuIdx = 0;
   for (const gpu of gpuProducts) {
+    const img = (gpu as any).hinhAnh && (gpu as any).hinhAnh.startsWith('/') ? (gpu as any).hinhAnh : gpuImages[gpuIdx++ % gpuImages.length];
     await prisma.sanPham.create({
-      data: {
-        ...gpu,
-        hinhAnh: (gpu as any).hinhAnh || `https://via.placeholder.com/300x300?text=${gpu.slug}`,
-        soLuongTon: 30,
-        danhMucId: gpuCat.id
-      }
+      data: { ...gpu, hinhAnh: img, soLuongTon: 30, danhMucId: gpuCat.id }
     })
   }
 
@@ -815,7 +780,7 @@ async function main() {
       gia: 2490000,
       moTa: 'RAM Laptop Kingston 1.2V 8GB 3200MHz DDR4',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '8GB',
         type: 'DDR4',
@@ -830,7 +795,7 @@ async function main() {
       gia: 3990000,
       moTa: 'RAM Laptop Kingston Sodimm 1.2V 16GB 3200MHz DDR4',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '16GB',
         type: 'DDR4',
@@ -845,7 +810,7 @@ async function main() {
       gia: 2490000,
       moTa: 'RAM Laptop Kingston DDR4 3200MHz 8GB',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '8GB',
         type: 'DDR4',
@@ -859,7 +824,7 @@ async function main() {
       gia: 6490000,
       moTa: 'RAM Laptop Kingston DDR5 5600MHz 16GB',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '16GB',
         type: 'DDR5',
@@ -873,7 +838,7 @@ async function main() {
       gia: 3990000,
       moTa: 'RAM PC Kingston Fury Beast DDR4 3200MHz 16GB',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '16GB',
         type: 'DDR4',
@@ -887,7 +852,7 @@ async function main() {
       gia: 3490000,
       moTa: 'RAM Laptop Kingston DDR5 5600MHz 8GB',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '8GB',
         type: 'DDR5',
@@ -901,7 +866,7 @@ async function main() {
       gia: 3990000,
       moTa: 'RAM Laptop Kingston DDR4 3200MHz 16GB',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '16GB',
         type: 'DDR4',
@@ -915,7 +880,7 @@ async function main() {
       gia: 10990000,
       moTa: 'RAM Laptop Kingston 1.2V 3200MHz KVR32S22D8/32, 32GB DDR4',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '32GB',
         type: 'DDR4',
@@ -931,7 +896,7 @@ async function main() {
       gia: 13990000,
       moTa: 'RAM PC Kingston Fury DDR5 5600MHz 32GB (2x16GB)',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '32GB (2x16GB)',
         type: 'DDR5',
@@ -945,7 +910,7 @@ async function main() {
       gia: 7290000,
       moTa: 'RAM PC Kingston Fury DDR5 5600MHz 16GB (1x16GB)',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '16GB (1x16GB)',
         type: 'DDR5',
@@ -959,7 +924,7 @@ async function main() {
       gia: 7290000,
       moTa: 'RAM PC Kingston Fury DDR5 6000MHz 16GB (1x16GB)',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '16GB (1x16GB)',
         type: 'DDR5',
@@ -973,7 +938,7 @@ async function main() {
       gia: 2490000,
       moTa: 'RAM PC Kingston Fury 8GB 3200MHz KF432C16BB/8',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '8GB',
         type: 'DDR4',
@@ -988,7 +953,7 @@ async function main() {
       gia: 26990000,
       moTa: 'RAM PC Kingston Fury RGB DDR5 6000MHz 64GB (2x32GB)',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '64GB (2x32GB)',
         type: 'DDR5',
@@ -1003,7 +968,7 @@ async function main() {
       gia: 14490000,
       moTa: 'RAM PC Kingston Fury RGB DDR5 6000MHz 32GB (2x16GB)',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '32GB (2x16GB)',
         type: 'DDR5',
@@ -1018,7 +983,7 @@ async function main() {
       gia: 14490000,
       moTa: 'RAM PC Kingston Fury DDR5 6000MHz 32GB (2x16GB)',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '32GB (2x16GB)',
         type: 'DDR5',
@@ -1032,7 +997,7 @@ async function main() {
       gia: 26990000,
       moTa: 'RAM PC Kingston Fury Beast RGB DDR5 5600MHz 64GB (2x32GB)',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '64GB (2x32GB)',
         type: 'DDR5',
@@ -1047,7 +1012,7 @@ async function main() {
       gia: 14490000,
       moTa: 'RAM PC Kingston Fury RGB DDR5 6000MHz 32GB (1x32GB)',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '32GB (1x32GB)',
         type: 'DDR5',
@@ -1062,7 +1027,7 @@ async function main() {
       gia: 14990000,
       moTa: 'RAM Kingston DDR5 5600MT/s 32GB',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '32GB',
         type: 'DDR5',
@@ -1076,7 +1041,7 @@ async function main() {
       gia: 3990000,
       moTa: 'RAM PC Kingston Fury Beast Black 16GB 3200MHz DDR4',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '16GB',
         type: 'DDR4',
@@ -1090,7 +1055,7 @@ async function main() {
       gia: 2490000,
       moTa: 'RAM PC Kingston Fury Beast DDR4 3200MHz 8GB',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '8GB',
         type: 'DDR4',
@@ -1104,7 +1069,7 @@ async function main() {
       gia: 4290000,
       moTa: 'RAM PC ADATA XPG D50 RGB 16GB (1x16GB) 3200MHz DDR4',
       thuongHieu: 'ADATA',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '16GB (1x16GB)',
         type: 'DDR4',
@@ -1119,7 +1084,7 @@ async function main() {
       gia: 2690000,
       moTa: 'RAM PC ADATA XPG D50 RGB 8GB (1x8GB) 3200MHz DDR4',
       thuongHieu: 'ADATA',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '8GB (1x8GB)',
         type: 'DDR4',
@@ -1134,7 +1099,7 @@ async function main() {
       gia: 7690000,
       moTa: 'RAM PC ADATA XPG LANCER RGB 16GB (1x16GB) 6000MHz DDR5',
       thuongHieu: 'ADATA',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '16GB (1x16GB)',
         type: 'DDR5',
@@ -1149,7 +1114,7 @@ async function main() {
       gia: 4290000,
       moTa: 'RAM PC ADATA XPG D35G RGB 16GB (1x16GB) 3200MHz DDR4',
       thuongHieu: 'ADATA',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '16GB (1x16GB)',
         type: 'DDR4',
@@ -1164,7 +1129,7 @@ async function main() {
       gia: 2690000,
       moTa: 'RAM PC ADATA XPG D35G RGB 8GB (1x8GB) 3200MHz DDR4',
       thuongHieu: 'ADATA',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '8GB (1x8GB)',
         type: 'DDR4',
@@ -1179,7 +1144,7 @@ async function main() {
       gia: 2690000,
       moTa: 'RAM PNY XLR8 DDR4 3200MHz Heatsink RGB 8GB',
       thuongHieu: 'PNY',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '8GB',
         type: 'DDR4',
@@ -1190,14 +1155,12 @@ async function main() {
     }
   ]
 
+  const ramImages = ['/images/3.jpg', '/images/4.jpg', '/images/5.jpg', '/images/6.jpg', '/images/7.jpg', '/images/8.jpg'];
+  let ramIdx = 0;
   for (const ram of ramProducts) {
+    const img = (ram as any).hinhAnh && (ram as any).hinhAnh.startsWith('/') ? (ram as any).hinhAnh : ramImages[ramIdx++ % ramImages.length];
     await prisma.sanPham.create({
-      data: {
-        ...ram,
-        hinhAnh: (ram as any).hinhAnh || `https://via.placeholder.com/300x300?text=${ram.slug}`,
-        soLuongTon: 100,
-        danhMucId: ramCat.id
-      }
+      data: { ...ram, hinhAnh: img, soLuongTon: 100, danhMucId: ramCat.id }
     })
   }
 
@@ -1287,7 +1250,7 @@ async function main() {
       gia: 4990000,
       moTa: 'SSD Kingston NV3 PCIe 4.0 NVMe 1TB',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '1TB',
         interface: 'M.2 PCIe Gen 4x4',
@@ -1301,7 +1264,7 @@ async function main() {
       gia: 3190000,
       moTa: 'SSD Kingston NV3 PCIe 4.0 NVMe 500GB',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '500GB',
         interface: 'M.2 PCIe Gen 4x4',
@@ -1315,7 +1278,7 @@ async function main() {
       gia: 8990000,
       moTa: 'SSD Samsung 990 PRO PCIe Gen 4.0 x4 NVMe 1TB',
       thuongHieu: 'Samsung',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '1TB',
         interface: 'M.2 PCIe Gen 4x4',
@@ -1329,7 +1292,7 @@ async function main() {
       gia: 2890000,
       moTa: 'SSD Transcend 110S NVMe PCIe Gen3 x4 512GB',
       thuongHieu: 'Transcend',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '512GB',
         interface: 'M.2 PCIe Gen3 x4',
@@ -1343,7 +1306,7 @@ async function main() {
       gia: 1690000,
       moTa: 'SSD VSP 860G SATA III 2.5" 256GB',
       thuongHieu: 'VSP',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '256GB',
         interface: 'SATA III 2.5"',
@@ -1357,7 +1320,7 @@ async function main() {
       gia: 16990000,
       moTa: 'SSD Samsung 990 PRO PCIe Gen 4.0 x4 NVMe 2TB',
       thuongHieu: 'Samsung',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '2TB',
         interface: 'M.2 PCIe Gen 4x4',
@@ -1371,7 +1334,7 @@ async function main() {
       gia: 8490000,
       moTa: 'SSD Kingston NV3 PCIe 4.0 NVMe 2TB',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '2TB',
         interface: 'M.2 PCIe Gen 4x4',
@@ -1385,7 +1348,7 @@ async function main() {
       gia: 1790000,
       moTa: 'SSD Transcend 110S NVMe PCIe Gen3 x4 256GB',
       thuongHieu: 'Transcend',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '256GB',
         interface: 'M.2 PCIe Gen3 x4',
@@ -1399,7 +1362,7 @@ async function main() {
       gia: 2890000,
       moTa: 'SSD ADATA SU650 SATA III 2.5" 512GB',
       thuongHieu: 'ADATA',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '512GB',
         interface: 'SATA III 2.5"',
@@ -1413,7 +1376,7 @@ async function main() {
       gia: 3190000,
       moTa: 'SSD WD Blue SN5000 NVMe PCIe Gen4 x4 500GB',
       thuongHieu: 'WD',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '500GB',
         interface: 'M.2 PCIe Gen4 x4',
@@ -1427,7 +1390,7 @@ async function main() {
       gia: 4990000,
       moTa: 'SSD WD Blue SN5000 NVMe PCIe Gen4 x4 1TB',
       thuongHieu: 'WD',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '1TB',
         interface: 'M.2 PCIe Gen4 x4',
@@ -1441,7 +1404,7 @@ async function main() {
       gia: 5790000,
       moTa: 'SSD di động Sandisk E61 Extreme Portable 1TB USB 3.2 Gen 2',
       thuongHieu: 'Sandisk',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '1TB',
         interface: 'USB 3.2 Gen 2',
@@ -1456,7 +1419,7 @@ async function main() {
       gia: 4990000,
       moTa: 'SSD Transcend MTE410S M.2 2242 PCIe Gen4 x4 1TB',
       thuongHieu: 'Transcend',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '1TB',
         interface: 'M.2 PCIe Gen4 x4',
@@ -1471,7 +1434,7 @@ async function main() {
       gia: 3190000,
       moTa: 'SSD Transcend MTE410S M.2 2242 PCIe Gen4 x4 512GB',
       thuongHieu: 'Transcend',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '512GB',
         interface: 'M.2 PCIe Gen4 x4',
@@ -1486,7 +1449,7 @@ async function main() {
       gia: 4990000,
       moTa: 'SSD ADATA LEGEND 860 PCIe Gen4 x4 M.2 2280 1TB',
       thuongHieu: 'ADATA',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '1TB',
         interface: 'M.2 PCIe Gen4 x4',
@@ -1501,7 +1464,7 @@ async function main() {
       gia: 4490000,
       moTa: 'SSD Patriot P400 Lite M.2 PCIe Gen 4x4 1TB',
       thuongHieu: 'Patriot',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '1TB',
         interface: 'M.2 PCIe Gen4 x4',
@@ -1515,7 +1478,7 @@ async function main() {
       gia: 8690000,
       moTa: 'SSD di động Sandisk E61 Extreme Portable 2TB USB 3.2 Gen 2',
       thuongHieu: 'Sandisk',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '2TB',
         interface: 'USB 3.2 Gen 2',
@@ -1530,7 +1493,7 @@ async function main() {
       gia: 3190000,
       moTa: 'SSD ADATA LEGEND 860 PCIe Gen4 x4 M.2 2280 500GB',
       thuongHieu: 'ADATA',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '500GB',
         interface: 'M.2 PCIe Gen4 x4',
@@ -1545,7 +1508,7 @@ async function main() {
       gia: 3190000,
       moTa: 'SSD Transcend MTE310S M.2 2230 PCIe Gen4 x4 512GB',
       thuongHieu: 'Transcend',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '512GB',
         interface: 'M.2 PCIe Gen4 x4',
@@ -1560,7 +1523,7 @@ async function main() {
       gia: 4990000,
       moTa: 'SSD Transcend MTE310S M.2 2230 PCIe Gen4 x4 1TB',
       thuongHieu: 'Transcend',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '1TB',
         interface: 'M.2 PCIe Gen4 x4',
@@ -1575,7 +1538,7 @@ async function main() {
       gia: 8990000,
       moTa: 'SSD Kingston SKC3000 M.2 PCIe NVMe 1TB',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '1TB',
         interface: 'M.2 PCIe Gen4 x4',
@@ -1589,7 +1552,7 @@ async function main() {
       gia: 10990000,
       moTa: 'SSD Kingston Fury Renegade G5 PCIe 5.0 NVMe 1TB',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '1TB',
         interface: 'M.2 PCIe Gen 5x4',
@@ -1603,7 +1566,7 @@ async function main() {
       gia: 18990000,
       moTa: 'SSD Kingston Fury Renegade G5 PCIe 5.0 NVMe 2TB',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '2TB',
         interface: 'M.2 PCIe Gen 5x4',
@@ -1617,7 +1580,7 @@ async function main() {
       gia: 4990000,
       moTa: 'SSD Samsung 990 EVO Plus PCIe Gen 4.0 x4 1TB',
       thuongHieu: 'Samsung',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '1TB',
         interface: 'M.2 PCIe Gen 4x4',
@@ -1631,7 +1594,7 @@ async function main() {
       gia: 1090000,
       moTa: 'SSD Kingston SA400S37 SATA 2.5 inch 240GB',
       thuongHieu: 'Kingston',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '240GB',
         interface: 'SATA III 2.5"',
@@ -1646,7 +1609,7 @@ async function main() {
       gia: 1790000,
       moTa: 'SSD ADATA LEGEND 710 PCIe Gen3 x4 M.2 2280 256GB',
       thuongHieu: 'ADATA',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '256GB',
         interface: 'M.2 PCIe Gen 3x4',
@@ -1661,7 +1624,7 @@ async function main() {
       gia: 2890000,
       moTa: 'SSD ADATA LEGEND 710 PCIe Gen3 x4 M.2 2280 512GB',
       thuongHieu: 'ADATA',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '512GB',
         interface: 'M.2 PCIe Gen 3x4',
@@ -1676,7 +1639,7 @@ async function main() {
       gia: 22990000,
       moTa: 'SSD SanDisk Creator Desk Drive 8TB USB 3.2 Gen 1 Type-C',
       thuongHieu: 'SanDisk',
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       thongSoKyThuat: {
         capacity: '8TB',
         interface: 'USB 3.2 Gen 1 Type-C',
@@ -1686,14 +1649,12 @@ async function main() {
     }
   ]
 
+  const storageImages = ['/images/9.jpg', '/images/10.jpg', '/images/11.jpg', '/images/12.jpg'];
+  let storageIdx = 0;
   for (const storage of storageProducts) {
+    const img = (storage as any).hinhAnh && (storage as any).hinhAnh.startsWith('/') ? (storage as any).hinhAnh : storageImages[storageIdx++ % storageImages.length];
     await prisma.sanPham.create({
-      data: {
-        ...storage,
-        hinhAnh: (storage as any).hinhAnh || `https://via.placeholder.com/300x300?text=${storage.slug}`,
-        soLuongTon: 75,
-        danhMucId: storageCat.id
-      }
+      data: { ...storage, hinhAnh: img, soLuongTon: 80, danhMucId: storageCat.id }
     })
   }
 
@@ -1761,14 +1722,12 @@ async function main() {
     }
   ]
 
+  const psuImages = ['/images/13.jpg', '/images/14.jpg', '/images/15.jpg'];
+  let psuIdx = 0;
   for (const psu of psuProducts) {
+    const img = (psu as any).hinhAnh && (psu as any).hinhAnh.startsWith('/') ? (psu as any).hinhAnh : psuImages[psuIdx++ % psuImages.length];
     await prisma.sanPham.create({
-      data: {
-        ...psu,
-        hinhAnh: (psu as any).hinhAnh || `https://via.placeholder.com/300x300?text=${psu.slug}`,
-        soLuongTon: 60,
-        danhMucId: psuCat.id
-      }
+      data: { ...psu, hinhAnh: img, soLuongTon: 60, danhMucId: psuCat.id }
     })
   }
 
@@ -1779,7 +1738,7 @@ async function main() {
       tenSanPham: 'Asus TUF Gaming B760M-PLUS Wifi D4',
       slug: 'asus-tuf-b760m-plus-wifi-d4',
       gia: 3790000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1788,7 +1747,7 @@ async function main() {
       tenSanPham: 'Asus PRIME H610M-K D4',
       slug: 'asus-prime-h610m-k-d4',
       gia: 1790000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1797,7 +1756,7 @@ async function main() {
       tenSanPham: 'Asus Prime B760M-A DDR4',
       slug: 'asus-prime-b760m-a-ddr4',
       gia: 2790000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, PCIe 4.0, DDR4',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'LGA 1700', pcie: 'PCIe 4.0', memory: 'DDR4' }
@@ -1806,7 +1765,7 @@ async function main() {
       tenSanPham: 'Asus TUF Gaming B760M-PLUS WIFI D5',
       slug: 'asus-tuf-b760m-plus-wifi-d5',
       gia: 4290000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, ATX, DDR5',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'ATX', memory: 'DDR5' }
@@ -1815,7 +1774,7 @@ async function main() {
       tenSanPham: 'Asus Prime B760M-K D4',
       slug: 'asus-prime-b760m-k-d4',
       gia: 2490000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1824,7 +1783,7 @@ async function main() {
       tenSanPham: 'ASUS TUF Gaming X870-PLUS WIFI',
       slug: 'asus-tuf-x870-plus-wifi',
       gia: 8990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket AM5, ATX, DDR5',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'AM5', formFactor: 'ATX', memory: 'DDR5' }
@@ -1833,7 +1792,7 @@ async function main() {
       tenSanPham: 'ASUS TUF Gaming Z890-PLUS WIFI',
       slug: 'asus-tuf-z890-plus-wifi',
       gia: 7590000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA1851, ATX, DDR5',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'LGA1851', formFactor: 'ATX', memory: 'DDR5' }
@@ -1842,7 +1801,7 @@ async function main() {
       tenSanPham: 'Asus Prime B860M-K DDR5',
       slug: 'asus-prime-b860m-k-ddr5',
       gia: 3590000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA1851, micro-ATX, DDR5',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'LGA1851', formFactor: 'Micro ATX', memory: 'DDR5' }
@@ -1851,7 +1810,7 @@ async function main() {
       tenSanPham: 'ASUS PRIME B650M-K',
       slug: 'asus-prime-b650m-k',
       gia: 3290000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket AM5, Micro ATX, DDR5',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'AM5', formFactor: 'Micro ATX', memory: 'DDR5' }
@@ -1860,7 +1819,7 @@ async function main() {
       tenSanPham: 'Asus TUF Gaming B760M-PLUS D4',
       slug: 'asus-tuf-b760m-plus-d4',
       gia: 3690000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1871,7 +1830,7 @@ async function main() {
       tenSanPham: 'Gigabyte B760M Gaming Plus Wifi D4',
       slug: 'gigabyte-b760m-gaming-plus-wifi-d4',
       gia: 3190000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, Micro ATX, DDR4',
       thuongHieu: 'Gigabyte',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1880,7 +1839,7 @@ async function main() {
       tenSanPham: 'Gigabyte B550M H ARGB AM4 D4',
       slug: 'gigabyte-b550m-h-argb-am4-d4',
       gia: 2090000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket AM4, Micro ATX, DDR4',
       thuongHieu: 'Gigabyte',
       thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1889,7 +1848,7 @@ async function main() {
       tenSanPham: 'Gigabyte B760M DS3H DDR4',
       slug: 'gigabyte-b760m-ds3h-ddr4',
       gia: 3090000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'Gigabyte',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1898,7 +1857,7 @@ async function main() {
       tenSanPham: 'Gigabyte B860M Eagle WIFI6 V2 D5',
       slug: 'gigabyte-b860m-eagle-wifi6-v2-d5',
       gia: 3790000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA1851, Micro ATX, DDR5',
       thuongHieu: 'Gigabyte',
       thongSoKyThuat: { socket: 'LGA1851', formFactor: 'Micro ATX', memory: 'DDR5' }
@@ -1907,7 +1866,7 @@ async function main() {
       tenSanPham: 'Gigabyte H810M H D5',
       slug: 'gigabyte-h810m-h-d5',
       gia: 2690000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA1851, Micro ATX, DDR5',
       thuongHieu: 'Gigabyte',
       thongSoKyThuat: { socket: 'LGA1851', formFactor: 'Micro ATX', memory: 'DDR5' }
@@ -1916,7 +1875,7 @@ async function main() {
       tenSanPham: 'Gigabyte Z790M Aorus Elite AX D5',
       slug: 'gigabyte-z790m-aorus-elite-ax-d5',
       gia: 6490000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, M-ATX, DDR5',
       thuongHieu: 'Gigabyte',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR5' }
@@ -1925,7 +1884,7 @@ async function main() {
       tenSanPham: 'Gigabyte B860M K DDR5',
       slug: 'gigabyte-b860m-k-ddr5',
       gia: 3390000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA1851, Micro-ATX, DDR5',
       thuongHieu: 'Gigabyte',
       thongSoKyThuat: { socket: 'LGA1851', formFactor: 'Micro ATX', memory: 'DDR5' }
@@ -1934,7 +1893,7 @@ async function main() {
       tenSanPham: 'Gigabyte Z790 A Elite AX DDR4',
       slug: 'gigabyte-z790-a-elite-ax-ddr4',
       gia: 8200000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, ATX, DDR4',
       thuongHieu: 'Gigabyte',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'ATX', memory: 'DDR4' }
@@ -1945,7 +1904,7 @@ async function main() {
       tenSanPham: 'MSI Pro H610M-S DDR4',
       slug: 'msi-pro-h610m-s-ddr4',
       gia: 1690000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'MSI',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1954,7 +1913,7 @@ async function main() {
       tenSanPham: 'MSI Pro B760M-E DDR4',
       slug: 'msi-pro-b760m-e-ddr4',
       gia: 2490000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'MSI',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1963,7 +1922,7 @@ async function main() {
       tenSanPham: 'MSI PRO B760M-A WIFI DDR4',
       slug: 'msi-pro-b760m-a-wifi-ddr4',
       gia: 3290000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'MSI',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1972,7 +1931,7 @@ async function main() {
       tenSanPham: 'MSI B760M Gaming WIFI DDR5',
       slug: 'msi-b760m-gaming-wifi-ddr5',
       gia: 3190000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, M-ATX, DDR5',
       thuongHieu: 'MSI',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR5' }
@@ -1981,7 +1940,7 @@ async function main() {
       tenSanPham: 'MSI B650M Gaming Wifi DDR5',
       slug: 'msi-b650m-gaming-wifi-ddr5',
       gia: 3690000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket AM5, M-ATX, DDR5',
       thuongHieu: 'MSI',
       thongSoKyThuat: { socket: 'AM5', formFactor: 'Micro ATX', memory: 'DDR5' }
@@ -1990,7 +1949,7 @@ async function main() {
       tenSanPham: 'MSI A520M-A Pro D4 AM4',
       slug: 'msi-a520m-a-pro-d4-am4',
       gia: 1490000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket AM4, M-ATX, DDR4',
       thuongHieu: 'MSI',
       thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1999,7 +1958,7 @@ async function main() {
       tenSanPham: 'MSI Z790 Gaming Plus WF DDR5',
       slug: 'msi-z790-gaming-plus-wf-ddr5',
       gia: 5990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, ATX, DDR5',
       thuongHieu: 'MSI',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'ATX', memory: 'DDR5' }
@@ -2008,7 +1967,7 @@ async function main() {
       tenSanPham: 'MSI B450M-A PRO MAX II',
       slug: 'msi-b450m-a-pro-max-ii',
       gia: 1790000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket AM4, M-ATX, DDR4',
       thuongHieu: 'MSI',
       thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -2019,7 +1978,7 @@ async function main() {
       tenSanPham: 'ASRock A520M/AC D4 AM4 Wifi',
       slug: 'asrock-a520m-ac-d4-am4-wifi',
       gia: 1590000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket AM4, M-ATX, DDR4',
       thuongHieu: 'ASRock',
       thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -2028,7 +1987,7 @@ async function main() {
       tenSanPham: 'ASRock H610M-HVS/M.2 R2.0',
       slug: 'asrock-h610m-hvs-m2-r2-0',
       gia: 1690000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'ASRock',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -2037,7 +1996,7 @@ async function main() {
       tenSanPham: 'Asrock B760M Pro RS/D4',
       slug: 'asrock-b760m-pro-rs-d4',
       gia: 2890000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'ASRock',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -2046,7 +2005,7 @@ async function main() {
       tenSanPham: 'ASRock A520M-HVS D4 AM4',
       slug: 'asrock-a520m-hvs-d4-am4',
       gia: 1490000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket AM4, M-ATX, DDR4',
       thuongHieu: 'ASRock',
       thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -2055,7 +2014,7 @@ async function main() {
       tenSanPham: 'ASRock H610M-HD/M.2 D4',
       slug: 'asrock-h610m-hd-m2-d4',
       gia: 1690000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'ASRock',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -2064,7 +2023,7 @@ async function main() {
       tenSanPham: 'ASRock B450M HDV R4',
       slug: 'asrock-b450m-hdv-r4',
       gia: 1650000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket AM4, M-ATX, DDR4',
       thuongHieu: 'ASRock',
       thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -2073,7 +2032,7 @@ async function main() {
       tenSanPham: 'Asrock B760M Pro RS/D4 Wifi',
       slug: 'asrock-b760m-pro-rs-d4-wifi',
       gia: 3190000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'ASRock',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -2082,7 +2041,7 @@ async function main() {
       tenSanPham: 'ASRock B550M Pro 4 DDR4',
       slug: 'asrock-b550m-pro-4-ddr4',
       gia: 2790000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket AM4, M-ATX, DDR4',
       thuongHieu: 'ASRock',
       thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -2091,7 +2050,7 @@ async function main() {
       tenSanPham: 'ASRock B650M Pro RS WiFi D5',
       slug: 'asrock-b650m-pro-rs-wifi-d5',
       gia: 3890000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket AM5, Micro ATX, DDR5',
       thuongHieu: 'ASRock',
       thongSoKyThuat: { socket: 'AM5', formFactor: 'Micro ATX', memory: 'DDR5' }
@@ -2100,7 +2059,7 @@ async function main() {
       tenSanPham: 'Asrock X870 Pro RS Wifi D5',
       slug: 'asrock-x870-pro-rs-wifi-d5',
       gia: 6690000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket AM5, ATX, DDR5',
       thuongHieu: 'ASRock',
       thongSoKyThuat: { socket: 'AM5', formFactor: 'ATX', memory: 'DDR5' }
@@ -2109,7 +2068,7 @@ async function main() {
       tenSanPham: 'ASRock B660M Pro RS',
       slug: 'asrock-b660m-pro-rs',
       gia: 2890000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'ASRock',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -2118,7 +2077,7 @@ async function main() {
       tenSanPham: 'ASRock Z790 Pro RS Wifi D5',
       slug: 'asrock-z790-pro-rs-wifi-d5',
       gia: 5490000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1700, PCIe 5.0, DDR5',
       thuongHieu: 'ASRock',
       thongSoKyThuat: { socket: 'LGA 1700', pcie: 'PCIe 5.0', memory: 'DDR5' }
@@ -2127,7 +2086,7 @@ async function main() {
       tenSanPham: 'ASRock A620AM-HVS DDR5',
       slug: 'asrock-a620am-hvs-ddr5',
       gia: 1990000,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket AM5, Micro ATX, DDR5',
       thuongHieu: 'ASRock',
       thongSoKyThuat: { socket: 'AM5', formFactor: 'Micro ATX', memory: 'DDR5' }
@@ -2136,21 +2095,19 @@ async function main() {
       tenSanPham: 'ASRock Z890 Pro RS Wifi D5',
       slug: 'asrock-z890-pro-rs-wifi-d5',
       gia: 0,
-      hinhAnh: '../public/images/',
+      hinhAnh: '',
       moTa: 'Socket LGA 1851RL-ILM, ATX, DDR5 - Giá liên hệ',
       thuongHieu: 'ASRock',
       thongSoKyThuat: { socket: 'LGA 1851RL-ILM', formFactor: 'ATX', memory: 'DDR5' }
     }
   ]
 
+  const moboImages = ['/images/1.jpg', '/images/2.jpg', '/images/3.jpg', '/images/4.jpg', '/images/5.jpg', '/images/6.jpg', '/images/7.jpg', '/images/8.jpg', '/images/9.jpg', '/images/10.jpg', '/images/11.jpg', '/images/12.jpg', '/images/13.jpg', '/images/14.jpg', '/images/15.jpg'];
+  let moboIdx = 0;
   for (const mobo of motherboardProducts) {
+    const img = (mobo as any).hinhAnh && (mobo as any).hinhAnh.startsWith('/') ? (mobo as any).hinhAnh : moboImages[moboIdx++ % moboImages.length];
     await prisma.sanPham.create({
-      data: {
-        ...mobo,
-        hinhAnh: (mobo as any).hinhAnh || `https://via.placeholder.com/300x300?text=${mobo.slug}`,
-        soLuongTon: 40,
-        danhMucId: mainboardCat.id
-      }
+      data: { ...mobo, hinhAnh: img, soLuongTon: 40, danhMucId: mainboardCat.id }
     })
   }
 
