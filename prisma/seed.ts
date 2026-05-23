@@ -290,7 +290,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 5 5600X',
       slug: 'amd-ryzen-5-5600x',
       gia: 4090000,
-      hinhAnh: '',
+      hinhAnh: '/images/18.jpg',
       moTa: '6 nhân, 12 luồng, 3.7 GHz, Socket AM4',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 6, threads: 12, baseFreq: '3.7 GHz', socket: 'AM4' }
@@ -299,7 +299,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 3 3200G (MPK)',
       slug: 'amd-ryzen-3-3200g',
       gia: 1990000,
-      hinhAnh: '',
+      hinhAnh: '/images/19.jpg',
       moTa: '4 nhân, 4 luồng, 4.0 GHz, Socket AM4',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 4, threads: 4, baseFreq: '4.0 GHz', socket: 'AM4' }
@@ -308,7 +308,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 5 5600GT (MPK)',
       slug: 'amd-ryzen-5-5600gt',
       gia: 3990000,
-      hinhAnh: '',
+      hinhAnh: '/images/20.jpg',
       moTa: '6 nhân, 12 luồng, 5.2 GHz, Socket AM4',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 6, threads: 12, boostFreq: '5.2 GHz', socket: 'AM4' }
@@ -317,7 +317,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 5 3400G (MPK)',
       slug: 'amd-ryzen-5-3400g',
       gia: 2090000,
-      hinhAnh: '',
+      hinhAnh: '/images/21.jpg',
       moTa: '4 nhân, 8 luồng, 4.2 GHz, Socket AM4',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 4, threads: 8, baseFreq: '4.2 GHz', socket: 'AM4' }
@@ -326,7 +326,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 5 7600',
       slug: 'amd-ryzen-5-7600',
       gia: 5490000,
-      hinhAnh: '',
+      hinhAnh: '/images/22.jpg',
       moTa: '6 nhân, 12 luồng, 3.8 GHz, Socket AM5',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 6, threads: 12, baseFreq: '3.8 GHz', socket: 'AM5' }
@@ -335,7 +335,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 3 4300G',
       slug: 'amd-ryzen-3-4300g',
       gia: 2390000,
-      hinhAnh: '',
+      hinhAnh: '/images/23.jpg',
       moTa: '4 nhân, 8 luồng, 3.8 GHz, Socket AM4',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 4, threads: 8, baseFreq: '3.8 GHz', socket: 'AM4' }
@@ -344,7 +344,7 @@ async function main() {
       tenSanPham: 'AMD Athlon 3000G',
       slug: 'amd-athlon-3000g',
       gia: 1290000,
-      hinhAnh: '',
+      hinhAnh: '/images/24.jpg',
       moTa: '2 nhân, 4 luồng, 3.5 GHz, Socket AM4',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 2, threads: 4, baseFreq: '3.5 GHz', socket: 'AM4' }
@@ -353,7 +353,7 @@ async function main() {
       tenSanPham: 'AMD Ryzen 7 9800X3D (WOF)',
       slug: 'amd-ryzen-7-9800x3d',
       gia: 13990000,
-      hinhAnh: '',
+      hinhAnh: '/images/25.jpg',
       moTa: '8 nhân, 16 luồng, 5.2 GHz, Socket AM5',
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 8, threads: 16, boostFreq: '5.2 GHz', socket: 'AM5' }
@@ -363,7 +363,7 @@ async function main() {
       tenSanPham: 'Intel Core i5 14600KF',
       slug: 'intel-core-i5-14600kf',
       gia: 6990000,
-      hinhAnh: '',
+      hinhAnh: '/images/26.jpg',
       moTa: '14 nhân, 20 luồng, 3.4 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 14, threads: 20, baseFreq: '3.4 GHz', socket: 'LGA 1700' }
@@ -372,7 +372,7 @@ async function main() {
       tenSanPham: 'Intel Core i5-12400F (TRAY)',
       slug: 'intel-core-i5-12400f',
       gia: 3990000,
-      hinhAnh: '',
+      hinhAnh: '/images/27.jpg',
       moTa: '6 nhân, 12 luồng, 4.40 GHz, Socket FCLGA1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 6, threads: 12, boostFreq: '4.4 GHz', socket: 'FCLGA1700' }
@@ -381,7 +381,7 @@ async function main() {
       tenSanPham: 'Intel Core i5 14500',
       slug: 'intel-core-i5-14500',
       gia: 8990000,
-      hinhAnh: '',
+      hinhAnh: '/images/28.jpg',
       moTa: '14 nhân, 20 luồng, 2.6 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 14, threads: 20, baseFreq: '2.6 GHz', socket: 'LGA 1700' }
@@ -390,7 +390,7 @@ async function main() {
       tenSanPham: 'Intel Core i5 13400F (Tray)',
       slug: 'intel-core-i5-13400f',
       gia: 4290000,
-      hinhAnh: '',
+      hinhAnh: '/images/29.jpg',
       moTa: '10 nhân, 16 luồng, 4.6 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 10, threads: 16, boostFreq: '4.6 GHz', socket: 'LGA 1700' }
@@ -399,7 +399,7 @@ async function main() {
       tenSanPham: 'Intel Core Ultra 9 285K',
       slug: 'intel-core-ultra-9-285k',
       gia: 16990000,
-      hinhAnh: '',
+      hinhAnh: '/images/30.jpg',
       moTa: '24 nhân, 24 luồng, 5.7 GHz, Socket FCLGA1851',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 24, threads: 24, boostFreq: '5.7 GHz', socket: 'FCLGA1851' }
@@ -408,7 +408,7 @@ async function main() {
       tenSanPham: 'Intel Core i7 14700F',
       slug: 'intel-core-i7-14700f',
       gia: 10490000,
-      hinhAnh: '',
+      hinhAnh: '/images/31.jpg',
       moTa: '20 nhân, 28 luồng, 2.1 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 20, threads: 28, baseFreq: '2.1 GHz', socket: 'LGA 1700' }
@@ -417,7 +417,7 @@ async function main() {
       tenSanPham: 'Intel Core i5 14400F (Tray)',
       slug: 'intel-core-i5-14400f',
       gia: 5990000,
-      hinhAnh: '',
+      hinhAnh: '/images/32.jpg',
       moTa: '10 nhân, 16 luồng, 4.7 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 10, threads: 16, boostFreq: '4.7 GHz', socket: 'LGA 1700' }
@@ -426,7 +426,7 @@ async function main() {
       tenSanPham: 'Intel Core i3 13100F',
       slug: 'intel-core-i3-13100f',
       gia: 2990000,
-      hinhAnh: '',
+      hinhAnh: '/images/33.jpg',
       moTa: '4 nhân, 8 luồng, 3.4 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 4, threads: 8, baseFreq: '3.4 GHz', socket: 'LGA 1700' }
@@ -435,7 +435,7 @@ async function main() {
       tenSanPham: 'Intel Core i3 14100F',
       slug: 'intel-core-i3-14100f',
       gia: 3290000,
-      hinhAnh: '',
+      hinhAnh: '/images/34.jpg',
       moTa: '4 nhân, 8 luồng, 3.5 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 4, threads: 8, baseFreq: '3.5 GHz', socket: 'LGA 1700' }
@@ -444,7 +444,7 @@ async function main() {
       tenSanPham: 'Intel Core i5-12500',
       slug: 'intel-core-i5-12500',
       gia: 5990000,
-      hinhAnh: '',
+      hinhAnh: '/images/35.jpg',
       moTa: '6 nhân, 12 luồng, 4.6 GHz, Socket FCLGA1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 6, threads: 12, boostFreq: '4.6 GHz', socket: 'FCLGA1700' }
@@ -453,7 +453,7 @@ async function main() {
       tenSanPham: 'Intel Core i9 14900',
       slug: 'intel-core-i9-14900',
       gia: 19990000,
-      hinhAnh: '',
+      hinhAnh: '/images/36.jpg',
       moTa: '24 nhân, 32 luồng, 2.0 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 24, threads: 32, baseFreq: '2.0 GHz', socket: 'LGA 1700' }
@@ -462,7 +462,7 @@ async function main() {
       tenSanPham: 'Intel Core i5 12400 (Tray)',
       slug: 'intel-core-i5-12400',
       gia: 5690000,
-      hinhAnh: '',
+      hinhAnh: '/images/37.jpg',
       moTa: '6 nhân, 12 luồng, 4.4 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 6, threads: 12, boostFreq: '4.4 GHz', socket: 'LGA 1700' }
@@ -471,7 +471,7 @@ async function main() {
       tenSanPham: 'Intel Pentium Gold G6405',
       slug: 'intel-pentium-g6405',
       gia: 1990000,
-      hinhAnh: '',
+      hinhAnh: '/images/38.jpg',
       moTa: '2 nhân, 4 luồng, 4.1 GHz, Socket LGA 1200',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 2, threads: 4, baseFreq: '4.1 GHz', socket: 'LGA 1200' }
@@ -480,7 +480,7 @@ async function main() {
       tenSanPham: 'Intel Core Ultra 5 225 (Tray)',
       slug: 'intel-core-ultra-5-225',
       gia: 4690000,
-      hinhAnh: '',
+      hinhAnh: '/images/39.jpg',
       moTa: '10 nhân, 10 luồng, 4.9 GHz, Socket FCLGA1851',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 10, threads: 10, boostFreq: '4.9 GHz', socket: 'FCLGA1851' }
@@ -489,7 +489,7 @@ async function main() {
       tenSanPham: 'Intel Core i3 14100 (Tray)',
       slug: 'intel-core-i3-14100',
       gia: 4490000,
-      hinhAnh: '',
+      hinhAnh: '/images/40.jpg',
       moTa: '4 nhân, 8 luồng, 4.7 GHz, Socket FCLGA1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 4, threads: 8, boostFreq: '4.7 GHz', socket: 'FCLGA1700' }
@@ -498,7 +498,7 @@ async function main() {
       tenSanPham: 'Intel Core i7 12700 (Tray)',
       slug: 'intel-core-i7-12700',
       gia: 9290000,
-      hinhAnh: '',
+      hinhAnh: '/images/41.jpg',
       moTa: '12 nhân, 20 luồng, 4.9 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 12, threads: 20, boostFreq: '4.9 GHz', socket: 'LGA 1700' }
@@ -507,7 +507,7 @@ async function main() {
       tenSanPham: 'Intel Core i3 12100 (Tray)',
       slug: 'intel-core-i3-12100',
       gia: 4490000,
-      hinhAnh: '',
+      hinhAnh: '/images/42.jpg',
       moTa: '4 nhân, 8 luồng, 4.3 GHz, Socket LGA 1700',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 4, threads: 8, boostFreq: '4.3 GHz', socket: 'LGA 1700' }
@@ -516,7 +516,7 @@ async function main() {
       tenSanPham: 'Intel Core Ultra 5 225F (Tray)',
       slug: 'intel-core-ultra-5-225f',
       gia: 4290000,
-      hinhAnh: '',
+      hinhAnh: '/images/43.jpg',
       moTa: '10 nhân, 10 luồng, 4.9 GHz, Socket LGA 1851',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 10, threads: 10, boostFreq: '4.9 GHz', socket: 'LGA 1851' }
@@ -525,7 +525,7 @@ async function main() {
       tenSanPham: 'Intel Core Ultra 5 245K',
       slug: 'intel-core-ultra-5-245k',
       gia: 8290000,
-      hinhAnh: '',
+      hinhAnh: '/images/44.jpg',
       moTa: '14 nhân, 14 luồng, 5.2 GHz, Socket FCLGA1851',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 14, threads: 14, boostFreq: '5.2 GHz', socket: 'FCLGA1851' }
@@ -534,7 +534,7 @@ async function main() {
       tenSanPham: 'Intel Core Ultra 5 245KF',
       slug: 'intel-core-ultra-5-245kf',
       gia: 7990000,
-      hinhAnh: '',
+      hinhAnh: '/images/45.jpg',
       moTa: '14 nhân, 14 luồng, 5.2 GHz, Socket FCLGA1851',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 14, threads: 14, boostFreq: '5.2 GHz', socket: 'FCLGA1851' }
