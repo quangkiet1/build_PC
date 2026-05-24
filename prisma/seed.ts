@@ -67,7 +67,6 @@ async function main() {
 
   // ============== THÊM NHIỀU CPU ==============
   const cpuProducts = [
-    // Intel CPUs
     {
       tenSanPham: 'Intel Core i9-14900KS',
       slug: 'intel-core-i9-14900ks',
@@ -148,7 +147,6 @@ async function main() {
         tdp: '125W'
       }
     },
-    // AMD CPUs
     {
       tenSanPham: 'AMD Ryzen 9 7950X3D',
       slug: 'amd-ryzen-9-7950x3d',
@@ -212,8 +210,7 @@ async function main() {
         socket: 'AM5',
         tdp: '65W'
       }
-    }
-    ,
+    },
     {
       tenSanPham: 'AMD Ryzen 9 9950X3D (Tray)',
       slug: 'amd-ryzen-9-9950x3d',
@@ -358,7 +355,6 @@ async function main() {
       thuongHieu: 'AMD',
       thongSoKyThuat: { cores: 8, threads: 16, boostFreq: '5.2 GHz', socket: 'AM5' }
     },
-    // Intel CPUs from provided list
     {
       tenSanPham: 'Intel Core i5 14600KF',
       slug: 'intel-core-i5-14600kf',
@@ -538,24 +534,6 @@ async function main() {
       moTa: '14 nhân, 14 luồng, 5.2 GHz, Socket FCLGA1851',
       thuongHieu: 'Intel',
       thongSoKyThuat: { cores: 14, threads: 14, boostFreq: '5.2 GHz', socket: 'FCLGA1851' }
-    },
-    {
-      tenSanPham: 'Intel Core i7 14700KF',
-      slug: 'intel-core-i7-14700kf',
-      gia: 10990000,
-      hinhAnh: '',
-      moTa: '20 nhân, 28 luồng, 3.4 GHz, Socket LGA 1700',
-      thuongHieu: 'Intel',
-      thongSoKyThuat: { cores: 20, threads: 28, baseFreq: '3.4 GHz', socket: 'LGA 1700' }
-    },
-    {
-      tenSanPham: 'Intel Core i9 14900KF',
-      slug: 'intel-core-i9-14900kf',
-      gia: 15990000,
-      hinhAnh: '',
-      moTa: '24 nhân, 32 luồng, 3.2 GHz, Socket LGA 1700',
-      thuongHieu: 'Intel',
-      thongSoKyThuat: { cores: 24, threads: 32, baseFreq: '3.2 GHz', socket: 'LGA 1700' }
     }
   ]
 
@@ -578,110 +556,186 @@ async function main() {
   }
 
   // ============== THÊM NHIỀU GPU ==============
-  const gpuProducts = [
+    const gpuProducts = [
     {
-      tenSanPham: 'NVIDIA RTX 4090',
-      slug: 'nvidia-rtx-4090',
-      gia: 42000000,
-      moTa: 'Card đồ họa flagship NVIDIA, 24GB GDDR6X',
-      thuongHieu: 'NVIDIA',
-      thongSoKyThuat: {
-        memory: '24GB GDDR6X',
-        memoryClock: '20 Gbps',
-        cudaCores: 16384,
-        tgp: '575W'
-      }
+      tenSanPham: 'VGA Asus Geforce GT710 2GB GT710-SL-2GD5-BRK-EVO',
+      slug: 'vga-asus-geforce-gt710-2gb-gt710sl2gd5brkevo',
+      gia: 1990000,
+      hinhAnh: '/images/46.jpg',
+      moTa: 'Card màn hình VGA Asus Geforce GT710 2GB GT710-SL-2GD5-BRK-EVO. Thông số: 2GB, GDDR5, 300W',
+      thuongHieu: 'ASUS',
+      thongSoKyThuat: { memory: '2GB', vramType: 'GDDR5', psu: '300W' }
     },
     {
-      tenSanPham: 'NVIDIA RTX 4080 Super',
-      slug: 'nvidia-rtx-4080-super',
-      gia: 35000000,
-      moTa: 'Card đồ họa cao cấp NVIDIA RTX 4080 Super, 16GB',
-      thuongHieu: 'NVIDIA',
-      thongSoKyThuat: {
-        memory: '16GB GDDR6X',
-        memoryClock: '20 Gbps',
-        cudaCores: 10240,
-        tgp: '320W'
-      }
+      tenSanPham: 'VGA MSI GeForce RTX 3060 VENTUS 2X 12G OC',
+      slug: 'vga-msi-geforce-rtx-3060-ventus-2x-12g-oc',
+      gia: 9490000,
+      hinhAnh: '/images/47.jpg',
+      moTa: 'Card màn hình VGA MSI GeForce RTX 3060 VENTUS 2X 12G OC. Thông số: 12GB, GDDR6, 550W',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { memory: '12GB', vramType: 'GDDR6', psu: '550W' }
     },
     {
-      tenSanPham: 'NVIDIA RTX 4080',
-      slug: 'nvidia-rtx-4080',
-      gia: 32000000,
-      moTa: 'Card đồ họa cao cấp cho gaming 1440p+',
-      thuongHieu: 'NVIDIA',
-      thongSoKyThuat: {
-        memory: '16GB GDDR6X',
-        memoryClock: '20 Gbps',
-        cudaCores: 9728,
-        tgp: '320W'
-      }
+      tenSanPham: 'VGA MSI GeForce RTX 5060 8GB VENTUS 2X OC',
+      slug: 'vga-msi-geforce-rtx-5060-8gb-ventus-2x-oc',
+      gia: 10690000,
+      hinhAnh: '/images/48.jpg',
+      moTa: 'Card màn hình VGA MSI GeForce RTX 5060 8GB VENTUS 2X OC. Thông số: 8GB, GDDR7, 550W',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { memory: '8GB', vramType: 'GDDR7', psu: '550W' }
     },
     {
-      tenSanPham: 'NVIDIA RTX 4070 Ti Super',
-      slug: 'nvidia-rtx-4070-ti-super',
-      gia: 31000000,
-      moTa: 'RTX 4070 Ti phiên bản Super, 12GB GDDR6X',
-      thuongHieu: 'NVIDIA',
-      thongSoKyThuat: {
-        memory: '12GB GDDR6X',
-        memoryClock: '21 Gbps',
-        cudaCores: 8064,
-        tgp: '285W'
-      }
+      tenSanPham: 'VGA ASUS Dual Geforce RTX 3060 OC 12GB DUAL-RTX3060-O12G-V2',
+      slug: 'vga-asus-dual-geforce-rtx-3060-oc-12gb-dual-rtx3060-o12g-v2',
+      gia: 9490000,
+      hinhAnh: '/images/49.jpg',
+      moTa: 'Card màn hình VGA ASUS Dual Geforce RTX 3060 OC 12GB DUAL-. Thông số: 12GB, GDDR6, Từ 650W - 2.7 slot',
+      thuongHieu: 'ASUS',
+      thongSoKyThuat: { memory: '12GB', vramType: 'GDDR6', psu: 'Từ 650W - 2.7 slot' }
     },
     {
-      tenSanPham: 'NVIDIA RTX 4070 Ti',
-      slug: 'nvidia-rtx-4070-ti',
-      gia: 28500000,
-      moTa: 'Card đồ họa mid-high end, 12GB GDDR6X',
-      thuongHieu: 'NVIDIA',
-      thongSoKyThuat: {
-        memory: '12GB GDDR6X',
-        memoryClock: '21 Gbps',
-        cudaCores: 7680,
-        tgp: '285W'
-      }
+      tenSanPham: 'VGA Asus Tuf Gaming Geforce RTX 5070 OC 12GB',
+      slug: 'vga-asus-tuf-gaming-geforce-rtx-5070-oc-12gb',
+      gia: 26990000,
+      hinhAnh: '/images/50.jpg',
+      moTa: 'Card màn hình VGA Asus Tuf Gaming Geforce RTX 5070 OC 12GB. Thông số: 12GB, GDDR7, 750W',
+      thuongHieu: 'ASUS',
+      thongSoKyThuat: { memory: '12GB', vramType: 'GDDR7', psu: '750W' }
     },
     {
-      tenSanPham: 'NVIDIA RTX 4070',
-      slug: 'nvidia-rtx-4070',
-      gia: 21000000,
-      moTa: 'Card đồ họa tầm trung cho gaming 1440p',
-      thuongHieu: 'NVIDIA',
-      thongSoKyThuat: {
-        memory: '12GB GDDR6',
-        memoryClock: '21 Gbps',
-        cudaCores: 5888,
-        tgp: '200W'
-      }
+      tenSanPham: 'VGA MSI Geforce RTX 5060 8GB Shadow 2X OC',
+      slug: 'vga-msi-geforce-rtx-5060-8gb-shadow-2x-oc',
+      gia: 9990000,
+      hinhAnh: '/images/51.jpg',
+      moTa: 'Card màn hình VGA MSI Geforce RTX 5060 8GB Shadow 2X OC. Thông số: 8GB, GDDR7, 550W',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { memory: '8GB', vramType: 'GDDR7', psu: '550W' }
     },
     {
-      tenSanPham: 'AMD Radeon RX 7900 XTX',
-      slug: 'amd-radeon-rx-7900-xtx',
-      gia: 31000000,
-      moTa: 'Card đồ họa AMD cao cấp, 24GB GDDR6',
-      thuongHieu: 'AMD',
-      thongSoKyThuat: {
-        memory: '24GB GDDR6',
-        memoryClock: '20 Gbps',
-        streamProcessors: 6144,
-        tgp: '500W'
-      }
+      tenSanPham: 'VGA MSI Geforce RTX 5090 32G Gaming Trio OC',
+      slug: 'vga-msi-geforce-rtx-5090-32g-gaming-trio-oc',
+      gia: 119000000,
+      hinhAnh: '/images/52.jpg',
+      moTa: 'Card màn hình VGA MSI Geforce RTX 5090 32G Gaming Trio OC. Thông số: 32GB, GDDR7, 1000W',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { memory: '32GB', vramType: 'GDDR7', psu: '1000W' }
     },
     {
-      tenSanPham: 'AMD Radeon RX 7900 XT',
-      slug: 'amd-radeon-rx-7900-xt',
-      gia: 24000000,
-      moTa: 'Card đồ họa AMD Radeon RX 7900 XT',
-      thuongHieu: 'AMD',
-      thongSoKyThuat: {
-        memory: '20GB GDDR6',
-        memoryClock: '20 Gbps',
-        streamProcessors: 5376,
-        tgp: '420W'
-      }
+      tenSanPham: 'VGA Asus Dual Radeon RX 6500 XT OC 4GB DUAL-RX6500XT-O4G-V2',
+      slug: 'vga-asus-dual-radeon-rx-6500-xt-oc-4gb-dual-rx6500xt-o4g-v2',
+      gia: 5190000,
+      hinhAnh: '/images/53.jpg',
+      moTa: 'Card màn hình VGA Asus Dual Radeon RX 6500 XT OC 4GB DUAL-. Thông số: 4GB, GDDR6, 500W',
+      thuongHieu: 'ASUS',
+      thongSoKyThuat: { memory: '4GB', vramType: 'GDDR6', psu: '500W' }
+    },
+    {
+      tenSanPham: 'VGA MSI GeForce RTX 3050 VENTUS 2X 6G OC',
+      slug: 'vga-msi-geforce-rtx-3050-ventus-2x-6g-oc',
+      gia: 6190000,
+      hinhAnh: '/images/54.jpg',
+      moTa: 'Card màn hình VGA MSI GeForce RTX 3050 VENTUS 2X 6G OC. Thông số: 6GB, GDDR6, 300W',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { memory: '6GB', vramType: 'GDDR6', psu: '300W' }
+    },
+    {
+      tenSanPham: 'VGA Gigabyte Radeon RX 6500 XT Eagle 4GB GV-R65XTEAGLE-4GD',
+      slug: 'vga-gigabyte-radeon-rx-6500-xt-eagle-4gb-gv-r65xteagle-4gd',
+      gia: 5190000,
+      hinhAnh: '/images/55.jpg',
+      moTa: 'Card màn hình VGA Gigabyte Radeon RX 6500 XT Eagle 4GB GV-R65XTEAGLE-4GD. Thông số: 4GB, GDDR6, 400W',
+      thuongHieu: 'Gigabyte',
+      thongSoKyThuat: { memory: '4GB', vramType: 'GDDR6', psu: '400W' }
+    },
+    {
+      tenSanPham: 'VGA Asrock Intel ARC A380 Challenger ITX 6GB OC',
+      slug: 'vga-asrock-intel-arc-a380-challenger-itx-6gb-oc',
+      gia: 4390000,
+      hinhAnh: '/images/56.jpg',
+      moTa: 'Card màn hình VGA Asrock Intel ARC A380 Challenger ITX 6GB OC. Thông số: 6GB, GDDR6, 500W',
+      thuongHieu: 'ASRock',
+      thongSoKyThuat: { memory: '6GB', vramType: 'GDDR6', psu: '500W' }
+    },
+    {
+      tenSanPham: 'VGA MSI GeForce RTX 5070 12GB VENTUS 2X OC',
+      slug: 'vga-msi-geforce-rtx-5070-12gb-ventus-2x-oc',
+      gia: 21990000,
+      hinhAnh: '/images/57.jpg',
+      moTa: 'Card màn hình VGA MSI GeForce RTX 5070 12GB VENTUS 2X OC. Thông số: 12GB, GDDR7, 650W',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { memory: '12GB', vramType: 'GDDR7', psu: '650W' }
+    },
+    {
+      tenSanPham: 'VGA Asus Phoenix Radeon RX 7600 OC 8GB DUAL-RX7600-O8G-EVO',
+      slug: 'vga-asus-phoenix-radeon-rx-7600-oc-8gb-dualrx7600-o8g-evo',
+      gia: 8490000,
+      hinhAnh: '/images/58.jpg',
+      moTa: 'Card màn hình VGA Asus Phoenix Radeon RX 7600 OC 8GB DUAL-RX7600-O8G-EVO. Thông số: 8GB, GDDR6, 550W',
+      thuongHieu: 'ASUS',
+      thongSoKyThuat: { memory: '8GB', vramType: 'GDDR6', psu: '550W' }
+    },
+    {
+      tenSanPham: 'VGA MSI GeForce RTX 5060 Ti 8G Ventus 2X OC Plus',
+      slug: 'vga-msi-geforce-rtx-5060-ti-8g-ventus-2x-oc-plus',
+      gia: 13990000,
+      hinhAnh: '/images/59.jpg',
+      moTa: 'Card màn hình VGA MSI GeForce RTX 5060 Ti 8G Ventus 2X OC Plus. Thông số: 8GB, GDDR7, 600W',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { memory: '8GB', vramType: 'GDDR7', psu: '600W' }
+    },
+    {
+      tenSanPham: 'VGA Gigabyte RTX 5050 WindForce OC 8GB',
+      slug: 'vga-gigabyte-rtx-5050-windforce-oc-8gb',
+      gia: 8490000,
+      hinhAnh: '/images/60.jpg',
+      moTa: 'Card màn hình VGA Gigabyte RTX 5050 WindForce OC 8GB. Thông số: 8GB, GDDR6, 550W',
+      thuongHieu: 'Gigabyte',
+      thongSoKyThuat: { memory: '8GB', vramType: 'GDDR6', psu: '550W' }
+    },
+    {
+      tenSanPham: 'VGA Asus Prime Radeon RX 9070 XT OC 16GB PRIME-RX9070XT-O16G',
+      slug: 'vga-asus-prime-radeon-rx-9070-xt-oc-16gb-prime',
+      gia: 24990000,
+      hinhAnh: '/images/61.jpg',
+      moTa: 'Card màn hình VGA Asus Prime Radeon RX 9070 XT OC 16GB PRIME-RX9070XT-O16G. Thông số: 16GB, GDDR6, 750W',
+      thuongHieu: 'ASUS',
+      thongSoKyThuat: { memory: '16GB', vramType: 'GDDR6', psu: '750W' }
+    },
+    {
+      tenSanPham: 'VGA MSI Geforce RTX 5070 12G Gaming Trio OC',
+      slug: 'vga-msi-geforce-rtx-5070-12g-gaming-trio-oc',
+      gia: 23990000,
+      hinhAnh: '/images/62.jpg',
+      moTa: 'Card màn hình VGA MSI Geforce RTX 5070 12G Gaming Trio OC. Thông số: 12GB, GDDR7, 650W',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { memory: '12GB', vramType: 'GDDR7', psu: '650W' }
+    },
+    {
+      tenSanPham: 'VGA MSI GeForce RTX 5070 Ti 16G Shadow 3X OC',
+      slug: 'vga-msi-geforce-rtx-5070-ti-16g-shadow-3x-oc',
+      gia: 32990000,
+      hinhAnh: '/images/63.jpg',
+      moTa: 'Card màn hình VGA MSI GeForce RTX 5070 Ti 16G Shadow 3X OC. Thông số: 16GB, GDDR7, 750W',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { memory: '16GB', vramType: 'GDDR7', psu: '750W' }
+    },
+    {
+      tenSanPham: 'VGA Asus Prime Geforce RTX 5060 Ti 16GB OC PRIME-RTX5060TI-O16G',
+      slug: 'vga-asus-prime-geforce-rtx-5060-ti-16gb-oc-prime',
+      gia: 20990000,
+      hinhAnh: '/images/64.jpg',
+      moTa: 'Card màn hình VGA Asus Prime Geforce RTX 5060 Ti 16GB OC PRIME-RTX5060TI-O16G. Thông số: 16GB, GDDR7, 550W',
+      thuongHieu: 'ASUS',
+      thongSoKyThuat: { memory: '16GB', vramType: 'GDDR7', psu: '550W' }
+    },
+    {
+      tenSanPham: 'VGA Gigabyte GeForce RTX 3050 WindForce OC 6GB GV-N3050WF2OCV2-6GD',
+      slug: 'vga-gigabyte-geforce-rtx-3050-windforce-oc-6gb-gv-n3050wf2ocv2-6gd',
+      gia: 6190000,
+      hinhAnh: '/images/65.jpg',
+      moTa: 'Card màn hình VGA Gigabyte GeForce RTX 3050 WindForce OC 6GB GV-N3050WF2OCV2-6GD. Thông số: 6GB, GDDR6, 300W',
+      thuongHieu: 'Gigabyte',
+      thongSoKyThuat: { memory: '6GB', vramType: 'GDDR6', psu: '300W' }
     }
   ]
 
@@ -700,6 +754,7 @@ async function main() {
       tenSanPham: 'Corsair Vengeance DDR5 64GB (2x32GB)',
       slug: 'corsair-vengeance-ddr5-64gb',
       gia: 9500000,
+      hinhAnh: '/images/66.jpg',
       moTa: 'Bộ RAM DDR5 Corsair Vengeance 64GB tốc độ cao',
       thuongHieu: 'Corsair',
       thongSoKyThuat: {
@@ -714,6 +769,7 @@ async function main() {
       slug: 'corsair-vengeance-ddr5-32gb',
       gia: 4500000,
       moTa: 'Bộ RAM DDR5 Corsair, 32GB tốc độ 6400MHz',
+      hinhAnh: '/images/67.jpg',
       thuongHieu: 'Corsair',
       thongSoKyThuat: {
         capacity: '32GB (2x16GB)',
@@ -727,6 +783,7 @@ async function main() {
       slug: 'kingston-fury-beast-ddr5-32gb',
       gia: 4200000,
       moTa: 'RAM Kingston Fury Beast DDR5 32GB',
+      hinhAnh: '/images/68.jpg',
       thuongHieu: 'Kingston',
       thongSoKyThuat: {
         capacity: '32GB (2x16GB)',
@@ -740,6 +797,7 @@ async function main() {
       slug: 'gskill-trident-z5-ddr5-48gb',
       gia: 7200000,
       moTa: 'RAM G.Skill Trident Z5 DDR5 48GB tốc độ siêu cao',
+      hinhAnh: '/images/69.jpg',
       thuongHieu: 'G.Skill',
       thongSoKyThuat: {
         capacity: '48GB (2x24GB)',
@@ -753,6 +811,7 @@ async function main() {
       slug: 'crucial-pro-ddr5-32gb',
       gia: 4000000,
       moTa: 'RAM Crucial Pro DDR5 32GB đáng tin cậy',
+      hinhAnh: '/images/70.jpg',
       thuongHieu: 'Crucial',
       thongSoKyThuat: {
         capacity: '32GB (2x16GB)',
@@ -766,6 +825,7 @@ async function main() {
       slug: 'rog-strix-flare-ii-ddr5-32gb',
       gia: 5500000,
       moTa: 'RAM ASUS ROG STRIX Flare II DDR5 32GB RGB',
+      hinhAnh: '/images/71.jpg',
       thuongHieu: 'ASUS',
       thongSoKyThuat: {
         capacity: '32GB (2x16GB)',
@@ -888,269 +948,6 @@ async function main() {
         voltage: '1.2V',
         formFactor: 'SO-DIMM',
         model: 'KVR32S22D8/32'
-      }
-    },
-    {
-      tenSanPham: 'RAM PC Kingston Fury DDR5 5600MHz 32GB (2x16GB)',
-      slug: 'ram-pc-kingston-fury-ddr5-5600mhz-32gb-2x16',
-      gia: 13990000,
-      moTa: 'RAM PC Kingston Fury DDR5 5600MHz 32GB (2x16GB)',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '32GB (2x16GB)',
-        type: 'DDR5',
-        speed: '5600MHz',
-        formFactor: 'DIMM'
-      }
-    },
-    {
-      tenSanPham: 'RAM PC Kingston Fury DDR5 5600MHz 16GB (1x16GB)',
-      slug: 'ram-pc-kingston-fury-ddr5-5600mhz-16gb-1x16',
-      gia: 7290000,
-      moTa: 'RAM PC Kingston Fury DDR5 5600MHz 16GB (1x16GB)',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '16GB (1x16GB)',
-        type: 'DDR5',
-        speed: '5600MHz',
-        formFactor: 'DIMM'
-      }
-    },
-    {
-      tenSanPham: 'RAM PC Kingston Fury DDR5 6000MHz 16GB (1x16GB)',
-      slug: 'ram-pc-kingston-fury-ddr5-6000mhz-16gb-1x16',
-      gia: 7290000,
-      moTa: 'RAM PC Kingston Fury DDR5 6000MHz 16GB (1x16GB)',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '16GB (1x16GB)',
-        type: 'DDR5',
-        speed: '6000MHz',
-        formFactor: 'DIMM'
-      }
-    },
-    {
-      tenSanPham: 'RAM PC Kingston Fury 8GB 3200MHz KF432C16BB/8',
-      slug: 'ram-pc-kingston-fury-8gb-3200mhz-kf432c16bb-8',
-      gia: 2490000,
-      moTa: 'RAM PC Kingston Fury 8GB 3200MHz KF432C16BB/8',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '8GB',
-        type: 'DDR4',
-        speed: '3200MHz',
-        formFactor: 'DIMM',
-        model: 'KF432C16BB/8'
-      }
-    },
-    {
-      tenSanPham: 'RAM PC Kingston Fury RGB DDR5 6000MHz 64GB (2x32GB)',
-      slug: 'ram-pc-kingston-fury-rgb-ddr5-6000mhz-64gb-2x32',
-      gia: 26990000,
-      moTa: 'RAM PC Kingston Fury RGB DDR5 6000MHz 64GB (2x32GB)',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '64GB (2x32GB)',
-        type: 'DDR5',
-        speed: '6000MHz',
-        formFactor: 'DIMM',
-        rgb: true
-      }
-    },
-    {
-      tenSanPham: 'RAM PC Kingston Fury RGB DDR5 6000MHz 32GB (2x16GB)',
-      slug: 'ram-pc-kingston-fury-rgb-ddr5-6000mhz-32gb-2x16',
-      gia: 14490000,
-      moTa: 'RAM PC Kingston Fury RGB DDR5 6000MHz 32GB (2x16GB)',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '32GB (2x16GB)',
-        type: 'DDR5',
-        speed: '6000MHz',
-        formFactor: 'DIMM',
-        rgb: true
-      }
-    },
-    {
-      tenSanPham: 'RAM PC Kingston Fury DDR5 6000MHz 32GB (2x16GB)',
-      slug: 'ram-pc-kingston-fury-ddr5-6000mhz-32gb-2x16',
-      gia: 14490000,
-      moTa: 'RAM PC Kingston Fury DDR5 6000MHz 32GB (2x16GB)',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '32GB (2x16GB)',
-        type: 'DDR5',
-        speed: '6000MHz',
-        formFactor: 'DIMM'
-      }
-    },
-    {
-      tenSanPham: 'RAM PC Kingston Fury Beast RGB DDR5 5600MHz 64GB (2x32GB)',
-      slug: 'ram-pc-kingston-fury-beast-rgb-ddr5-5600mhz-64gb-2x32',
-      gia: 26990000,
-      moTa: 'RAM PC Kingston Fury Beast RGB DDR5 5600MHz 64GB (2x32GB)',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '64GB (2x32GB)',
-        type: 'DDR5',
-        speed: '5600MHz',
-        formFactor: 'DIMM',
-        rgb: true
-      }
-    },
-    {
-      tenSanPham: 'RAM PC Kingston Fury RGB DDR5 6000MHz 32GB (1x32GB)',
-      slug: 'ram-pc-kingston-fury-rgb-ddr5-6000mhz-32gb-1x32',
-      gia: 14490000,
-      moTa: 'RAM PC Kingston Fury RGB DDR5 6000MHz 32GB (1x32GB)',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '32GB (1x32GB)',
-        type: 'DDR5',
-        speed: '6000MHz',
-        formFactor: 'DIMM',
-        rgb: true
-      }
-    },
-    {
-      tenSanPham: 'RAM Kingston DDR5 5600MT/s 32GB',
-      slug: 'ram-kingston-ddr5-5600mt-s-32gb',
-      gia: 14990000,
-      moTa: 'RAM Kingston DDR5 5600MT/s 32GB',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '32GB',
-        type: 'DDR5',
-        speed: '5600MT/s',
-        formFactor: 'DIMM'
-      }
-    },
-    {
-      tenSanPham: 'RAM PC Kingston Fury Beast Black 16GB 3200MHz DDR4',
-      slug: 'ram-pc-kingston-fury-beast-black-ddr4-3200mhz-16gb',
-      gia: 3990000,
-      moTa: 'RAM PC Kingston Fury Beast Black 16GB 3200MHz DDR4',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '16GB',
-        type: 'DDR4',
-        speed: '3200MHz',
-        formFactor: 'DIMM'
-      }
-    },
-    {
-      tenSanPham: 'RAM PC Kingston Fury Beast DDR4 3200MHz 8GB',
-      slug: 'ram-pc-kingston-fury-beast-ddr4-3200mhz-8gb',
-      gia: 2490000,
-      moTa: 'RAM PC Kingston Fury Beast DDR4 3200MHz 8GB',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '8GB',
-        type: 'DDR4',
-        speed: '3200MHz',
-        formFactor: 'DIMM'
-      }
-    },
-    {
-      tenSanPham: 'RAM PC ADATA XPG D50 RGB 16GB (1x16GB) 3200MHz',
-      slug: 'ram-pc-adata-xpg-d50-rgb-16gb-1x16-3200mhz',
-      gia: 4290000,
-      moTa: 'RAM PC ADATA XPG D50 RGB 16GB (1x16GB) 3200MHz DDR4',
-      thuongHieu: 'ADATA',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '16GB (1x16GB)',
-        type: 'DDR4',
-        speed: '3200MHz',
-        formFactor: 'DIMM',
-        rgb: true
-      }
-    },
-    {
-      tenSanPham: 'RAM PC ADATA XPG D50 RGB 8GB (1x8GB) 3200MHz DDR4',
-      slug: 'ram-pc-adata-xpg-d50-rgb-8gb-1x8-3200mhz',
-      gia: 2690000,
-      moTa: 'RAM PC ADATA XPG D50 RGB 8GB (1x8GB) 3200MHz DDR4',
-      thuongHieu: 'ADATA',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '8GB (1x8GB)',
-        type: 'DDR4',
-        speed: '3200MHz',
-        formFactor: 'DIMM',
-        rgb: true
-      }
-    },
-    {
-      tenSanPham: 'RAM PC ADATA XPG LANCER RGB 16GB (1x16GB) 6000MHz',
-      slug: 'ram-pc-adata-xpg-lancer-rgb-16gb-1x16-6000mhz',
-      gia: 7690000,
-      moTa: 'RAM PC ADATA XPG LANCER RGB 16GB (1x16GB) 6000MHz DDR5',
-      thuongHieu: 'ADATA',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '16GB (1x16GB)',
-        type: 'DDR5',
-        speed: '6000MHz',
-        formFactor: 'DIMM',
-        rgb: true
-      }
-    },
-    {
-      tenSanPham: 'RAM PC ADATA XPG D35G RGB 16GB (1x16GB) 3200MHz',
-      slug: 'ram-pc-adata-xpg-d35g-rgb-16gb-1x16-3200mhz',
-      gia: 4290000,
-      moTa: 'RAM PC ADATA XPG D35G RGB 16GB (1x16GB) 3200MHz DDR4',
-      thuongHieu: 'ADATA',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '16GB (1x16GB)',
-        type: 'DDR4',
-        speed: '3200MHz',
-        formFactor: 'DIMM',
-        rgb: true
-      }
-    },
-    {
-      tenSanPham: 'RAM PC ADATA XPG D35G RGB 8GB (1x8GB) 3200MHz',
-      slug: 'ram-pc-adata-xpg-d35g-rgb-8gb-1x8-3200mhz',
-      gia: 2690000,
-      moTa: 'RAM PC ADATA XPG D35G RGB 8GB (1x8GB) 3200MHz DDR4',
-      thuongHieu: 'ADATA',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '8GB (1x8GB)',
-        type: 'DDR4',
-        speed: '3200MHz',
-        formFactor: 'DIMM',
-        rgb: true
-      }
-    },
-    {
-      tenSanPham: 'RAM PNY XLR8 DDR4 3200MHz Heatsink RGB 8GB',
-      slug: 'ram-pny-xlr8-ddr4-3200mhz-heatsink-rgb-8gb',
-      gia: 2690000,
-      moTa: 'RAM PNY XLR8 DDR4 3200MHz Heatsink RGB 8GB',
-      thuongHieu: 'PNY',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '8GB',
-        type: 'DDR4',
-        speed: '3200MHz',
-        formFactor: 'DIMM',
-        rgb: true
       }
     }
   ]
@@ -1355,297 +1152,6 @@ async function main() {
         readSpeed: '1600MB/s',
         writeSpeed: '1100MB/s'
       }
-    },
-    {
-      tenSanPham: 'ADATA SU650 SATA III 2.5" 512GB',
-      slug: 'adata-su650-sata-iii-2-5-512gb',
-      gia: 2890000,
-      moTa: 'SSD ADATA SU650 SATA III 2.5" 512GB',
-      thuongHieu: 'ADATA',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '512GB',
-        interface: 'SATA III 2.5"',
-        readSpeed: '520MB/s',
-        writeSpeed: '450MB/s'
-      }
-    },
-    {
-      tenSanPham: 'WD Blue SN5000 NVMe PCIe Gen4 x4 500GB',
-      slug: 'wd-blue-sn5000-nvme-pcie-gen4-x4-500gb',
-      gia: 3190000,
-      moTa: 'SSD WD Blue SN5000 NVMe PCIe Gen4 x4 500GB',
-      thuongHieu: 'WD',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '500GB',
-        interface: 'M.2 PCIe Gen4 x4',
-        readSpeed: '5000MB/s',
-        writeSpeed: '4000MB/s'
-      }
-    },
-    {
-      tenSanPham: 'WD Blue SN5000 NVMe PCIe Gen4 x4 1TB',
-      slug: 'wd-blue-sn5000-nvme-pcie-gen4-x4-1tb',
-      gia: 4990000,
-      moTa: 'SSD WD Blue SN5000 NVMe PCIe Gen4 x4 1TB',
-      thuongHieu: 'WD',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '1TB',
-        interface: 'M.2 PCIe Gen4 x4',
-        readSpeed: '5150MB/s',
-        writeSpeed: '4900MB/s'
-      }
-    },
-    {
-      tenSanPham: 'Sandisk E61 Extreme Portable 1TB',
-      slug: 'sandisk-e61-extreme-portable-1tb',
-      gia: 5790000,
-      moTa: 'SSD di động Sandisk E61 Extreme Portable 1TB USB 3.2 Gen 2',
-      thuongHieu: 'Sandisk',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '1TB',
-        interface: 'USB 3.2 Gen 2',
-        readSpeed: '1050MB/s',
-        writeSpeed: '1000MB/s',
-        formFactor: 'Portable'
-      }
-    },
-    {
-      tenSanPham: 'Transcend MTE410S M.2 2242 PCIe Gen4 x4 1TB',
-      slug: 'transcend-mte410s-m2-2242-pcie-gen4-x4-1tb',
-      gia: 4990000,
-      moTa: 'SSD Transcend MTE410S M.2 2242 PCIe Gen4 x4 1TB',
-      thuongHieu: 'Transcend',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '1TB',
-        interface: 'M.2 PCIe Gen4 x4',
-        formFactor: '2242',
-        readSpeed: '5000MB/s',
-        writeSpeed: '3500MB/s'
-      }
-    },
-    {
-      tenSanPham: 'Transcend MTE410S M.2 2242 PCIe Gen4 x4 512GB',
-      slug: 'transcend-mte410s-m2-2242-pcie-gen4-x4-512gb',
-      gia: 3190000,
-      moTa: 'SSD Transcend MTE410S M.2 2242 PCIe Gen4 x4 512GB',
-      thuongHieu: 'Transcend',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '512GB',
-        interface: 'M.2 PCIe Gen4 x4',
-        formFactor: '2242',
-        readSpeed: '5000MB/s',
-        writeSpeed: '3200MB/s'
-      }
-    },
-    {
-      tenSanPham: 'ADATA LEGEND 860 PCIe Gen4 x4 M.2 2280 1TB',
-      slug: 'adata-legend-860-pcie-gen4-x4-m2-2280-1tb',
-      gia: 4990000,
-      moTa: 'SSD ADATA LEGEND 860 PCIe Gen4 x4 M.2 2280 1TB',
-      thuongHieu: 'ADATA',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '1TB',
-        interface: 'M.2 PCIe Gen4 x4',
-        formFactor: '2280',
-        readSpeed: '6000MB/s',
-        writeSpeed: '5000MB/s'
-      }
-    },
-    {
-      tenSanPham: 'Patriot P400 Lite M.2 PCIe Gen 4x4 1TB',
-      slug: 'patriot-p400-lite-m2-pcie-gen-4x4-1tb',
-      gia: 4490000,
-      moTa: 'SSD Patriot P400 Lite M.2 PCIe Gen 4x4 1TB',
-      thuongHieu: 'Patriot',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '1TB',
-        interface: 'M.2 PCIe Gen4 x4',
-        readSpeed: '3500MB/s',
-        writeSpeed: '2700MB/s'
-      }
-    },
-    {
-      tenSanPham: 'Sandisk E61 Extreme Portable 2TB',
-      slug: 'sandisk-e61-extreme-portable-2tb',
-      gia: 8690000,
-      moTa: 'SSD di động Sandisk E61 Extreme Portable 2TB USB 3.2 Gen 2',
-      thuongHieu: 'Sandisk',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '2TB',
-        interface: 'USB 3.2 Gen 2',
-        readSpeed: '1050MB/s',
-        writeSpeed: '1000MB/s',
-        formFactor: 'Portable'
-      }
-    },
-    {
-      tenSanPham: 'ADATA LEGEND 860 PCIe Gen4 x4 M.2 2280 500GB',
-      slug: 'adata-legend-860-pcie-gen4-x4-m2-2280-500gb',
-      gia: 3190000,
-      moTa: 'SSD ADATA LEGEND 860 PCIe Gen4 x4 M.2 2280 500GB',
-      thuongHieu: 'ADATA',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '500GB',
-        interface: 'M.2 PCIe Gen4 x4',
-        formFactor: '2280',
-        readSpeed: '6000MB/s',
-        writeSpeed: '4000MB/s'
-      }
-    },
-    {
-      tenSanPham: 'Transcend MTE310S M.2 2230 PCIe Gen4 x4 512GB',
-      slug: 'transcend-mte310s-m2-2230-pcie-gen4-x4-512gb',
-      gia: 3190000,
-      moTa: 'SSD Transcend MTE310S M.2 2230 PCIe Gen4 x4 512GB',
-      thuongHieu: 'Transcend',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '512GB',
-        interface: 'M.2 PCIe Gen4 x4',
-        formFactor: '2230',
-        readSpeed: '5000MB/s',
-        writeSpeed: '3500MB/s'
-      }
-    },
-    {
-      tenSanPham: 'Transcend MTE310S M.2 2230 PCIe Gen4 x4 1TB',
-      slug: 'transcend-mte310s-m2-2230-pcie-gen4-x4-1tb',
-      gia: 4990000,
-      moTa: 'SSD Transcend MTE310S M.2 2230 PCIe Gen4 x4 1TB',
-      thuongHieu: 'Transcend',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '1TB',
-        interface: 'M.2 PCIe Gen4 x4',
-        formFactor: '2230',
-        readSpeed: '5000MB/s',
-        writeSpeed: '4000MB/s'
-      }
-    },
-    {
-      tenSanPham: 'Kingston SKC3000 M.2 PCIe NVMe 1TB',
-      slug: 'kingston-skc3000-m2-pcie-nvme-1tb',
-      gia: 8990000,
-      moTa: 'SSD Kingston SKC3000 M.2 PCIe NVMe 1TB',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '1TB',
-        interface: 'M.2 PCIe Gen4 x4',
-        readSpeed: '7000MB/s',
-        writeSpeed: '6000MB/s'
-      }
-    },
-    {
-      tenSanPham: 'Kingston Fury Renegade G5 PCIe 5.0 NVMe 1TB',
-      slug: 'kingston-fury-renegade-g5-pcie-5-0-nvme-1tb',
-      gia: 10990000,
-      moTa: 'SSD Kingston Fury Renegade G5 PCIe 5.0 NVMe 1TB',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '1TB',
-        interface: 'M.2 PCIe Gen 5x4',
-        readSpeed: '14200MB/s',
-        writeSpeed: '10200MB/s'
-      }
-    },
-    {
-      tenSanPham: 'Kingston Fury Renegade G5 PCIe 5.0 NVMe 2TB',
-      slug: 'kingston-fury-renegade-g5-pcie-5-0-nvme-2tb',
-      gia: 18990000,
-      moTa: 'SSD Kingston Fury Renegade G5 PCIe 5.0 NVMe 2TB',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '2TB',
-        interface: 'M.2 PCIe Gen 5x4',
-        readSpeed: '14700MB/s',
-        writeSpeed: '12000MB/s'
-      }
-    },
-    {
-      tenSanPham: 'Samsung 990 EVO Plus PCIe Gen 4.0 x4 1TB',
-      slug: 'samsung-990-evo-plus-pcie-gen-4-x4-1tb',
-      gia: 4990000,
-      moTa: 'SSD Samsung 990 EVO Plus PCIe Gen 4.0 x4 1TB',
-      thuongHieu: 'Samsung',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '1TB',
-        interface: 'M.2 PCIe Gen 4x4',
-        readSpeed: '7250MB/s',
-        writeSpeed: '6300MB/s'
-      }
-    },
-    {
-      tenSanPham: 'Kingston SA400S37 SATA 2.5 inch 240GB',
-      slug: 'kingston-sa400s37-sata-2-5-240gb',
-      gia: 1090000,
-      moTa: 'SSD Kingston SA400S37 SATA 2.5 inch 240GB',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '240GB',
-        interface: 'SATA III 2.5"',
-        readSpeed: '500MB/s',
-        writeSpeed: '350MB/s',
-        formFactor: '2.5 inch'
-      }
-    },
-    {
-      tenSanPham: 'ADATA LEGEND 710 PCIe Gen3 x4 M.2 2280 256GB',
-      slug: 'adata-legend-710-pcie-gen3-x4-m2-2280-256gb',
-      gia: 1790000,
-      moTa: 'SSD ADATA LEGEND 710 PCIe Gen3 x4 M.2 2280 256GB',
-      thuongHieu: 'ADATA',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '256GB',
-        interface: 'M.2 PCIe Gen 3x4',
-        formFactor: '2280',
-        readSpeed: '2400MB/s',
-        writeSpeed: '1000MB/s'
-      }
-    },
-    {
-      tenSanPham: 'ADATA LEGEND 710 PCIe Gen3 x4 M.2 2280 512GB',
-      slug: 'adata-legend-710-pcie-gen3-x4-m2-2280-512gb',
-      gia: 2890000,
-      moTa: 'SSD ADATA LEGEND 710 PCIe Gen3 x4 M.2 2280 512GB',
-      thuongHieu: 'ADATA',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '512GB',
-        interface: 'M.2 PCIe Gen 3x4',
-        formFactor: '2280',
-        readSpeed: '2400MB/s',
-        writeSpeed: '1600MB/s'
-      }
-    },
-    {
-      tenSanPham: 'SanDisk Creator Desk Drive 8TB',
-      slug: 'sandisk-creator-desk-drive-8tb',
-      gia: 22990000,
-      moTa: 'SSD SanDisk Creator Desk Drive 8TB USB 3.2 Gen 1 Type-C',
-      thuongHieu: 'SanDisk',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '8TB',
-        interface: 'USB 3.2 Gen 1 Type-C',
-        readSpeed: '1000MB/s',
-        formFactor: 'Portable'
-      }
     }
   ]
 
@@ -1733,7 +1239,6 @@ async function main() {
 
   // ============== THÊM NHIỀU MAINBOARD ==============
   const motherboardProducts = [
-    // ASUS
     {
       tenSanPham: 'Asus TUF Gaming B760M-PLUS Wifi D4',
       slug: 'asus-tuf-b760m-plus-wifi-d4',
@@ -1824,8 +1329,6 @@ async function main() {
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
     },
-
-    // GIGABYTE
     {
       tenSanPham: 'Gigabyte B760M Gaming Plus Wifi D4',
       slug: 'gigabyte-b760m-gaming-plus-wifi-d4',
@@ -1861,244 +1364,6 @@ async function main() {
       moTa: 'Socket LGA1851, Micro ATX, DDR5',
       thuongHieu: 'Gigabyte',
       thongSoKyThuat: { socket: 'LGA1851', formFactor: 'Micro ATX', memory: 'DDR5' }
-    },
-    {
-      tenSanPham: 'Gigabyte H810M H D5',
-      slug: 'gigabyte-h810m-h-d5',
-      gia: 2690000,
-      hinhAnh: '',
-      moTa: 'Socket LGA1851, Micro ATX, DDR5',
-      thuongHieu: 'Gigabyte',
-      thongSoKyThuat: { socket: 'LGA1851', formFactor: 'Micro ATX', memory: 'DDR5' }
-    },
-    {
-      tenSanPham: 'Gigabyte Z790M Aorus Elite AX D5',
-      slug: 'gigabyte-z790m-aorus-elite-ax-d5',
-      gia: 6490000,
-      hinhAnh: '',
-      moTa: 'Socket LGA 1700, M-ATX, DDR5',
-      thuongHieu: 'Gigabyte',
-      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR5' }
-    },
-    {
-      tenSanPham: 'Gigabyte B860M K DDR5',
-      slug: 'gigabyte-b860m-k-ddr5',
-      gia: 3390000,
-      hinhAnh: '',
-      moTa: 'Socket LGA1851, Micro-ATX, DDR5',
-      thuongHieu: 'Gigabyte',
-      thongSoKyThuat: { socket: 'LGA1851', formFactor: 'Micro ATX', memory: 'DDR5' }
-    },
-    {
-      tenSanPham: 'Gigabyte Z790 A Elite AX DDR4',
-      slug: 'gigabyte-z790-a-elite-ax-ddr4',
-      gia: 8200000,
-      hinhAnh: '',
-      moTa: 'Socket LGA 1700, ATX, DDR4',
-      thuongHieu: 'Gigabyte',
-      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'ATX', memory: 'DDR4' }
-    },
-
-    // MSI
-    {
-      tenSanPham: 'MSI Pro H610M-S DDR4',
-      slug: 'msi-pro-h610m-s-ddr4',
-      gia: 1690000,
-      hinhAnh: '',
-      moTa: 'Socket LGA 1700, M-ATX, DDR4',
-      thuongHieu: 'MSI',
-      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
-    },
-    {
-      tenSanPham: 'MSI Pro B760M-E DDR4',
-      slug: 'msi-pro-b760m-e-ddr4',
-      gia: 2490000,
-      hinhAnh: '',
-      moTa: 'Socket LGA 1700, M-ATX, DDR4',
-      thuongHieu: 'MSI',
-      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
-    },
-    {
-      tenSanPham: 'MSI PRO B760M-A WIFI DDR4',
-      slug: 'msi-pro-b760m-a-wifi-ddr4',
-      gia: 3290000,
-      hinhAnh: '',
-      moTa: 'Socket LGA 1700, M-ATX, DDR4',
-      thuongHieu: 'MSI',
-      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
-    },
-    {
-      tenSanPham: 'MSI B760M Gaming WIFI DDR5',
-      slug: 'msi-b760m-gaming-wifi-ddr5',
-      gia: 3190000,
-      hinhAnh: '',
-      moTa: 'Socket LGA 1700, M-ATX, DDR5',
-      thuongHieu: 'MSI',
-      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR5' }
-    },
-    {
-      tenSanPham: 'MSI B650M Gaming Wifi DDR5',
-      slug: 'msi-b650m-gaming-wifi-ddr5',
-      gia: 3690000,
-      hinhAnh: '',
-      moTa: 'Socket AM5, M-ATX, DDR5',
-      thuongHieu: 'MSI',
-      thongSoKyThuat: { socket: 'AM5', formFactor: 'Micro ATX', memory: 'DDR5' }
-    },
-    {
-      tenSanPham: 'MSI A520M-A Pro D4 AM4',
-      slug: 'msi-a520m-a-pro-d4-am4',
-      gia: 1490000,
-      hinhAnh: '',
-      moTa: 'Socket AM4, M-ATX, DDR4',
-      thuongHieu: 'MSI',
-      thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
-    },
-    {
-      tenSanPham: 'MSI Z790 Gaming Plus WF DDR5',
-      slug: 'msi-z790-gaming-plus-wf-ddr5',
-      gia: 5990000,
-      hinhAnh: '',
-      moTa: 'Socket LGA 1700, ATX, DDR5',
-      thuongHieu: 'MSI',
-      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'ATX', memory: 'DDR5' }
-    },
-    {
-      tenSanPham: 'MSI B450M-A PRO MAX II',
-      slug: 'msi-b450m-a-pro-max-ii',
-      gia: 1790000,
-      hinhAnh: '',
-      moTa: 'Socket AM4, M-ATX, DDR4',
-      thuongHieu: 'MSI',
-      thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
-    },
-
-    // ASRock
-    {
-      tenSanPham: 'ASRock A520M/AC D4 AM4 Wifi',
-      slug: 'asrock-a520m-ac-d4-am4-wifi',
-      gia: 1590000,
-      hinhAnh: '',
-      moTa: 'Socket AM4, M-ATX, DDR4',
-      thuongHieu: 'ASRock',
-      thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
-    },
-    {
-      tenSanPham: 'ASRock H610M-HVS/M.2 R2.0',
-      slug: 'asrock-h610m-hvs-m2-r2-0',
-      gia: 1690000,
-      hinhAnh: '',
-      moTa: 'Socket LGA 1700, M-ATX, DDR4',
-      thuongHieu: 'ASRock',
-      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
-    },
-    {
-      tenSanPham: 'Asrock B760M Pro RS/D4',
-      slug: 'asrock-b760m-pro-rs-d4',
-      gia: 2890000,
-      hinhAnh: '',
-      moTa: 'Socket LGA 1700, M-ATX, DDR4',
-      thuongHieu: 'ASRock',
-      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
-    },
-    {
-      tenSanPham: 'ASRock A520M-HVS D4 AM4',
-      slug: 'asrock-a520m-hvs-d4-am4',
-      gia: 1490000,
-      hinhAnh: '',
-      moTa: 'Socket AM4, M-ATX, DDR4',
-      thuongHieu: 'ASRock',
-      thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
-    },
-    {
-      tenSanPham: 'ASRock H610M-HD/M.2 D4',
-      slug: 'asrock-h610m-hd-m2-d4',
-      gia: 1690000,
-      hinhAnh: '',
-      moTa: 'Socket LGA 1700, M-ATX, DDR4',
-      thuongHieu: 'ASRock',
-      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
-    },
-    {
-      tenSanPham: 'ASRock B450M HDV R4',
-      slug: 'asrock-b450m-hdv-r4',
-      gia: 1650000,
-      hinhAnh: '',
-      moTa: 'Socket AM4, M-ATX, DDR4',
-      thuongHieu: 'ASRock',
-      thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
-    },
-    {
-      tenSanPham: 'Asrock B760M Pro RS/D4 Wifi',
-      slug: 'asrock-b760m-pro-rs-d4-wifi',
-      gia: 3190000,
-      hinhAnh: '',
-      moTa: 'Socket LGA 1700, M-ATX, DDR4',
-      thuongHieu: 'ASRock',
-      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
-    },
-    {
-      tenSanPham: 'ASRock B550M Pro 4 DDR4',
-      slug: 'asrock-b550m-pro-4-ddr4',
-      gia: 2790000,
-      hinhAnh: '',
-      moTa: 'Socket AM4, M-ATX, DDR4',
-      thuongHieu: 'ASRock',
-      thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
-    },
-    {
-      tenSanPham: 'ASRock B650M Pro RS WiFi D5',
-      slug: 'asrock-b650m-pro-rs-wifi-d5',
-      gia: 3890000,
-      hinhAnh: '',
-      moTa: 'Socket AM5, Micro ATX, DDR5',
-      thuongHieu: 'ASRock',
-      thongSoKyThuat: { socket: 'AM5', formFactor: 'Micro ATX', memory: 'DDR5' }
-    },
-    {
-      tenSanPham: 'Asrock X870 Pro RS Wifi D5',
-      slug: 'asrock-x870-pro-rs-wifi-d5',
-      gia: 6690000,
-      hinhAnh: '',
-      moTa: 'Socket AM5, ATX, DDR5',
-      thuongHieu: 'ASRock',
-      thongSoKyThuat: { socket: 'AM5', formFactor: 'ATX', memory: 'DDR5' }
-    },
-    {
-      tenSanPham: 'ASRock B660M Pro RS',
-      slug: 'asrock-b660m-pro-rs',
-      gia: 2890000,
-      hinhAnh: '',
-      moTa: 'Socket LGA 1700, M-ATX, DDR4',
-      thuongHieu: 'ASRock',
-      thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
-    },
-    {
-      tenSanPham: 'ASRock Z790 Pro RS Wifi D5',
-      slug: 'asrock-z790-pro-rs-wifi-d5',
-      gia: 5490000,
-      hinhAnh: '',
-      moTa: 'Socket LGA 1700, PCIe 5.0, DDR5',
-      thuongHieu: 'ASRock',
-      thongSoKyThuat: { socket: 'LGA 1700', pcie: 'PCIe 5.0', memory: 'DDR5' }
-    },
-    {
-      tenSanPham: 'ASRock A620AM-HVS DDR5',
-      slug: 'asrock-a620am-hvs-ddr5',
-      gia: 1990000,
-      hinhAnh: '',
-      moTa: 'Socket AM5, Micro ATX, DDR5',
-      thuongHieu: 'ASRock',
-      thongSoKyThuat: { socket: 'AM5', formFactor: 'Micro ATX', memory: 'DDR5' }
-    },
-    {
-      tenSanPham: 'ASRock Z890 Pro RS Wifi D5',
-      slug: 'asrock-z890-pro-rs-wifi-d5',
-      gia: 0,
-      hinhAnh: '',
-      moTa: 'Socket LGA 1851RL-ILM, ATX, DDR5 - Giá liên hệ',
-      thuongHieu: 'ASRock',
-      thongSoKyThuat: { socket: 'LGA 1851RL-ILM', formFactor: 'ATX', memory: 'DDR5' }
     }
   ]
 
@@ -2133,19 +1398,7 @@ async function main() {
     },
   })
 
-  console.log('✅ Seeding hoàn tất!')
-  console.log('📊 Tổng cộng:')
-  console.log('   - 6 danh mục')
-  console.log('   - 51 CPU')
-  console.log('   - 8 GPU')
-  console.log('   - 32 RAM')
-  console.log('   - 34 Storage')
-  console.log('   - 5 PSU')
-  console.log('   - 40 Motherboard')
-  console.log('   = 170 sản phẩm')
-}
-
-// Tạo user admin nếu chưa tồn tại, rồi cập nhật vai trò
+  // Tạo user admin nếu chưa tồn tại, rồi cập nhật vai trò
 const adminEmail = 'huynhkietzuki@gmail.com'
 const existingAdmin = await prisma.nguoiDung.findUnique({ where: { email: adminEmail } })
 if (!existingAdmin) {
@@ -2164,6 +1417,20 @@ if (!existingAdmin) {
     data: { vaiTro: VaiTro.QUAN_TRI_VIEN }
   })
   console.log(`✅ Updated admin role: ${adminEmail}`)
+}
+
+  console.log('✅ Seeding hoàn tất!')
+  console.log('📊 Tổng cộng:')
+  console.log('   - 6 danh mục')
+  console.log('   - 45 CPU')
+  console.log('   - 20 GPU')
+  console.log('   - 14 RAM')
+  console.log('   - 14 Storage')
+  console.log('   - 5 PSU')
+  console.log('   - 14 Motherboard')
+  console.log('   = 100 sản phẩm')
+
+
 }
 
 main()

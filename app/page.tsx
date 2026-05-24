@@ -123,50 +123,7 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="relative flex h-[320px] items-center justify-center overflow-hidden lg:h-[520px]" data-animate-item>
-              {/* Spinning Orbital Animation */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="h-[220px] w-[220px] rounded-full border border-[#F7931A]/20 animate-[spin_15s_linear_infinite] sm:h-[280px] sm:w-[280px]" />
-                <div className="absolute h-[300px] w-[300px] rounded-full border border-white/5 animate-[spin_20s_linear_infinite_reverse] sm:h-[380px] sm:w-[380px]" />
-                <div className="absolute h-[380px] w-[380px] rounded-full border border-white/5 animate-[spin_25s_linear_infinite] sm:h-[460px] sm:w-[460px]" />
-              </div>
-              
-              <div className="glass-panel rounded-2xl p-6 md:p-8 w-full max-w-md relative z-10 animate-float shadow-[0_0_50px_-10px_rgba(247,147,26,0.15)] hover:shadow-[0_0_50px_-5px_rgba(247,147,26,0.25)] transition-shadow duration-500">
-                <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-4">
-                  <div>
-                    <p className="text-[10px] font-mono text-[#F7931A] uppercase tracking-widest">{t('builderPromoTitle')}</p>
-                    <h2 className="text-xl font-heading font-bold text-white mt-1">
-                      {t('builderPromoDescription')}
-                    </h2>
-                  </div>
-                  <div className="bg-[#EA580C]/20 border border-[#EA580C]/50 rounded-lg p-2 text-[#FFD600] shadow-[0_0_15px_rgba(234,88,12,0.4)]">
-                    <ShieldCheck className="h-6 w-6" />
-                  </div>
-                </div>
 
-                <div className="space-y-6">
-                  {builderSteps.map((item) => (
-                    <div key={item.step} className="flex gap-4 group">
-                      <span className="flex shrink-0 h-8 w-8 items-center justify-center rounded-lg bg-black/50 border border-white/10 font-mono text-xs font-bold text-[#F7931A] group-hover:border-[#F7931A]/50 transition-colors">
-                        {item.step}
-                      </span>
-                      <div>
-                        <p className="text-sm font-semibold text-white mb-1">{item.title}</p>
-                        <p className="text-xs text-muted leading-relaxed">{item.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <ProtectedLink
-                  href="/builder"
-                  className="mt-8 w-full inline-flex justify-center items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-6 py-3.5 font-medium text-white transition-all hover:bg-[#F7931A]/10 hover:border-[#F7931A]/30 hover:text-[#F7931A]"
-                >
-                  {t('openBuilder')}
-                  <ArrowRight className="h-4 w-4" />
-                </ProtectedLink>
-              </div>
-            </div>
           </AnimatedSection>
         </div>
       </section>
