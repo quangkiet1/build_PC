@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json().catch(() => null)
     if (!body || typeof body !== 'object') {
-      return NextResponse.json({ error: 'Du lieu dang nhap khong hop le' }, { status: 400 })
+      return NextResponse.json({ error: 'Dữ liệu đăng nhập không hợp lệ' }, { status: 400 })
     }
 
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''

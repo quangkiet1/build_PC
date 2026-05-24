@@ -8,24 +8,48 @@ import * as THREE from 'three'
 const COPPER = '#F7931A'
 const GOLD = '#FFD600'
 const CYAN = '#38BDF8'
+const NODE_COUNT = 60
+const EDGE_NODE_COUNT = 30
+const STREAM_COUNT = 20
+
+function seededUnit(index: number, salt: number) {
+  const value = Math.sin(index * 997.31 + salt * 131.17) * 10000
+  return value - Math.floor(value)
+}
+
+function seededRange(index: number, salt: number, min: number, max: number) {
+  return min + seededUnit(index, salt) * (max - min)
+}
 
 // Neural network node particles
 function NeuralNodes() {
   const groupRef = useRef<THREE.Group>(null)
-  const count = 60
 
   const nodes = useMemo(() => {
-    return Array.from({ length: count }).map((_, i) => ({
-      position: [
-        (Math.random() - 0.5) * 14,
-        (Math.random() - 0.5) * 10,
-        (Math.random() - 0.5) * 6 - 2,
-      ] as [number, number, number],
-      phase: Math.random() * Math.PI * 2,
-      speed: 0.2 + Math.random() * 0.4,
-      size: 0.04 + Math.random() * 0.07,
-      color: [COPPER, GOLD, CYAN, '#FFFFFF'][Math.floor(Math.random() * 4)],
-    }))
+    const colorOptions = [COPPER, GOLD, CYAN, '#FFFFFF']
+    const items: Array<{
+      position: [number, number, number]
+      phase: number
+      speed: number
+      size: number
+      color: string
+    }> = []
+
+    for (let i = 0; i < NODE_COUNT; i++) {
+      items.push({
+        position: [
+          seededRange(i, 1, -7, 7),
+          seededRange(i, 2, -5, 5),
+          seededRange(i, 3, -5, 1),
+        ],
+        phase: seededRange(i, 4, 0, Math.PI * 2),
+        speed: seededRange(i, 5, 0.2, 0.6),
+        size: seededRange(i, 6, 0.04, 0.11),
+        color: colorOptions[Math.floor(seededUnit(i, 7) * colorOptions.length)],
+      })
+    }
+
+    return items
   }, [])
 
   useFrame(({ clock }) => {
@@ -58,12 +82,14 @@ function NeuralEdges() {
   const { positions, colors } = useMemo(() => {
     const pts: number[] = []
     const cols: number[] = []
-    const nodeCount = 30
-    const nodePositions = Array.from({ length: nodeCount }).map(() => new THREE.Vector3(
-      (Math.random() - 0.5) * 14,
-      (Math.random() - 0.5) * 10,
-      (Math.random() - 0.5) * 4 - 2,
-    ))
+    const nodePositions: THREE.Vector3[] = []
+    for (let i = 0; i < EDGE_NODE_COUNT; i++) {
+      nodePositions.push(new THREE.Vector3(
+        seededRange(i, 11, -7, 7),
+        seededRange(i, 12, -5, 5),
+        seededRange(i, 13, -4, 0),
+      ))
+    }
 
     const colorOptions = [
       new THREE.Color(COPPER),
@@ -71,8 +97,8 @@ function NeuralEdges() {
       new THREE.Color(CYAN),
     ]
 
-    for (let i = 0; i < nodeCount; i++) {
-      for (let j = i + 1; j < nodeCount; j++) {
+    for (let i = 0; i < EDGE_NODE_COUNT; i++) {
+      for (let j = i + 1; j < EDGE_NODE_COUNT; j++) {
         const dist = nodePositions[i].distanceTo(nodePositions[j])
         if (dist < 4.5) {
           pts.push(nodePositions[i].x, nodePositions[i].y, nodePositions[i].z)
@@ -155,12 +181,11 @@ function FloatingGeometry() {
 // Data stream particles flowing from bottom to top
 function DataStream() {
   const groupRef = useRef<THREE.Group>(null)
-  const streamCount = 20
   const streams = useMemo(() =>
-    Array.from({ length: streamCount }).map((_, i) => ({
+    Array.from({ length: STREAM_COUNT }).map((_, i) => ({
       x: -7 + (i % 10) * 1.6,
       z: -3 - Math.floor(i / 10) * 1.5,
-      phase: (i / streamCount) * Math.PI * 2,
+      phase: (i / STREAM_COUNT) * Math.PI * 2,
       color: i % 3 === 0 ? COPPER : i % 2 === 0 ? GOLD : CYAN,
     })),
     []
@@ -173,8 +198,10 @@ function DataStream() {
       const s = streams[i]
       const y = ((t * 1.2 + s.phase * 1.5) % 12) - 6
       child.position.set(s.x, y, s.z)
-      ;(child as THREE.Mesh).material && (((child as THREE.Mesh).material as THREE.MeshBasicMaterial).opacity =
-        0.3 + 0.5 * (1 - Math.abs(y) / 6))
+      const material = (child as THREE.Mesh).material
+      if (material) {
+        ;(material as THREE.MeshBasicMaterial).opacity = 0.3 + 0.5 * (1 - Math.abs(y) / 6)
+      }
     })
   })
 

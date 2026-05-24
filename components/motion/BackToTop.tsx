@@ -45,7 +45,7 @@ export function BackToTop() {
     <button
       ref={buttonRef}
       onClick={handleClick}
-      className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-sky-400/30 bg-sky-500/90 text-white shadow-[0_8px_30px_rgba(14,165,233,0.4)] transition-all hover:bg-sky-400 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 focus:ring-offset-slate-900"
+      className="fixed bottom-24 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-sky-400/30 bg-sky-500/90 text-white shadow-[0_8px_30px_rgba(14,165,233,0.4)] transition-all hover:bg-sky-400 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 focus:ring-offset-slate-900"
       aria-label="Lên đầu trang"
     >
       <ChevronUp className="h-6 w-6" />

@@ -751,204 +751,94 @@ async function main() {
   // ============== THÊM NHIỀU RAM ==============
   const ramProducts = [
     {
-      tenSanPham: 'Corsair Vengeance DDR5 64GB (2x32GB)',
-      slug: 'corsair-vengeance-ddr5-64gb',
-      gia: 9500000,
+      tenSanPham: 'RAM PC ADATA XPG D50 RGB 16GB (1x16GB) 3200MHz DDR4',
+      slug: 'ram-pc-adata-xpg-d50-rgb-16gb-3200mhz-ddr4',
+      gia: 4290000,
       hinhAnh: '/images/66.jpg',
-      moTa: 'Bộ RAM DDR5 Corsair Vengeance 64GB tốc độ cao',
-      thuongHieu: 'Corsair',
-      thongSoKyThuat: {
-        capacity: '64GB (2x32GB)',
-        type: 'DDR5',
-        speed: '6400MHz',
-        latency: 'CL32'
-      }
-    },
-    {
-      tenSanPham: 'Corsair Vengeance DDR5 32GB (2x16GB)',
-      slug: 'corsair-vengeance-ddr5-32gb',
-      gia: 4500000,
-      moTa: 'Bộ RAM DDR5 Corsair, 32GB tốc độ 6400MHz',
-      hinhAnh: '/images/67.jpg',
-      thuongHieu: 'Corsair',
-      thongSoKyThuat: {
-        capacity: '32GB (2x16GB)',
-        type: 'DDR5',
-        speed: '6400MHz',
-        latency: 'CL32'
-      }
-    },
-    {
-      tenSanPham: 'Kingston Fury Beast DDR5 32GB',
-      slug: 'kingston-fury-beast-ddr5-32gb',
-      gia: 4200000,
-      moTa: 'RAM Kingston Fury Beast DDR5 32GB',
-      hinhAnh: '/images/68.jpg',
-      thuongHieu: 'Kingston',
-      thongSoKyThuat: {
-        capacity: '32GB (2x16GB)',
-        type: 'DDR5',
-        speed: '6400MHz',
-        latency: 'CL32'
-      }
-    },
-    {
-      tenSanPham: 'G.Skill Trident Z5 DDR5 48GB',
-      slug: 'gskill-trident-z5-ddr5-48gb',
-      gia: 7200000,
-      moTa: 'RAM G.Skill Trident Z5 DDR5 48GB tốc độ siêu cao',
-      hinhAnh: '/images/69.jpg',
-      thuongHieu: 'G.Skill',
-      thongSoKyThuat: {
-        capacity: '48GB (2x24GB)',
-        type: 'DDR5',
-        speed: '7200MHz',
-        latency: 'CL30'
-      }
-    },
-    {
-      tenSanPham: 'Crucial Pro DDR5 32GB',
-      slug: 'crucial-pro-ddr5-32gb',
-      gia: 4000000,
-      moTa: 'RAM Crucial Pro DDR5 32GB đáng tin cậy',
-      hinhAnh: '/images/70.jpg',
-      thuongHieu: 'Crucial',
-      thongSoKyThuat: {
-        capacity: '32GB (2x16GB)',
-        type: 'DDR5',
-        speed: '6400MHz',
-        latency: 'CL32'
-      }
-    },
-    {
-      tenSanPham: 'ROG STRIX FLARE II DDR5 32GB',
-      slug: 'rog-strix-flare-ii-ddr5-32gb',
-      gia: 5500000,
-      moTa: 'RAM ASUS ROG STRIX Flare II DDR5 32GB RGB',
-      hinhAnh: '/images/71.jpg',
-      thuongHieu: 'ASUS',
-      thongSoKyThuat: {
-        capacity: '32GB (2x16GB)',
-        type: 'DDR5',
-        speed: '7200MHz',
-        latency: 'CL34'
-      }
-    },
-    {
-      tenSanPham: 'RAM Laptop Kingston 1.2V 8GB 3200MHz',
-      slug: 'ram-laptop-kingston-1-2v-8gb-3200mhz',
-      gia: 2490000,
-      moTa: 'RAM Laptop Kingston 1.2V 8GB 3200MHz DDR4',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '8GB',
-        type: 'DDR4',
-        speed: '3200MHz',
-        voltage: '1.2V',
-        formFactor: 'SO-DIMM'
-      }
-    },
-    {
-      tenSanPham: 'RAM Laptop Kingston Sodimm 1.2V 16GB 3200MHz',
-      slug: 'ram-laptop-kingston-sodimm-1-2v-16gb-3200mhz',
-      gia: 3990000,
-      moTa: 'RAM Laptop Kingston Sodimm 1.2V 16GB 3200MHz DDR4',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '16GB',
-        type: 'DDR4',
-        speed: '3200MHz',
-        voltage: '1.2V',
-        formFactor: 'SO-DIMM'
-      }
-    },
-    {
-      tenSanPham: 'RAM Laptop Kingston DDR4 3200MHz 8GB',
-      slug: 'ram-laptop-kingston-ddr4-3200mhz-8gb',
-      gia: 2490000,
-      moTa: 'RAM Laptop Kingston DDR4 3200MHz 8GB',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '8GB',
-        type: 'DDR4',
-        speed: '3200MHz',
-        formFactor: 'SO-DIMM'
-      }
-    },
-    {
-      tenSanPham: 'RAM Laptop Kingston DDR5 5600MHz 16GB',
-      slug: 'ram-laptop-kingston-ddr5-5600mhz-16gb',
-      gia: 6490000,
-      moTa: 'RAM Laptop Kingston DDR5 5600MHz 16GB',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '16GB',
-        type: 'DDR5',
-        speed: '5600MHz',
-        formFactor: 'SO-DIMM'
-      }
+      moTa: 'RAM PC ADATA XPG D50 RGB 16GB (1x16GB) 3200MHz DDR4. Giá cũ: 6.290.000₫. Ưu đãi: Smember giảm đến 86.000₫',
+      thuongHieu: 'ADATA',
+      thongSoKyThuat: { capacity: '16GB', speed: '3200 MHz', type: 'DDR4' }
     },
     {
       tenSanPham: 'RAM PC Kingston Fury Beast DDR4 3200MHz 16GB',
       slug: 'ram-pc-kingston-fury-beast-ddr4-3200mhz-16gb',
       gia: 3990000,
-      moTa: 'RAM PC Kingston Fury Beast DDR4 3200MHz 16GB',
+      hinhAnh: '/images/67.jpg',
+      moTa: 'RAM PC Kingston Fury Beast DDR4 3200MHz 16GB. Giá cũ: 5.990.000₫. Ưu đãi: Smember giảm đến 80.000₫',
       thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '16GB',
-        type: 'DDR4',
-        speed: '3200MHz',
-        formFactor: 'DIMM'
-      }
+      thongSoKyThuat: { capacity: '16GB', speed: '3200 MHz', type: 'DDR4' }
     },
     {
-      tenSanPham: 'RAM Laptop Kingston DDR5 5600MHz 8GB',
-      slug: 'ram-laptop-kingston-ddr5-5600mhz-8gb',
-      gia: 3490000,
-      moTa: 'RAM Laptop Kingston DDR5 5600MHz 8GB',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '8GB',
-        type: 'DDR5',
-        speed: '5600MHz',
-        formFactor: 'SO-DIMM'
-      }
+      tenSanPham: 'RAM PC ADATA XPG D50 RGB 8GB (1x8GB) 3200MHz DDR4',
+      slug: 'ram-pc-adata-xpg-d50-rgb-8gb-3200mhz-ddr4',
+      gia: 2690000,
+      hinhAnh: '/images/68.jpg',
+      moTa: 'RAM PC ADATA XPG D50 RGB 8GB (1x8GB) 3200MHz DDR4. Giá cũ: 3.690.000₫. Ưu đãi: Smember giảm đến 54.000₫',
+      thuongHieu: 'ADATA',
+      thongSoKyThuat: { capacity: '8GB', speed: '3200 MHz', type: 'DDR4' }
     },
     {
-      tenSanPham: 'RAM Laptop Kingston DDR4 3200MHz 16GB',
-      slug: 'ram-laptop-kingston-ddr4-3200mhz-16gb',
+      tenSanPham: 'Ram PC Kingston Fury DDR5 5600MHz 32GB (2*16)',
+      slug: 'ram-pc-kingston-fury-ddr5-5600mhz-32gb',
+      gia: 13990000,
+      hinhAnh: '/images/69.jpg',
+      moTa: 'Ram PC Kingston Fury DDR5 5600MHz 32GB (2*16). Giá cũ: 18.990.000₫. Ưu đãi: Smember giảm đến 280.000₫',
+      thuongHieu: 'Kingston',
+      thongSoKyThuat: { capacity: '32GB', speed: '5600 MHz', type: 'DDR5' }
+    },
+    {
+      tenSanPham: 'Ram PC Kingston Fury DDR5 5600MHz 16GB (1*16)',
+      slug: 'ram-pc-kingston-fury-ddr5-5600mhz-16gb',
+      gia: 7290000,
+      hinhAnh: '/images/70.jpg',
+      moTa: 'Ram PC Kingston Fury DDR5 5600MHz 16GB (1*16). Giá cũ: 9.490.000₫. Ưu đãi: Smember giảm đến 146.000₫',
+      thuongHieu: 'Kingston',
+      thongSoKyThuat: { capacity: '16GB', speed: '5600 MHz', type: 'DDR5' }
+    },
+    {
+      tenSanPham: 'RAM PC Kingston Fury DDR5 6000MHz 16GB (1*16)',
+      slug: 'ram-pc-kingston-fury-ddr5-6000mhz-16gb',
+      gia: 7290000,
+      hinhAnh: '/images/71.jpg',
+      moTa: 'RAM PC Kingston Fury DDR5 6000MHz 16GB (1*16). Giá cũ: 9.490.000₫. Ưu đãi: Smember giảm đến 146.000₫',
+      thuongHieu: 'Kingston',
+      thongSoKyThuat: { capacity: '16GB', speed: '6000 MHz', type: 'DDR5' }
+    },
+    {
+      tenSanPham: 'RAM PC GSkill Ripjaws V DDR4 3200Mhz 16GB',
+      slug: 'ram-pc-gskill-ripjaws-v-ddr4-3200mhz-16gb',
       gia: 3990000,
-      moTa: 'RAM Laptop Kingston DDR4 3200MHz 16GB',
-      thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '16GB',
-        type: 'DDR4',
-        speed: '3200MHz',
-        formFactor: 'SO-DIMM'
-      }
+      hinhAnh: '/images/72.jpg',
+      moTa: 'RAM PC GSkill Ripjaws V DDR4 3200Mhz 16GB. Giá cũ: 5.990.000₫. Ưu đãi: Smember giảm đến 80.000₫',
+      thuongHieu: 'GSkill',
+      thongSoKyThuat: { capacity: '16GB', speed: '3200 MHz', type: 'DDR4' }
     },
     {
-      tenSanPham: 'RAM Laptop Kingston 1.2V 3200MHz KVR32S22D8/32',
-      slug: 'ram-laptop-kingston-kvr32s22d8-32-3200mhz',
-      gia: 10990000,
-      moTa: 'RAM Laptop Kingston 1.2V 3200MHz KVR32S22D8/32, 32GB DDR4',
+      tenSanPham: 'Ram PC Kingston Fury RGB DDR5 6000MHz 64GB (2*32)',
+      slug: 'ram-pc-kingston-fury-rgb-ddr5-6000mhz-64gb',
+      gia: 26990000,
+      hinhAnh: '/images/73.jpg',
+      moTa: 'Ram PC Kingston Fury RGB DDR5 6000MHz 64GB (2*32). Giá cũ: 29.990.000₫. Ưu đãi: Smember giảm đến 540.000₫',
       thuongHieu: 'Kingston',
-      hinhAnh: '',
-      thongSoKyThuat: {
-        capacity: '32GB',
-        type: 'DDR4',
-        speed: '3200MHz',
-        voltage: '1.2V',
-        formFactor: 'SO-DIMM',
-        model: 'KVR32S22D8/32'
-      }
+      thongSoKyThuat: { capacity: '64GB', speed: '6000 MHz', type: 'DDR5' }
+    },
+    {
+      tenSanPham: 'RAM PC Kingston Fury 8GB 3200MHz KF432C16BB/8',
+      slug: 'ram-pc-kingston-fury-8gb-3200mhz-kf432c16bb-8',
+      gia: 2490000,
+      hinhAnh: '/images/74.jpg',
+      moTa: 'RAM PC Kingston Fury 8GB 3200MHz KF432C16BB/8. Giá cũ: 3.490.000₫. Ưu đãi: Smember giảm đến 50.000₫',
+      thuongHieu: 'Kingston',
+      thongSoKyThuat: { capacity: '8GB', speed: '3200 MHz', type: 'DDR4' }
+    },
+    {
+      tenSanPham: 'Ram PC Corsair Vengeance RGB DDR5 6000MHz 16GB',
+      slug: 'ram-pc-corsair-vengeance-rgb-ddr5-6000mhz-16gb',
+      gia: 7690000,
+      hinhAnh: '/images/75.jpg',
+      moTa: 'Ram PC Corsair Vengeance RGB DDR5 6000MHz 16GB. Giá cũ: 9.990.000₫. Ưu đãi: Smember giảm đến 154.000₫',
+      thuongHieu: 'Corsair',
+      thongSoKyThuat: { capacity: '16GB', speed: '6000 MHz', type: 'DDR5' }
     }
   ]
 
@@ -1167,64 +1057,94 @@ async function main() {
   // ============== THÊM NHIỀU PSU ==============
   const psuProducts = [
     {
-      tenSanPham: 'Corsair HX1200i 1200W',
-      slug: 'corsair-hx1200i-1200w',
-      gia: 8500000,
-      moTa: 'Nguồn Corsair HX1200i 1200W 80+ Platinum',
+      tenSanPham: 'Nguồn máy tính Corsair CX650',
+      slug: 'nguon-may-tinh-corsair-cx650',
+      gia: 1490000,
+      hinhAnh: '/images/76.jpg',
+      moTa: 'Nguồn máy tính Corsair CX650. Giá cũ: 1.590.000₫. Ưu đãi: Smember giảm đến 30.000₫',
       thuongHieu: 'Corsair',
-      thongSoKyThuat: {
-        wattage: '1200W',
-        efficiency: '80+ Platinum',
-        modular: 'Fully Modular'
-      }
+      thongSoKyThuat: { wattage: '650W', efficiency: '80 Plus Bronze' }
     },
     {
-      tenSanPham: 'Corsair RM850x 850W',
-      slug: 'corsair-rm850x-850w',
-      gia: 3200000,
-      moTa: 'Nguồn Corsair RM850x 850W 80+ Gold',
-      thuongHieu: 'Corsair',
-      thongSoKyThuat: {
-        wattage: '850W',
-        efficiency: '80+ Gold',
-        modular: 'Fully Modular'
-      }
+      tenSanPham: 'Nguồn máy tính Xigmatek X-Power III 650 600W',
+      slug: 'nguon-may-tinh-xigmatek-x-power-iii-650-600w',
+      gia: 890000,
+      hinhAnh: '/images/77.jpg',
+      moTa: 'Nguồn máy tính Xigmatek X-Power III 650 600W. Giá cũ: 1.290.000₫. Ưu đãi: Smember giảm đến 18.000₫',
+      thuongHieu: 'Xigmatek',
+      thongSoKyThuat: { wattage: '600W', efficiency: '85%', modular: 'Semi Modular' }
     },
     {
-      tenSanPham: 'EVGA SuperNOVA 850 G6',
-      slug: 'evga-supernova-850-g6',
-      gia: 3500000,
-      moTa: 'Nguồn EVGA SuperNOVA 850 G6 850W 80+ Gold',
-      thuongHieu: 'EVGA',
-      thongSoKyThuat: {
-        wattage: '850W',
-        efficiency: '80+ Gold',
-        modular: 'Fully Modular'
-      }
-    },
-    {
-      tenSanPham: 'Seasonic Focus 750W',
-      slug: 'seasonic-focus-750w',
-      gia: 3000000,
-      moTa: 'Nguồn Seasonic Focus 750W 80+ Gold',
-      thuongHieu: 'Seasonic',
-      thongSoKyThuat: {
-        wattage: '750W',
-        efficiency: '80+ Gold',
-        modular: 'Fully Modular'
-      }
-    },
-    {
-      tenSanPham: 'MSI MAG A650GL 650W',
-      slug: 'msi-mag-a650gl-650w',
-      gia: 2200000,
-      moTa: 'Nguồn MSI MAG A650GL 650W 80+ Gold',
+      tenSanPham: 'Nguồn máy tính MSI Mag A750BN PCIe5 III 750W',
+      slug: 'nguon-may-tinh-msi-mag-a750bn-pcie5-iii-750w',
+      gia: 1590000,
+      hinhAnh: '/images/78.jpg',
+      moTa: 'Nguồn máy tính MSI Mag A750BN PCIe5 III 750W. Giá cũ: 1.890.000₫. Ưu đãi: Smember giảm đến 32.000₫',
       thuongHieu: 'MSI',
-      thongSoKyThuat: {
-        wattage: '650W',
-        efficiency: '80+ Gold',
-        modular: 'Fully Modular'
-      }
+      thongSoKyThuat: { wattage: '750W', efficiency: '80 Plus Bronze', modular: 'Non Modular' }
+    },
+    {
+      tenSanPham: 'Nguồn máy tính MSI Mag A650BN Đen 650W',
+      slug: 'nguon-may-tinh-msi-mag-a650bn-den-650w',
+      gia: 1290000,
+      hinhAnh: '/images/79.jpg',
+      moTa: 'Nguồn máy tính MSI Mag A650BN Đen 650W. Giá cũ: 1.490.000₫. Ưu đãi: Smember giảm đến 26.000₫',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { wattage: '650W', efficiency: '80 Plus Bronze', modular: 'Non Modular' }
+    },
+    {
+      tenSanPham: 'Nguồn máy tính Xigmatek X-Power III 450 400W',
+      slug: 'nguon-may-tinh-xigmatek-x-power-iii-450-400w',
+      gia: 650000,
+      hinhAnh: '/images/80.jpg',
+      moTa: 'Nguồn máy tính Xigmatek X-Power III 450 400W. Giá cũ: 790.000₫. Ưu đãi: Smember giảm đến 13.000₫',
+      thuongHieu: 'Xigmatek',
+      thongSoKyThuat: { wattage: '400W', efficiency: '80 Plus Standard' }
+    },
+    {
+      tenSanPham: 'Nguồn máy tính Jetek Elite V6 E350 350W',
+      slug: 'nguon-may-tinh-jetek-elite-v6-e350-350w',
+      gia: 390000,
+      hinhAnh: '/images/81.jpg',
+      moTa: 'Nguồn máy tính Jetek Elite V6 E350 350W. Giá cũ: 490.000₫. Ưu đãi: Smember giảm đến 8.000₫',
+      thuongHieu: 'Jetek',
+      thongSoKyThuat: { wattage: '350W', modular: 'Non Modular' }
+    },
+    {
+      tenSanPham: 'Nguồn máy tính Xigmatek X-Power III 500 450W',
+      slug: 'nguon-may-tinh-xigmatek-x-power-iii-500-450w',
+      gia: 690000,
+      hinhAnh: '/images/82.jpg',
+      moTa: 'Nguồn máy tính Xigmatek X-Power III 500 450W. Giá cũ: 990.000₫. Ưu đãi: Smember giảm đến 14.000₫',
+      thuongHieu: 'Xigmatek',
+      thongSoKyThuat: { wattage: '450W', modular: 'Semi Modular' }
+    },
+    {
+      tenSanPham: 'Nguồn máy tính MSI Mag A850GL PCIe5 850W',
+      slug: 'nguon-may-tinh-msi-mag-a850gl-pcie5-850w',
+      gia: 2890000,
+      hinhAnh: '/images/83.jpg',
+      moTa: 'Nguồn máy tính MSI Mag A850GL PCIe5 850W. Giá cũ: 3.490.000₫. Ưu đãi: Smember giảm đến 58.000₫',
+      thuongHieu: 'MSI',
+      thongSoKyThuat: { wattage: '850W', efficiency: '80 Plus Gold', modular: 'Full Modular' }
+    },
+    {
+      tenSanPham: 'Nguồn máy tính Jetek MW650 V2 650W',
+      slug: 'nguon-may-tinh-jetek-mw650-v2-650w',
+      gia: 890000,
+      hinhAnh: '/images/84.jpg',
+      moTa: 'Nguồn máy tính Jetek MW650 V2 650W. Giá cũ: 1.090.000₫. Ưu đãi: Smember giảm đến 18.000₫',
+      thuongHieu: 'Jetek',
+      thongSoKyThuat: { wattage: '650W', modular: 'Non Modular' }
+    },
+    {
+      tenSanPham: 'Nguồn máy tính Xigmatek X-Power III 350 250W',
+      slug: 'nguon-may-tinh-xigmatek-x-power-iii-350-250w',
+      gia: 450000,
+      hinhAnh: '/images/85.jpg',
+      moTa: 'Nguồn máy tính Xigmatek X-Power III 350 250W. Giá cũ: 550.000₫. Ưu đãi: Smember giảm đến 9.000₫',
+      thuongHieu: 'Xigmatek',
+      thongSoKyThuat: { wattage: '250W', efficiency: '80 Plus Standard', modular: 'Semi Modular' }
     }
   ]
 
@@ -1243,7 +1163,7 @@ async function main() {
       tenSanPham: 'Asus TUF Gaming B760M-PLUS Wifi D4',
       slug: 'asus-tuf-b760m-plus-wifi-d4',
       gia: 3790000,
-      hinhAnh: '',
+      hinhAnh: '/images/86.jpg',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1252,7 +1172,7 @@ async function main() {
       tenSanPham: 'Asus PRIME H610M-K D4',
       slug: 'asus-prime-h610m-k-d4',
       gia: 1790000,
-      hinhAnh: '',
+      hinhAnh: '/images/87.jpg',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1261,7 +1181,7 @@ async function main() {
       tenSanPham: 'Asus Prime B760M-A DDR4',
       slug: 'asus-prime-b760m-a-ddr4',
       gia: 2790000,
-      hinhAnh: '',
+      hinhAnh: '/images/88.jpg',
       moTa: 'Socket LGA 1700, PCIe 4.0, DDR4',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'LGA 1700', pcie: 'PCIe 4.0', memory: 'DDR4' }
@@ -1270,7 +1190,7 @@ async function main() {
       tenSanPham: 'Asus TUF Gaming B760M-PLUS WIFI D5',
       slug: 'asus-tuf-b760m-plus-wifi-d5',
       gia: 4290000,
-      hinhAnh: '',
+      hinhAnh: '/images/89.jpg',
       moTa: 'Socket LGA 1700, ATX, DDR5',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'ATX', memory: 'DDR5' }
@@ -1279,7 +1199,7 @@ async function main() {
       tenSanPham: 'Asus Prime B760M-K D4',
       slug: 'asus-prime-b760m-k-d4',
       gia: 2490000,
-      hinhAnh: '',
+      hinhAnh: '/images/90.jpg',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1288,7 +1208,7 @@ async function main() {
       tenSanPham: 'ASUS TUF Gaming X870-PLUS WIFI',
       slug: 'asus-tuf-x870-plus-wifi',
       gia: 8990000,
-      hinhAnh: '',
+      hinhAnh: '/images/91.jpg',
       moTa: 'Socket AM5, ATX, DDR5',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'AM5', formFactor: 'ATX', memory: 'DDR5' }
@@ -1297,7 +1217,7 @@ async function main() {
       tenSanPham: 'ASUS TUF Gaming Z890-PLUS WIFI',
       slug: 'asus-tuf-z890-plus-wifi',
       gia: 7590000,
-      hinhAnh: '',
+      hinhAnh: '/images/92.jpg',
       moTa: 'Socket LGA1851, ATX, DDR5',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'LGA1851', formFactor: 'ATX', memory: 'DDR5' }
@@ -1306,7 +1226,7 @@ async function main() {
       tenSanPham: 'Asus Prime B860M-K DDR5',
       slug: 'asus-prime-b860m-k-ddr5',
       gia: 3590000,
-      hinhAnh: '',
+      hinhAnh: '/images/93.jpg',
       moTa: 'Socket LGA1851, micro-ATX, DDR5',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'LGA1851', formFactor: 'Micro ATX', memory: 'DDR5' }
@@ -1315,16 +1235,16 @@ async function main() {
       tenSanPham: 'ASUS PRIME B650M-K',
       slug: 'asus-prime-b650m-k',
       gia: 3290000,
-      hinhAnh: '',
+      hinhAnh: '/images/94.jpg',
       moTa: 'Socket AM5, Micro ATX, DDR5',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'AM5', formFactor: 'Micro ATX', memory: 'DDR5' }
     },
     {
-      tenSanPham: 'Asus TUF Gaming B760M-PLUS D4',
+      tenSanPham: ' ',
       slug: 'asus-tuf-b760m-plus-d4',
       gia: 3690000,
-      hinhAnh: '',
+      hinhAnh: '/images/95.jpg',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'ASUS',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1333,7 +1253,7 @@ async function main() {
       tenSanPham: 'Gigabyte B760M Gaming Plus Wifi D4',
       slug: 'gigabyte-b760m-gaming-plus-wifi-d4',
       gia: 3190000,
-      hinhAnh: '',
+      hinhAnh: '/images/96.jpg',
       moTa: 'Socket LGA 1700, Micro ATX, DDR4',
       thuongHieu: 'Gigabyte',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1342,7 +1262,7 @@ async function main() {
       tenSanPham: 'Gigabyte B550M H ARGB AM4 D4',
       slug: 'gigabyte-b550m-h-argb-am4-d4',
       gia: 2090000,
-      hinhAnh: '',
+      hinhAnh: '/images/97.jpg',
       moTa: 'Socket AM4, Micro ATX, DDR4',
       thuongHieu: 'Gigabyte',
       thongSoKyThuat: { socket: 'AM4', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1351,7 +1271,7 @@ async function main() {
       tenSanPham: 'Gigabyte B760M DS3H DDR4',
       slug: 'gigabyte-b760m-ds3h-ddr4',
       gia: 3090000,
-      hinhAnh: '',
+      hinhAnh: '/images/98.jpg',
       moTa: 'Socket LGA 1700, M-ATX, DDR4',
       thuongHieu: 'Gigabyte',
       thongSoKyThuat: { socket: 'LGA 1700', formFactor: 'Micro ATX', memory: 'DDR4' }
@@ -1360,7 +1280,7 @@ async function main() {
       tenSanPham: 'Gigabyte B860M Eagle WIFI6 V2 D5',
       slug: 'gigabyte-b860m-eagle-wifi6-v2-d5',
       gia: 3790000,
-      hinhAnh: '',
+      hinhAnh: '/images/99.jpg',
       moTa: 'Socket LGA1851, Micro ATX, DDR5',
       thuongHieu: 'Gigabyte',
       thongSoKyThuat: { socket: 'LGA1851', formFactor: 'Micro ATX', memory: 'DDR5' }

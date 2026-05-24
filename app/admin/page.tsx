@@ -6,14 +6,11 @@ import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/server-user'
 
 export default async function AdminDashboardPage() {
+  // Middleware đã bảo vệ route này rồi, chỉ cần lấy user data để hiển thị
   const user = await getCurrentUser()
 
-  if (!user) {
-    redirect('/?auth=required&next=/admin')
-  }
-
-  if (user.vaiTro !== 'QUAN_TRI_VIEN') {
-    redirect('/?auth=forbidden&next=/admin')
+  if (!user || user.vaiTro !== 'QUAN_TRI_VIEN') {
+    redirect('/')
   }
 
   const [productCount, userCount, orderCount, pendingOrderCount, promotionCount] = await Promise.all([

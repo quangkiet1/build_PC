@@ -9,9 +9,12 @@ export async function POST(request: NextRequest) {
     }
 
     const email = body.email.trim().toLowerCase()
-    const otp = body.otp.trim()
+    const otp = body.otp.replace(/\s/g, '')
 
-    // Tìm OTP hợp lệ gần nhất
+    if (!/^\d{6}$/.test(otp)) {
+      return NextResponse.json({ error: 'Mã OTP phải gồm 6 chữ số' }, { status: 400 })
+    }
+
     const record = await prisma.maXacNhan.findFirst({
       where: {
         email,
@@ -23,52 +26,50 @@ export async function POST(request: NextRequest) {
 
     if (!record) {
       return NextResponse.json(
-        { error: 'Mã xác nhận không tồn tại hoặc đã được sử dụng. Vui lòng yêu cầu mã mới.' },
+        { error: 'Mã OTP không tồn tại hoặc đã được sử dụng. Vui lòng yêu cầu mã mới.' },
         { status: 400 }
       )
     }
 
-    // Kiểm tra hết hạn
     if (new Date() > record.hetHan) {
       await prisma.maXacNhan.delete({ where: { id: record.id } })
       return NextResponse.json(
-        { error: 'Mã xác nhận đã hết hạn (2 phút). Vui lòng yêu cầu mã mới.' },
+        { error: 'Mã OTP đã hết hạn. Vui lòng yêu cầu mã mới.' },
         { status: 400 }
       )
     }
 
-    // Kiểm tra số lần thử (tối đa 5 lần)
-    if (record.soLanThu >= 5) {
-      await prisma.maXacNhan.delete({ where: { id: record.id } })
-      return NextResponse.json(
-        { error: 'Bạn đã nhập sai quá nhiều lần. Vui lòng yêu cầu mã mới.' },
-        { status: 429 }
-      )
-    }
-
-    // Kiểm tra mã
     if (record.ma !== otp) {
+      const nextAttempts = record.soLanThu + 1
+
+      if (nextAttempts >= 5) {
+        await prisma.maXacNhan.delete({ where: { id: record.id } })
+        return NextResponse.json(
+          { error: 'Bạn đã nhập sai quá nhiều lần. Vui lòng yêu cầu mã mới.' },
+          { status: 429 }
+        )
+      }
+
       await prisma.maXacNhan.update({
         where: { id: record.id },
-        data: { soLanThu: { increment: 1 } },
+        data: { soLanThu: nextAttempts },
       })
-      const remaining = 5 - (record.soLanThu + 1)
+
       return NextResponse.json(
-        { error: `Mã xác nhận không đúng. Còn ${remaining} lần thử.` },
+        { error: `Mã OTP không đúng. Còn ${5 - nextAttempts} lần thử.` },
         { status: 400 }
       )
     }
 
-    // Đánh dấu OTP đã xác nhận
     await prisma.maXacNhan.update({
       where: { id: record.id },
       data: { daXacNhan: true },
     })
 
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Xác nhận thành công',
-      email, // trả về để client dùng cho bước tiếp theo
+    return NextResponse.json({
+      success: true,
+      message: 'Xác thực OTP thành công',
+      email,
     })
   } catch (error) {
     console.error('Verify OTP error:', error)

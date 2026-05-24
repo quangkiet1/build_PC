@@ -100,15 +100,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (typeof window !== 'undefined') {
       const stored = window.localStorage.getItem(STORAGE_KEY)
       if (stored) {
-        try {
-          setUser(JSON.parse(stored) as AuthUser)
-        } catch {
-          window.localStorage.removeItem(STORAGE_KEY)
-        }
+        window.setTimeout(() => {
+          try {
+            setUser(JSON.parse(stored) as AuthUser)
+          } catch {
+            window.localStorage.removeItem(STORAGE_KEY)
+          }
+        }, 0)
       }
     }
 
-    void refreshUser().finally(() => setIsLoading(false))
+    const refreshTimer = window.setTimeout(() => {
+      void refreshUser().finally(() => setIsLoading(false))
+    }, 0)
 
     const handleAuthChanged = () => {
       void refreshUser()
@@ -116,26 +120,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     window.addEventListener('auth-changed', handleAuthChanged)
     return () => {
+      window.clearTimeout(refreshTimer)
       window.removeEventListener('auth-changed', handleAuthChanged)
     }
   }, [refreshUser])
 
-  const buildModalUrl = useCallback(
-    (reason: AuthReason, nextUrl?: string) => {
-      const fallbackCurrentUrl = typeof window !== 'undefined'
+  const buildAuthPageUrl = useCallback(
+    (mode: AuthMode, nextUrl?: string) => {
+      const currentUrl = typeof window !== 'undefined'
         ? `${window.location.pathname}${window.location.search}`
         : pathname || '/'
+      const isCurrentAuthPage = ['/login', '/register', '/forgot-password'].some((path) =>
+        currentUrl === path || currentUrl.startsWith(`${path}?`)
+      )
+      const redirectTarget = nextUrl || (isCurrentAuthPage ? '/' : currentUrl) || '/'
+      const authPath = mode === 'register' ? '/register' : '/login'
+      const params = new URLSearchParams()
 
-      const redirectTarget = nextUrl || fallbackCurrentUrl || '/'
-
-      if (typeof window !== 'undefined') {
-        const params = new URLSearchParams(window.location.search)
-        params.set('auth', reason)
+      if (redirectTarget !== authPath) {
         params.set('next', redirectTarget)
-        return `${window.location.pathname}?${params.toString()}`
       }
 
-      return `${pathname || '/'}?auth=${reason}&next=${encodeURIComponent(redirectTarget)}`
+      const query = params.toString()
+      return query ? `${authPath}?${query}` : authPath
     },
     [pathname]
   )
@@ -143,10 +150,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const openAuthModal = useCallback(
     (options: OpenAuthOptions = {}) => {
       const { mode = 'login', reason = mode, nextUrl, onSuccess = null } = options
+      const targetMode = reason === 'register' || mode === 'register' ? 'register' : 'login'
       pendingActionRef.current = onSuccess
-      router.push(buildModalUrl(reason, nextUrl))
+      router.push(buildAuthPageUrl(targetMode, nextUrl))
     },
-    [buildModalUrl, router]
+    [buildAuthPageUrl, router]
   )
 
   const closeAuthModal = useCallback(() => {

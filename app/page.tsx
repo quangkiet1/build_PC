@@ -75,7 +75,7 @@ export default async function HomePage() {
       </div>
 
       {/* HERO SECTION */}
-      <section className="relative flex min-h-[calc(100svh-4rem)] items-center overflow-hidden border-b border-white/5 pb-8 pt-14 z-10 lg:min-h-[700px] lg:pb-10 lg:pt-16">
+      <section className="relative flex min-h-screen items-center overflow-hidden border-b border-white/5 pb-8 pt-24 z-10 lg:min-h-[700px] lg:pb-10 lg:pt-28">
         <Hero3DWrapper />
         <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(circle_at_72%_42%,rgba(247,147,26,0.18),transparent_34%),radial-gradient(circle_at_88%_18%,rgba(56,189,248,0.12),transparent_30%)]" />
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
@@ -87,9 +87,8 @@ export default async function HomePage() {
               </span>
               
               <h1 className="mt-6 text-5xl sm:text-6xl md:text-7xl font-heading font-bold leading-[1.1] tracking-tight">
-                {t('titleStart')}
-                <br />
-                <span className="bg-gradient-to-r from-[#F7931A] to-[#FFD600] bg-clip-text text-transparent">{t('titleAccent')}</span>
+                Xây dựng cấu hình{' '}
+                <span className="bg-gradient-to-r from-[#F7931A] to-[#FFD600] bg-clip-text text-transparent whitespace-nowrap">PC thông minh hơn</span>
               </h1>
               
               <p className="mt-6 text-lg md:text-xl leading-relaxed text-muted max-w-2xl">
@@ -209,9 +208,8 @@ export default async function HomePage() {
                 {t('builderBadge')}
               </span>
               <h2 className="mt-6 text-4xl md:text-5xl font-heading font-bold text-white leading-tight">
-                {t('builderHeadline')}
-                <br />
-                <span className="bg-gradient-to-r from-[#F7931A] to-[#FFD600] bg-clip-text text-transparent">{t('builderHeadlineAccent')}</span>
+                {t('builderHeadline')}{' '}
+                <span className="bg-gradient-to-r from-[#F7931A] to-[#FFD600] bg-clip-text text-transparent whitespace-nowrap">{t('builderHeadlineAccent')}</span>
               </h2>
               <p className="mt-6 text-lg text-muted max-w-xl">
                 {t('builderDescription')}

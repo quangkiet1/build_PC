@@ -11,16 +11,24 @@ import { useCart } from '@/app/providers/cart-provider'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { UserDropdown } from '@/components/UserDropdown'
 
-const AUTH_ROUTES = ['/login', '/register']
+const AUTH_ROUTES = ['/login', '/register', '/forgot-password']
 
 export function Header() {
   const { cartCount } = useCart()
-  const { user, openAuthModal } = useAuth()
+  const { user } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const badgeRef = useRef<HTMLSpanElement>(null)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const t = useTranslations('header')
   const pathname = usePathname()
+  const builderLoginHref = `/login?next=${encodeURIComponent('/builder')}`
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   const isAuthRoute = AUTH_ROUTES.some((r) => pathname === r)
 
@@ -73,7 +81,11 @@ export function Header() {
 
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0F1115]/80 backdrop-blur-xl">
+    <header className={`fixed top-0 left-0 right-0 w-full z-50 backdrop-blur-xl transition-all duration-300 ${
+      scrolled
+        ? 'bg-[#0F1115]/95 border-b border-[#F7931A]/20 shadow-[0_4px_30px_rgba(0,0,0,0.6)]'
+        : 'bg-[#0F1115]/80 border-b border-white/10'
+    }`}>
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="group inline-flex items-center gap-3 text-2xl font-heading font-bold text-white transition hover:text-[#F7931A]">
@@ -96,7 +108,7 @@ export function Header() {
               </Link>
             ) : (
               <Link
-                href="/login?next=/builder"
+                href={builderLoginHref}
                 className="text-sm font-mono tracking-widest uppercase text-muted transition hover:text-[#F7931A]"
               >
                 {t('builder')}
@@ -155,9 +167,10 @@ export function Header() {
               </Link>
             ) : (
               <Link
-                href="/login?next=/builder"
+                href={builderLoginHref}
+                onClick={() => setMobileMenuOpen(false)}
                 data-menu-item
-                className="block rounded-lg px-4 py-2 text-muted font-mono uppercase tracking-widest text-sm transition hover:bg-white/5 hover:text-[#F7931A]"
+                className="block w-full text-left rounded-lg px-4 py-2 text-muted font-mono uppercase tracking-widest text-sm transition hover:bg-white/5 hover:text-[#F7931A]"
               >
                 {t('builder')}
               </Link>
@@ -181,12 +194,14 @@ export function Header() {
               <div data-menu-item className="grid grid-cols-2 gap-3 px-1 pt-2">
                 <Link
                   href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="rounded-full border border-white/20 bg-transparent px-4 py-3 text-center text-sm font-semibold text-white transition hover:border-[#F7931A]/50 hover:bg-[#F7931A]/10 hover:text-[#F7931A]"
                 >
                   {t('login')}
                 </Link>
                 <Link
                   href="/register"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="rounded-full bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-4 py-3 text-center text-sm font-semibold text-white shadow-[0_0_15px_-5px_rgba(247,147,26,0.5)] transition hover:scale-105 hover:shadow-[0_0_25px_-5px_rgba(247,147,26,0.7)]"
                 >
                   {t('register')}

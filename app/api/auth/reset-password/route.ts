@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { hashPassword, createAccessToken, createAuthCookie } from '@/lib/auth'
+import { createAccessToken, createAuthCookie, hashPassword } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => null)
-    if (
-      !body ||
-      typeof body.email !== 'string' ||
-      typeof body.password !== 'string'
-    ) {
+    if (!body || typeof body.email !== 'string' || typeof body.password !== 'string') {
       return NextResponse.json({ error: 'Dữ liệu không hợp lệ' }, { status: 400 })
     }
 
@@ -23,7 +19,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Kiểm tra OTP đã được xác nhận chưa
     const record = await prisma.maXacNhan.findFirst({
       where: {
         email,
@@ -36,12 +31,20 @@ export async function POST(request: NextRequest) {
 
     if (!record) {
       return NextResponse.json(
-        { error: 'Phiên xác nhận không hợp lệ hoặc đã hết hạn. Vui lòng bắt đầu lại.' },
+        { error: 'Phiên xác thực không hợp lệ hoặc đã hết hạn. Vui lòng bắt đầu lại.' },
         { status: 400 }
       )
     }
 
-    // Cập nhật mật khẩu mới
+    const existingUser = await prisma.nguoiDung.findUnique({
+      where: { email },
+      select: { id: true },
+    })
+
+    if (!existingUser) {
+      return NextResponse.json({ error: 'Tài khoản không tồn tại' }, { status: 404 })
+    }
+
     const hashedPassword = await hashPassword(password)
     const user = await prisma.nguoiDung.update({
       where: { email },
@@ -49,16 +52,15 @@ export async function POST(request: NextRequest) {
       select: { id: true, email: true, hoTen: true, vaiTro: true },
     })
 
-    // Xóa OTP đã dùng
     await prisma.maXacNhan.delete({ where: { id: record.id } })
 
-    // Tự động đăng nhập — set JWT cookie
     const token = createAccessToken({ id: user.id, email: user.email, vaiTro: user.vaiTro })
     const response = NextResponse.json({
       message: 'Đặt lại mật khẩu thành công',
       user: { id: user.id, name: user.hoTen, email: user.email, role: user.vaiTro },
     })
     response.headers.set('Set-Cookie', createAuthCookie(token))
+
     return response
   } catch (error) {
     console.error('Reset password error:', error)

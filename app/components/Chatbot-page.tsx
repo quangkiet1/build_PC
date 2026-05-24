@@ -96,7 +96,7 @@ export default function Chatbot() {
   const buildCount = Object.keys(keLinhKien).length;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-6 right-6 z-[60]">
       {isOpen && (
         <div className="mb-4 w-[370px] md:w-[420px] flex flex-col rounded-2xl overflow-hidden shadow-2xl"
           style={{ height: '580px', background: '#0a0a0f', border: '1px solid rgba(247,147,26,0.25)', boxShadow: '0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(247,147,26,0.08)' }}>
