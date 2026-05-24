@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Plus, Edit2, Trash2, X, ArrowLeft, Search, Percent, Loader2 } from 'lucide-react'
@@ -49,7 +49,7 @@ export default function AdminPromotions() {
     isActive: true,
   })
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true)
       const response = await fetch('/api/admin/promotions', { credentials: 'include' })
@@ -71,11 +71,11 @@ export default function AdminPromotions() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [addToast, router])
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [fetchData])
 
   const openForm = (promotion?: Promotion) => {
     if (promotion) {
@@ -207,10 +207,10 @@ export default function AdminPromotions() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#07080d] text-white flex items-center justify-center relative">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.08),transparent_50%)] pointer-events-none" />
+      <div className="relative flex min-h-screen items-center justify-center bg-[#030304] text-white">
+        <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-30" />
         <div className="text-center relative z-10">
-          <Loader2 className="w-8 h-8 text-indigo-400 animate-spin mx-auto mb-3" />
+          <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-[#FFD600]" />
           <p className="text-slate-400">Đang tải khuyến mãi...</p>
         </div>
       </div>
@@ -218,25 +218,26 @@ export default function AdminPromotions() {
   }
 
   return (
-    <div className="min-h-screen bg-[#07080d] text-white relative">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.08),transparent_50%)] pointer-events-none" />
+    <div className="relative min-h-screen bg-[#030304] text-white">
+      <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-30" />
+      <div className="pointer-events-none absolute -left-1/4 -top-1/4 h-3/4 w-3/4 bg-radial-blur" />
       {/* Header */}
       <div className="bg-black/40 backdrop-blur-2xl border-b border-white/10 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <Link href="/admin" className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-indigo-300 transition mb-4">
+          <Link href="/admin" className="mb-4 inline-flex items-center gap-1.5 text-sm text-slate-400 transition hover:text-[#FFD600]">
             <ArrowLeft className="w-4 h-4" /> Quay lại Dashboard
           </Link>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold flex items-center gap-2">
-                <Percent className="w-6 h-6 text-indigo-400" />
+                <Percent className="h-6 w-6 text-[#FFD600]" />
                 Quản lý Khuyến mãi
               </h1>
               <p className="text-slate-400 text-sm mt-1">{promotions.length} khuyến mãi trong hệ thống</p>
             </div>
             <button
               onClick={() => openForm()}
-              className="inline-flex items-center gap-2 px-4 py-2.5 gaming-gradient rounded-xl text-white text-sm font-semibold transition hover:opacity-90"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
             >
               <Plus className="w-4 h-4" /> Thêm khuyến mãi
             </button>
@@ -254,7 +255,7 @@ export default function AdminPromotions() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Tìm theo mã hoặc tên..."
-              className="w-full rounded-[16px] border border-white/10 bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 focus:border-indigo-500/50 focus:outline-none transition hover:bg-black/20"
+              className="w-full rounded-2xl border border-white/10 bg-[#0F1115]/85 py-2.5 pl-10 pr-4 text-sm text-white outline-none transition placeholder:text-slate-500 hover:bg-black/20 focus:border-[#F7931A]/50"
             />
           </div>
         </div>
@@ -287,7 +288,7 @@ export default function AdminPromotions() {
                   filtered.map((promo) => (
                     <tr key={promo.id} className="border-b border-white/10 last:border-b-0 hover:bg-white/5 transition">
                       <td className="px-5 py-3.5">
-                        <span className="font-mono text-sm text-indigo-400 font-medium">{promo.maKhuyenMai}</span>
+                        <span className="font-mono text-sm font-medium text-[#FFD600]">{promo.maKhuyenMai}</span>
                       </td>
                       <td className="px-5 py-3.5 text-sm text-white">{promo.tenKhuyenMai}</td>
                       <td className="px-5 py-3.5">
@@ -312,7 +313,7 @@ export default function AdminPromotions() {
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => openForm(promo)}
-                            className="p-2 rounded-lg text-slate-400 hover:bg-indigo-500/10 hover:text-indigo-400 transition"
+                            className="rounded-lg p-2 text-slate-400 transition hover:bg-[#F7931A]/10 hover:text-[#FFD600]"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
@@ -354,7 +355,7 @@ export default function AdminPromotions() {
                   value={formData.maKhuyenMai}
                   onChange={(e) => setFormData({ ...formData, maKhuyenMai: e.target.value })}
                   placeholder="VD: SALE2024"
-                  className="w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:border-indigo-500/50 focus:outline-none disabled:opacity-50"
+                  className="w-full rounded-xl border border-white/10 bg-[#141a26] px-4 py-2.5 text-sm text-white outline-none placeholder:text-slate-600 focus:border-[#F7931A]/50 disabled:opacity-50"
                   disabled={!!selectedPromotion}
                   required
                 />
@@ -367,7 +368,7 @@ export default function AdminPromotions() {
                   value={formData.tenKhuyenMai}
                   onChange={(e) => setFormData({ ...formData, tenKhuyenMai: e.target.value })}
                   placeholder="VD: Giảm giá mùa hè"
-                  className="w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:border-indigo-500/50 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-[#141a26] px-4 py-2.5 text-sm text-white outline-none placeholder:text-slate-600 focus:border-[#F7931A]/50"
                   required
                 />
               </div>
@@ -378,7 +379,7 @@ export default function AdminPromotions() {
                   value={formData.moTa}
                   onChange={(e) => setFormData({ ...formData, moTa: e.target.value })}
                   rows={2}
-                  className="w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:border-indigo-500/50 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-[#141a26] px-4 py-2.5 text-sm text-white outline-none placeholder:text-slate-600 focus:border-[#F7931A]/50"
                   placeholder="Dieu kien hoac ghi chu ngan"
                 />
               </div>
@@ -389,7 +390,7 @@ export default function AdminPromotions() {
                   <select
                     value={formData.loaiGiamGia}
                     onChange={(e) => setFormData({ ...formData, loaiGiamGia: e.target.value as 'PHAN_TRAM' | 'SO_TIEN' })}
-                    className="scheme-dark w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white focus:border-indigo-500/50 focus:outline-none"
+                    className="scheme-dark w-full rounded-xl border border-white/10 bg-[#141a26] px-4 py-2.5 text-sm text-white outline-none focus:border-[#F7931A]/50"
                   >
                     <option value="PHAN_TRAM">Phan tram</option>
                     <option value="SO_TIEN">So tien co dinh</option>
@@ -405,7 +406,7 @@ export default function AdminPromotions() {
                     max={formData.loaiGiamGia === 'PHAN_TRAM' ? 100 : undefined}
                     value={formData.giaTriGiam}
                     onChange={(e) => setFormData({ ...formData, giaTriGiam: Number(e.target.value) })}
-                    className="w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white focus:border-indigo-500/50 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-[#141a26] px-4 py-2.5 text-sm text-white outline-none focus:border-[#F7931A]/50"
                     required
                   />
                 </div>
@@ -420,7 +421,7 @@ export default function AdminPromotions() {
                     value={formData.minOrderValue}
                     onChange={(e) => setFormData({ ...formData, minOrderValue: e.target.value })}
                     placeholder="Khong bat buoc"
-                    className="w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:border-indigo-500/50 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-[#141a26] px-4 py-2.5 text-sm text-white outline-none placeholder:text-slate-600 focus:border-[#F7931A]/50"
                   />
                 </div>
                 <div>
@@ -431,7 +432,7 @@ export default function AdminPromotions() {
                     value={formData.gioiHanTong}
                     onChange={(e) => setFormData({ ...formData, gioiHanTong: e.target.value })}
                     placeholder="Khong gioi han"
-                    className="w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:border-indigo-500/50 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-[#141a26] px-4 py-2.5 text-sm text-white outline-none placeholder:text-slate-600 focus:border-[#F7931A]/50"
                   />
                 </div>
                 <div>
@@ -441,7 +442,7 @@ export default function AdminPromotions() {
                     min="1"
                     value={formData.gioiHanMoiNguoi}
                     onChange={(e) => setFormData({ ...formData, gioiHanMoiNguoi: Number(e.target.value) })}
-                    className="w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white focus:border-indigo-500/50 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-[#141a26] px-4 py-2.5 text-sm text-white outline-none focus:border-[#F7931A]/50"
                     required
                   />
                 </div>
@@ -454,7 +455,7 @@ export default function AdminPromotions() {
                     type="datetime-local"
                     value={formData.ngayBatDau}
                     onChange={(e) => setFormData({ ...formData, ngayBatDau: e.target.value })}
-                    className="scheme-dark w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white focus:border-indigo-500/50 focus:outline-none"
+                    className="scheme-dark w-full rounded-xl border border-white/10 bg-[#141a26] px-4 py-2.5 text-sm text-white outline-none focus:border-[#F7931A]/50"
                     required
                   />
                 </div>
@@ -464,7 +465,7 @@ export default function AdminPromotions() {
                     type="datetime-local"
                     value={formData.ngayKetThuc}
                     onChange={(e) => setFormData({ ...formData, ngayKetThuc: e.target.value })}
-                    className="scheme-dark w-full rounded-xl border border-[#1e2535] bg-[#141a26] px-4 py-2.5 text-sm text-white focus:border-indigo-500/50 focus:outline-none"
+                    className="scheme-dark w-full rounded-xl border border-white/10 bg-[#141a26] px-4 py-2.5 text-sm text-white outline-none focus:border-[#F7931A]/50"
                     required
                   />
                 </div>
@@ -475,7 +476,7 @@ export default function AdminPromotions() {
                   type="checkbox"
                   checked={formData.isActive}
                   onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="w-4 h-4 rounded border-slate-600 bg-[#141a26] text-indigo-500 focus:ring-indigo-500/20"
+                  className="h-4 w-4 rounded border-slate-600 bg-[#141a26] text-[#F7931A] focus:ring-[#F7931A]/20"
                   id="isActive"
                 />
                 <label htmlFor="isActive" className="text-sm text-slate-300">
@@ -486,7 +487,7 @@ export default function AdminPromotions() {
               <div className="flex gap-2 pt-2">
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl gaming-gradient text-white font-semibold text-sm transition hover:opacity-90"
+                  className="flex-1 rounded-xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
                 >
                   {selectedPromotion ? 'Cập nhật' : 'Thêm'}
                 </button>

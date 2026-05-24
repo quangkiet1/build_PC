@@ -17,7 +17,7 @@ export function ToastContainer() {
               ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
               : toast.type === 'error'
                 ? 'bg-red-500/10 border-red-500/30 text-red-400'
-                : 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+                : 'border-[#F7931A]/30 bg-[#F7931A]/10 text-[#FFD600]'
           }`}
         >
           <div className="shrink-0 mt-0.5">

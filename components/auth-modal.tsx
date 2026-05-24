@@ -168,11 +168,11 @@ export function AuthModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && closeModal()}>
-      <DialogContent className="max-w-4xl overflow-hidden border-[#1f2740] bg-[#0a0f17] p-0 text-slate-100 shadow-[0_30px_120px_rgba(2,6,23,0.7)]">
+      <DialogContent className="max-w-4xl overflow-hidden border-white/10 bg-[#0F1115] p-0 text-slate-100 shadow-[0_30px_120px_rgba(0,0,0,0.7)]">
         <div className="grid md:grid-cols-[0.95fr_1.05fr]">
-          <div className="relative hidden min-h-full overflow-hidden border-r border-[#1f2740] bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.16),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(99,102,241,0.2),transparent_35%),linear-gradient(180deg,#09101b,#0a0f17)] p-8 md:flex md:flex-col md:justify-between">
+          <div className="relative hidden min-h-full overflow-hidden border-r border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(247,147,26,0.18),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(255,214,0,0.12),transparent_36%),linear-gradient(180deg,#111315,#060607)] p-8 md:flex md:flex-col md:justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-sky-400/20 bg-sky-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-sky-300">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#F7931A]/25 bg-[#F7931A]/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-[#FFD600]">
                 <Sparkles className="h-3.5 w-3.5" />
                 Account Access
               </div>
@@ -195,7 +195,7 @@ export function AuthModal() {
                 </div>
               </div>
               <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
-                <ShieldCheck className="mt-0.5 h-5 w-5 text-sky-400" />
+                <ShieldCheck className="mt-0.5 h-5 w-5 text-[#FFD600]" />
                 <div>
                   <div className="font-medium text-white">Xác thực an toàn</div>
                   <div className="text-sm text-slate-400">Không lộ password, cookie auth được xử lý ở backend như hiện tại.</div>
@@ -215,7 +215,7 @@ export function AuthModal() {
               </DialogDescription>
             </DialogHeader>
 
-        <div className="mt-6 grid grid-cols-2 gap-2 rounded-2xl border border-[#27314a] bg-[#0f1522] p-1.5">
+        <div className="mt-6 grid grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-[#030304] p-1.5">
           <button
             type="button"
             onClick={() => {
@@ -224,8 +224,8 @@ export function AuthModal() {
             }}
             className={`rounded-xl px-4 py-3 text-sm font-semibold transition ${
               activeTab === 'login'
-                ? 'bg-[linear-gradient(135deg,#4f46e5,#0ea5e9)] text-white shadow-[0_10px_30px_rgba(79,70,229,0.35)]'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-gradient-to-r from-[#EA580C] to-[#F7931A] text-white shadow-[0_10px_30px_rgba(247,147,26,0.28)]'
+                : 'text-slate-400 hover:bg-white/5 hover:text-white'
             }`}
           >
             <span className="inline-flex items-center gap-2">
@@ -241,8 +241,8 @@ export function AuthModal() {
             }}
             className={`rounded-xl px-4 py-3 text-sm font-semibold transition ${
               activeTab === 'register'
-                ? 'bg-[linear-gradient(135deg,#4f46e5,#0ea5e9)] text-white shadow-[0_10px_30px_rgba(79,70,229,0.35)]'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-gradient-to-r from-[#EA580C] to-[#F7931A] text-white shadow-[0_10px_30px_rgba(247,147,26,0.28)]'
+                : 'text-slate-400 hover:bg-white/5 hover:text-white'
             }`}
           >
             <span className="inline-flex items-center gap-2">
@@ -263,7 +263,7 @@ export function AuthModal() {
                   placeholder="ban@example.com"
                   value={loginForm.email}
                   onChange={(event) => setLoginForm((prev) => ({ ...prev, email: event.target.value }))}
-                  className="h-12 rounded-2xl border-[#28314a] bg-[#0f1522] pl-11 text-slate-100 transition focus:border-sky-400/40 focus:ring-sky-400/20"
+                  className="h-12 rounded-2xl border-white/10 bg-[#030304] pl-11 text-slate-100 transition focus:border-[#F7931A]/50 focus:ring-[#F7931A]/20"
                 />
               </div>
             </div>
@@ -274,10 +274,10 @@ export function AuthModal() {
                 placeholder="Nhập mật khẩu"
                 value={loginForm.password}
                 onChange={(event) => setLoginForm((prev) => ({ ...prev, password: event.target.value }))}
-                className="h-12 rounded-2xl border-[#28314a] bg-[#0f1522] text-slate-100 transition focus:border-sky-400/40 focus:ring-sky-400/20"
+                className="h-12 rounded-2xl border-white/10 bg-[#030304] text-slate-100 transition focus:border-[#F7931A]/50 focus:ring-[#F7931A]/20"
               />
             </div>
-            <Button type="submit" className="h-12 w-full rounded-2xl bg-[linear-gradient(135deg,#4f46e5,#0ea5e9)] text-white shadow-[0_10px_30px_rgba(79,70,229,0.35)] hover:opacity-95" disabled={loading}>
+            <Button type="submit" className="h-12 w-full rounded-2xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] text-white shadow-[0_10px_30px_rgba(247,147,26,0.28)] hover:opacity-95" disabled={loading}>
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Đăng nhập'}
             </Button>
           </form>
@@ -289,7 +289,7 @@ export function AuthModal() {
                 placeholder="Nguyễn Văn A"
                 value={registerForm.name}
                 onChange={(event) => setRegisterForm((prev) => ({ ...prev, name: event.target.value }))}
-                className="h-12 rounded-2xl border-[#28314a] bg-[#0f1522] text-slate-100 transition focus:border-sky-400/40 focus:ring-sky-400/20"
+                className="h-12 rounded-2xl border-white/10 bg-[#030304] text-slate-100 transition focus:border-[#F7931A]/50 focus:ring-[#F7931A]/20"
               />
             </div>
             <div className="space-y-2">
@@ -301,7 +301,7 @@ export function AuthModal() {
                   placeholder="ban@example.com"
                   value={registerForm.email}
                   onChange={(event) => setRegisterForm((prev) => ({ ...prev, email: event.target.value }))}
-                  className="h-12 rounded-2xl border-[#28314a] bg-[#0f1522] pl-11 text-slate-100 transition focus:border-sky-400/40 focus:ring-sky-400/20"
+                  className="h-12 rounded-2xl border-white/10 bg-[#030304] pl-11 text-slate-100 transition focus:border-[#F7931A]/50 focus:ring-[#F7931A]/20"
                 />
               </div>
             </div>
@@ -312,10 +312,10 @@ export function AuthModal() {
                 placeholder="Tối thiểu 6 ký tự"
                 value={registerForm.password}
                 onChange={(event) => setRegisterForm((prev) => ({ ...prev, password: event.target.value }))}
-                className="h-12 rounded-2xl border-[#28314a] bg-[#0f1522] text-slate-100 transition focus:border-sky-400/40 focus:ring-sky-400/20"
+                className="h-12 rounded-2xl border-white/10 bg-[#030304] text-slate-100 transition focus:border-[#F7931A]/50 focus:ring-[#F7931A]/20"
               />
             </div>
-            <Button type="submit" className="h-12 w-full rounded-2xl bg-[linear-gradient(135deg,#4f46e5,#0ea5e9)] text-white shadow-[0_10px_30px_rgba(79,70,229,0.35)] hover:opacity-95" disabled={loading}>
+            <Button type="submit" className="h-12 w-full rounded-2xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] text-white shadow-[0_10px_30px_rgba(247,147,26,0.28)] hover:opacity-95" disabled={loading}>
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Đăng ký và đăng nhập ngay'}
             </Button>
           </form>
@@ -327,7 +327,7 @@ export function AuthModal() {
           </div>
         )}
 
-        <div className="mt-5 rounded-2xl border border-[#27314a] bg-[#0f1522] px-4 py-3 text-xs leading-6 text-slate-400">
+        <div className="mt-5 rounded-2xl border border-white/10 bg-[#030304] px-4 py-3 text-xs leading-6 text-slate-400">
           {activeTab === 'login'
             ? 'Sau khi đăng nhập thành công, hệ thống sẽ đưa bạn quay lại đúng trang trước đó nếu có.'
             : 'Sau khi đăng ký thành công, tài khoản sẽ được tự động đăng nhập mà không cần thao tác thêm.'}

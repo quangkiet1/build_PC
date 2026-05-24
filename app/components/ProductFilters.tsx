@@ -1,6 +1,8 @@
 'use client'
 
+import type { FormEvent } from 'react'
 import { useState } from 'react'
+import { Search } from 'lucide-react'
 
 interface Category {
   id: string
@@ -25,7 +27,7 @@ export function ProductFilters({
   const [category] = useState(initialCategory)
   const [sort] = useState(initialSort)
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const params = new URLSearchParams(window.location.search)
     if (search.trim()) {
@@ -33,8 +35,8 @@ export function ProductFilters({
     } else {
       params.delete('search')
     }
-    params.delete('category') // Reset category when searching
-    params.delete('sort') // Reset sort when searching
+    params.delete('category')
+    params.delete('sort')
     window.location.href = `/products?${params.toString()}`
   }
 
@@ -45,7 +47,7 @@ export function ProductFilters({
     } else {
       params.delete('category')
     }
-    params.delete('search') // Reset search when filtering by category
+    params.delete('search')
     window.location.href = `/products?${params.toString()}`
   }
 
@@ -60,9 +62,8 @@ export function ProductFilters({
   }
 
   return (
-    <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 mb-8">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Search */}
+    <div className="mb-8 rounded-2xl border border-white/10 bg-[#0F1115]/85 p-5 shadow-[0_22px_55px_rgba(0,0,0,0.24)]">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <div className="md:col-span-2">
           <form onSubmit={handleSearch} className="flex gap-2">
             <input
@@ -70,23 +71,23 @@ export function ProductFilters({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Tìm kiếm sản phẩm..."
-              className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
+              className="min-h-11 flex-1 rounded-xl border border-white/10 bg-[#030304] px-4 py-2 text-white outline-none transition placeholder:text-[#64748B] hover:border-white/20 focus:border-[#F7931A]/55 focus:ring-1 focus:ring-[#F7931A]/20"
             />
             <button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#F7931A] px-4 py-2 text-white shadow-[0_0_18px_rgba(247,147,26,0.28)] transition hover:bg-[#ff9f2d]"
+              aria-label="Tìm kiếm"
             >
-              🔍
+              <Search className="h-4 w-4" />
             </button>
           </form>
         </div>
 
-        {/* Category Filter */}
         <div>
           <select
             value={category}
             onChange={(e) => handleCategoryChange(e.target.value)}
-            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
+            className="min-h-11 w-full rounded-xl border border-white/10 bg-[#030304] px-4 py-2 text-white outline-none transition hover:border-white/20 focus:border-[#F7931A]/55 focus:ring-1 focus:ring-[#F7931A]/20"
           >
             <option value="all">Tất cả danh mục</option>
             {categories.map((cat) => (
@@ -97,16 +98,15 @@ export function ProductFilters({
           </select>
         </div>
 
-        {/* Sort */}
         <div>
           <select
             value={sort}
             onChange={(e) => handleSortChange(e.target.value)}
-            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
+            className="min-h-11 w-full rounded-xl border border-white/10 bg-[#030304] px-4 py-2 text-white outline-none transition hover:border-white/20 focus:border-[#F7931A]/55 focus:ring-1 focus:ring-[#F7931A]/20"
           >
             <option value="newest">Mới nhất</option>
-            <option value="price_asc">Giá thấp → cao</option>
-            <option value="price_desc">Giá cao → thấp</option>
+            <option value="price_asc">Giá thấp đến cao</option>
+            <option value="price_desc">Giá cao đến thấp</option>
             <option value="name_asc">Tên A-Z</option>
             <option value="name_desc">Tên Z-A</option>
           </select>

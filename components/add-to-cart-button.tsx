@@ -34,5 +34,13 @@ export function AddToCartButton({ productId }: AddToCartButtonProps) {
     }
   }
 
-  return <Button onClick={handleAddToCart} disabled={loading} className="gaming-gradient">{loading ? t('adding') : t('add')}</Button>
+  return (
+    <Button
+      onClick={handleAddToCart}
+      disabled={loading}
+      className="bg-gradient-to-r from-[#EA580C] to-[#F7931A] font-semibold text-white shadow-[0_0_18px_rgba(247,147,26,0.24)] transition hover:brightness-110"
+    >
+      {loading ? t('adding') : t('add')}
+    </Button>
+  )
 }

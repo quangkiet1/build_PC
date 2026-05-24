@@ -73,7 +73,7 @@ export default function PromotionsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#07080d] text-white flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-[#030304] text-white">
         <div className="text-center">
           <div className="animate-pulse h-16 w-16 rounded-2xl bg-[#0f1117] border border-[#1e2535] mx-auto mb-4" />
           <p className="text-slate-400">Đang tải khuyến mãi...</p>
@@ -86,13 +86,13 @@ export default function PromotionsPage() {
   const activeProductPromotions = productPromotions.filter(isProductPromotionActive)
 
   return (
-    <div className="min-h-screen bg-[#07080d] text-white">
+    <div className="min-h-screen bg-[#030304] text-white">
       {/* Header */}
-      <div className="bg-[#0a0b10] border-b border-[#1e2535]">
+      <div className="border-b border-white/10 bg-[#0F1115]/85">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-indigo-400" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#F7931A]/25 bg-[#F7931A]/10">
+              <Sparkles className="h-5 w-5 text-[#FFD600]" />
             </div>
             <div>
               <h1 className="text-3xl font-bold">Khuyến mãi</h1>
@@ -107,19 +107,19 @@ export default function PromotionsPage() {
         {activePromotions.length > 0 && (
           <section>
             <h2 className="text-xl font-semibold mb-5 flex items-center gap-2">
-              <Tag className="w-5 h-5 text-indigo-400" />
+              <Tag className="h-5 w-5 text-[#FFD600]" />
               Mã khuyến mãi
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {activePromotions.map((promo) => (
                 <div
                   key={promo.id}
-                  className="bg-[#0f1117] border border-[#1e2535] rounded-2xl p-6 hover:border-indigo-500/30 transition group"
+                  className="group rounded-2xl border border-white/10 bg-[#0F1115] p-6 transition hover:border-[#F7931A]/35"
                 >
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div>
                       <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Mã khuyến mãi</p>
-                      <p className="text-xl font-bold font-mono text-indigo-400 tracking-wider">
+                      <p className="font-mono text-xl font-bold tracking-wider text-[#FFD600]">
                         {promo.maKhuyenMai}
                       </p>
                     </div>
@@ -137,7 +137,7 @@ export default function PromotionsPage() {
 
                   <button
                     onClick={() => handleCopy(promo.maKhuyenMai)}
-                    className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition flex items-center justify-center gap-2"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#F7931A] py-2.5 text-sm font-medium text-white transition hover:bg-[#ff9f2d]"
                   >
                     {copiedCode === promo.maKhuyenMai ? (
                       <><CheckCircle2 className="w-4 h-4" /> Đã sao chép!</>
@@ -189,7 +189,7 @@ export default function PromotionsPage() {
 
                     <Link
                       href="/products"
-                      className="block w-full py-2 rounded-xl border border-[#1e2535] text-center text-sm text-slate-300 hover:border-indigo-500/50 hover:text-white transition"
+                      className="block w-full rounded-xl border border-white/10 py-2 text-center text-sm text-slate-300 transition hover:border-[#F7931A]/45 hover:text-white"
                     >
                       Xem chi tiết
                     </Link>
@@ -208,7 +208,7 @@ export default function PromotionsPage() {
             </div>
             <h3 className="text-2xl font-semibold mb-2">Chưa có khuyến mãi</h3>
             <p className="text-slate-400 mb-6">Hiện tại chưa có chương trình khuyến mãi nào đang hoạt động.</p>
-            <Link href="/products" className="inline-flex px-6 py-3 gaming-gradient rounded-xl text-white font-semibold transition">
+            <Link href="/products" className="inline-flex rounded-xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-6 py-3 font-semibold text-white transition hover:brightness-110">
               Khám phá sản phẩm
             </Link>
           </div>

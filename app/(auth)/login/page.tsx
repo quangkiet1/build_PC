@@ -81,11 +81,11 @@ export default function LoginPage() {
           />
 
           <div data-auth-item className="mb-7 flex flex-col items-center text-center">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg border border-orange-100 bg-orange-50">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border border-[#F7931A]/30 bg-[#F7931A]/10 shadow-[0_0_24px_-8px_rgba(247,147,26,0.72)]">
               <Cpu className="h-7 w-7 text-[#F7931A]" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-950">Đăng nhập</h1>
-            <p className="mt-2 text-sm leading-6 text-slate-500">
+            <h1 className="font-heading text-2xl font-bold tracking-tight text-white">Đăng nhập</h1>
+            <p className="mt-2 text-sm leading-6 text-[#94A3B8]">
               Trở lại PC Builder để tiếp tục cấu hình, giỏ hàng và đơn của bạn.
             </p>
           </div>
@@ -93,9 +93,9 @@ export default function LoginPage() {
           {error && (
             <div
               data-auth-item
-              className="mb-5 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+              className="mb-5 flex items-start gap-3 rounded-xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-sm text-red-200"
             >
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-300" />
               <p>{error}</p>
             </div>
           )}
@@ -148,7 +148,7 @@ export default function LoginPage() {
                   type="button"
                   onClick={() => setShowPassword((value) => !value)}
                   aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 transition hover:text-slate-950"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#64748B] transition hover:text-white"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -159,7 +159,7 @@ export default function LoginPage() {
               id="login-submit-btn"
               type="submit"
               disabled={loading}
-              className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-gradient-to-r from-[#EA580C] via-[#F7931A] to-[#FFD600] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_16px_34px_-22px_rgba(234,88,12,0.9)] transition hover:translate-y-[-1px] disabled:pointer-events-none disabled:opacity-60"
+              className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[#EA580C] via-[#F7931A] to-[#FFD600] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_0_20px_-6px_rgba(247,147,26,0.7)] transition hover:translate-y-[-1px] hover:shadow-[0_0_30px_-6px_rgba(247,147,26,0.85)] disabled:pointer-events-none disabled:opacity-60"
             >
               <span className="absolute inset-0 bg-white/12 opacity-0 transition group-hover:opacity-100" />
               <span className="relative flex items-center gap-2">
@@ -173,18 +173,18 @@ export default function LoginPage() {
           </form>
 
           <div data-auth-item className="my-7 flex items-center gap-4">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-slate-200" />
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
             <span className="text-xs font-mono uppercase tracking-wider text-[#475569]">
               Chưa có tài khoản?
             </span>
-            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-slate-200" />
+            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/10" />
           </div>
 
           <Link
             data-auth-item
             id="go-to-register-link"
             href="/register"
-            className="group flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-3.5 text-sm font-medium text-slate-700 transition hover:border-sky-200 hover:bg-sky-50 hover:text-sky-700"
+            className="group flex w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3.5 text-sm font-medium text-white transition hover:border-[#F7931A]/45 hover:bg-[#F7931A]/10 hover:text-[#FFD600]"
           >
             Tạo tài khoản mới
             <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
@@ -193,7 +193,7 @@ export default function LoginPage() {
           <div data-auth-item className="mt-6 text-center">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-xs font-mono text-slate-500 transition hover:text-slate-800"
+              className="inline-flex items-center gap-2 text-xs font-mono text-[#64748B] transition hover:text-[#CBD5E1]"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               Về trang chủ

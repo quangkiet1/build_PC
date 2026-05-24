@@ -269,9 +269,9 @@ export default function AdminProductsPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#07080d] text-white flex items-center justify-center">
+      <main className="flex min-h-screen items-center justify-center bg-[#030304] text-white">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 text-indigo-400 animate-spin mx-auto mb-3" />
+          <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-[#FFD600]" />
           <p className="text-slate-400">Đang tải sản phẩm...</p>
         </div>
       </main>
@@ -279,19 +279,19 @@ export default function AdminProductsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#07080d] text-white px-4 py-10 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[#030304] px-4 py-10 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <Link
               href="/admin"
-              className="rounded-xl border border-slate-800 bg-[#0f1117] p-2.5 text-slate-400 transition hover:border-indigo-500/40 hover:text-white"
+              className="rounded-xl border border-white/10 bg-[#0F1115] p-2.5 text-slate-400 transition hover:border-[#F7931A]/40 hover:text-white"
             >
               <ArrowLeft className="h-5 w-5" />
             </Link>
             <div>
               <h1 className="flex items-center gap-2.5 text-2xl font-bold sm:text-3xl">
-                <Package className="h-7 w-7 text-indigo-400" />
+                <Package className="h-7 w-7 text-[#FFD600]" />
                 Quản lý Sản phẩm
               </h1>
               <p className="mt-1 text-sm text-slate-400">{products.length} sản phẩm trong kho.</p>
@@ -300,7 +300,7 @@ export default function AdminProductsPage() {
           <button
             type="button"
             onClick={() => openForm()}
-            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#F7931A] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#ff9f2d]"
           >
             <Plus className="h-4 w-4" />
             Thêm sản phẩm
@@ -314,7 +314,7 @@ export default function AdminProductsPage() {
             placeholder="Tìm theo tên sản phẩm hoặc danh mục..."
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
-            className="w-full rounded-xl border border-slate-800 bg-[#0f1117] py-3 pl-11 pr-4 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/25"
+            className="w-full rounded-xl border border-white/10 bg-[#0F1115] py-3 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#F7931A]/50 focus:ring-1 focus:ring-[#F7931A]/20"
           />
         </div>
 
@@ -383,7 +383,7 @@ export default function AdminProductsPage() {
                           <button
                             type="button"
                             onClick={() => openForm(product)}
-                            className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-[#111827] px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-indigo-500/40 hover:text-white"
+                            className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-[#111827] px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-[#F7931A]/40 hover:text-white"
                           >
                             <Edit2 className="h-3 w-3" />
                             Sửa
@@ -438,7 +438,7 @@ export default function AdminProductsPage() {
                     type="text"
                     value={formData.tenSanPham}
                     onChange={(e) => setFormData(prev => ({ ...prev, tenSanPham: e.target.value }))}
-                    className="w-full rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50"
+                    className="w-full rounded-xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#F7931A]/50"
                     placeholder="Nhập tên sản phẩm"
                     required
                   />
@@ -449,7 +449,7 @@ export default function AdminProductsPage() {
                   <select
                     value={formData.danhMucId}
                     onChange={(e) => setFormData(prev => ({ ...prev, danhMucId: e.target.value }))}
-                    className="w-full rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500/50"
+                    className="w-full rounded-xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-white outline-none transition focus:border-[#F7931A]/50"
                     required
                   >
                     <option value="">Chọn danh mục</option>
@@ -467,7 +467,7 @@ export default function AdminProductsPage() {
                     type="number"
                     value={formData.gia}
                     onChange={(e) => setFormData(prev => ({ ...prev, gia: Number(e.target.value) }))}
-                    className="w-full rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50"
+                    className="w-full rounded-xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#F7931A]/50"
                     placeholder="0"
                     min="0"
                     required
@@ -480,7 +480,7 @@ export default function AdminProductsPage() {
                     type="number"
                     value={formData.phanTramGiam}
                     onChange={(e) => setFormData(prev => ({ ...prev, phanTramGiam: Number(e.target.value) }))}
-                    className="w-full rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50"
+                    className="w-full rounded-xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#F7931A]/50"
                     placeholder="0"
                     min="0"
                     max="100"
@@ -493,7 +493,7 @@ export default function AdminProductsPage() {
                     type="number"
                     value={formData.soLuongTon}
                     onChange={(e) => setFormData(prev => ({ ...prev, soLuongTon: Number(e.target.value) }))}
-                    className="w-full rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50"
+                    className="w-full rounded-xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#F7931A]/50"
                     placeholder="100"
                     min="0"
                   />
@@ -506,7 +506,7 @@ export default function AdminProductsPage() {
                   value={formData.moTa}
                   onChange={(e) => setFormData(prev => ({ ...prev, moTa: e.target.value }))}
                   rows={3}
-                  className="w-full rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50"
+                  className="w-full rounded-xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#F7931A]/50"
                   placeholder="Mô tả sản phẩm..."
                 />
               </div>
@@ -517,7 +517,7 @@ export default function AdminProductsPage() {
                   value={formData.thongSoKyThuat}
                   onChange={(e) => setFormData(prev => ({ ...prev, thongSoKyThuat: e.target.value }))}
                   rows={4}
-                  className="w-full rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50 font-mono"
+                  className="w-full rounded-xl border border-white/10 bg-[#111827] px-4 py-3 font-mono text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#F7931A]/50"
                   placeholder='{"socket": "AM5", "chipset": "B650", "ram_type": "DDR5"}'
                 />
               </div>
@@ -537,7 +537,7 @@ export default function AdminProductsPage() {
                     />
                     <label
                       htmlFor="image-upload"
-                      className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-slate-300 transition hover:border-indigo-500/40 hover:text-white cursor-pointer"
+                      className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-slate-300 transition hover:border-[#F7931A]/40 hover:text-white"
                     >
                       {uploadingImages ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
                       {uploadingImages ? 'Đang tải lên...' : 'Chọn hình ảnh'}
@@ -583,7 +583,7 @@ export default function AdminProductsPage() {
               <button
                 type="submit"
                 form="product-form"
-                className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
+                className="rounded-xl bg-[#F7931A] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#ff9f2d]"
               >
                 {selectedProduct ? 'Cập nhật' : 'Thêm sản phẩm'}
               </button>

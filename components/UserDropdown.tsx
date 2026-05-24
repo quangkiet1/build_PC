@@ -30,8 +30,8 @@ export function UserDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="group inline-flex items-center gap-3 rounded-2xl border border-[#28314a] bg-[#111726] px-2.5 py-2 text-left transition hover:border-indigo-400/40 hover:bg-[#131a2a] focus:outline-none">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[linear-gradient(135deg,rgba(99,102,241,0.95),rgba(14,165,233,0.85))] text-sm font-bold text-white shadow-[0_8px_30px_rgba(79,70,229,0.35)]">
+        <button className="group inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-2.5 py-2 text-left transition hover:border-[#F7931A]/40 hover:bg-[#F7931A]/10 focus:outline-none">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] text-sm font-bold text-white shadow-[0_8px_30px_rgba(247,147,26,0.28)]">
             {initials}
           </span>
           <span className="min-w-0">

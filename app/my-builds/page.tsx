@@ -115,8 +115,10 @@ export default function MyBuildsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#07080d] text-white relative">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.08),transparent_50%)] pointer-events-none" />
+    <div className="relative min-h-screen overflow-hidden bg-[#030304] text-white">
+      <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-30" />
+      <div className="pointer-events-none absolute -left-1/4 -top-1/4 h-3/4 w-3/4 bg-radial-blur" />
+      <div className="pointer-events-none absolute -bottom-1/4 -right-1/4 h-3/4 w-3/4 bg-radial-blur" />
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
         <div className="mb-8">
@@ -132,7 +134,7 @@ export default function MyBuildsPage() {
               onClick={() => setFilter(f)}
               className={`px-5 py-2.5 rounded-[12px] font-medium transition-all backdrop-blur-md border ${
                 filter === f
-                  ? 'bg-indigo-600/20 text-indigo-300 border-indigo-500/50 shadow-[0_0_15px_rgba(79,70,229,0.2)]'
+                  ? 'border-[#F7931A]/45 bg-[#F7931A]/10 text-[#FFD600] shadow-[0_0_15px_rgba(247,147,26,0.18)]'
                   : 'bg-white/5 text-slate-300 border-white/10 hover:bg-white/10'
               }`}
             >
@@ -154,19 +156,19 @@ export default function MyBuildsPage() {
         {/* Loading */}
         {loading && (
           <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+            <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-[#F7931A]"></div>
           </div>
         )}
 
         {/* Empty State */}
         {!loading && builds.length === 0 && (
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-20 bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl border border-white/10 rounded-[24px] shadow-xl">
-            <AlertCircle className="w-16 h-16 text-indigo-400/50 mx-auto mb-6" />
+            <AlertCircle className="mx-auto mb-6 h-16 w-16 text-[#F7931A]/55" />
             <h3 className="text-2xl font-bold text-white mb-2">Không có cấu hình nào</h3>
             <p className="text-slate-400 mb-8 max-w-md mx-auto">Bạn chưa lưu cấu hình PC nào. Hãy trải nghiệm ngay công cụ xây dựng PC để tạo ra bộ máy mơ ước của bạn.</p>
             <Link
               href="/builder"
-              className="inline-block px-8 py-3 bg-[linear-gradient(135deg,#6366f1,#a855f7)] text-white font-semibold rounded-[16px] hover:brightness-110 transition shadow-[0_0_20px_rgba(99,102,241,0.3)]"
+              className="inline-block rounded-2xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-8 py-3 font-semibold text-white shadow-[0_0_20px_rgba(247,147,26,0.28)] transition hover:brightness-110"
             >
               Tạo Cấu Hình Mới
             </Link>
@@ -183,14 +185,14 @@ export default function MyBuildsPage() {
             }}
             className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
           >
-            {builds.map((build, index) => (
+            {builds.map((build) => (
               <motion.div
                 variants={{
                   hidden: { opacity: 0, y: 20 },
                   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } }
                 }}
                 key={build.id}
-                className="bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl rounded-[24px] border border-white/10 overflow-hidden hover:border-indigo-500/50 transition-all duration-300 hover:shadow-[0_10px_30px_rgba(79,70,229,0.15)] hover:-translate-y-1 flex flex-col"
+                className="flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0F1115]/85 shadow-xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-[#F7931A]/35 hover:shadow-[0_10px_30px_rgba(247,147,26,0.14)]"
               >
                 {/* Card Header */}
                 <div className="p-5 border-b border-white/5 bg-white/5">
@@ -204,7 +206,7 @@ export default function MyBuildsPage() {
                         <span className="px-2 py-1 text-xs bg-green-500/20 text-green-300 rounded">Hoàn thành</span>
                       )}
                       {build.isPublic && (
-                        <span className="px-2 py-1 text-xs bg-blue-500/20 text-blue-300 rounded">Public</span>
+                        <span className="rounded bg-[#F7931A]/15 px-2 py-1 text-xs text-[#FFD600]">Public</span>
                       )}
                     </div>
                   </div>
@@ -215,7 +217,7 @@ export default function MyBuildsPage() {
                   {/* Price */}
                   <div className="bg-black/20 rounded-[12px] p-3 border border-white/5">
                     <p className="text-xs uppercase tracking-wider text-slate-500 mb-1">Tổng giá</p>
-                    <p className="text-2xl font-bold text-indigo-400">{formatPrice(build.tongGia)}</p>
+                    <p className="text-2xl font-bold text-[#FFD600]">{formatPrice(build.tongGia)}</p>
                   </div>
 
                   {/* Date */}
@@ -231,7 +233,7 @@ export default function MyBuildsPage() {
                       {build.items.map((item) => (
                         <div key={item.id} className="text-xs text-slate-400 bg-white/5 px-3 py-2 rounded-[8px] border border-white/5 flex justify-between items-center">
                           <span className="text-slate-300 truncate mr-2">{item.sanPham.tenSanPham}</span>
-                          {item.soLuong > 1 && <span className="text-indigo-300 font-bold bg-indigo-500/20 px-1.5 py-0.5 rounded">x{item.soLuong}</span>}
+                          {item.soLuong > 1 && <span className="rounded bg-[#F7931A]/15 px-1.5 py-0.5 font-bold text-[#FFD600]">x{item.soLuong}</span>}
                         </div>
                       ))}
                     </div>
@@ -242,7 +244,7 @@ export default function MyBuildsPage() {
                 <div className="p-4 border-t border-white/5 flex gap-2 bg-black/20">
                   <button
                     onClick={() => handleLoadBuild(build.id)}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 rounded-[12px] transition text-sm font-medium"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#F7931A]/30 bg-[#F7931A]/10 px-3 py-2.5 text-sm font-medium text-[#FFD600] transition hover:bg-[#F7931A]/20"
                   >
                     <Copy className="w-4 h-4" />
                     Load

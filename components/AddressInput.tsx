@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { MapPin } from 'lucide-react'
 
 interface AddressInputProps {
@@ -39,7 +39,7 @@ export function AddressInput({ value, onChange, placeholder, error }: AddressInp
   const [apiError, setApiError] = useState(false)
   const loadingRef = useRef(false)
 
-  const initializeAutocomplete = () => {
+  const initializeAutocomplete = useCallback(() => {
     if (!inputRef.current || !window.google) return
 
     // Prevent duplicate initialization
@@ -67,9 +67,9 @@ export function AddressInput({ value, onChange, placeholder, error }: AddressInp
       setApiError(true)
       console.warn('Autocomplete initialization failed:', err)
     }
-  }
+  }, [onChange])
 
-  const loadGoogleMapsScript = () => {
+  const loadGoogleMapsScript = useCallback(() => {
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
     if (!apiKey) {
       setApiKeyMissing(true)
@@ -100,33 +100,35 @@ export function AddressInput({ value, onChange, placeholder, error }: AddressInp
       console.warn('Google Maps API not available:', err)
     }
     document.head.appendChild(script)
-  }
+  }, [])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
 
     // If Google Maps already loaded, initialize autocomplete
     if (window.google && !autocompleteRef.current && inputRef.current) {
-      try {
-        initializeAutocomplete()
-        setIsLoaded(true)
-      } catch (err) {
-        setApiError(true)
-        console.warn('Google Maps autocomplete not available (billing not enabled)')
-      }
+      queueMicrotask(() => {
+        try {
+          initializeAutocomplete()
+          setIsLoaded(true)
+        } catch {
+          setApiError(true)
+          console.warn('Google Maps autocomplete not available (billing not enabled)')
+        }
+      })
       return
     }
 
     // If already loading or loaded, skip
     if (isLoaded || loadingRef.current || apiKeyMissing || apiError) return
 
-    loadGoogleMapsScript()
-  }, [isLoaded, apiKeyMissing, apiError])
+    queueMicrotask(loadGoogleMapsScript)
+  }, [apiError, apiKeyMissing, initializeAutocomplete, isLoaded, loadGoogleMapsScript])
 
   return (
     <div className="space-y-2">
       <div className="relative">
-        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-indigo-400 pointer-events-none" />
+        <MapPin className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#FFD600]" />
         <input
           ref={inputRef}
           type="text"
@@ -143,7 +145,7 @@ export function AddressInput({ value, onChange, placeholder, error }: AddressInp
           className={`w-full rounded-xl border bg-[#141a26] px-4 py-3 pl-11 text-sm text-white placeholder:text-slate-500 outline-none transition ${
             error 
               ? 'border-rose-500/50 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/20'
-              : 'border-[#1e2535] focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20'
+              : 'border-white/10 focus:border-[#F7931A]/50 focus:ring-1 focus:ring-[#F7931A]/20'
           }`}
           autoComplete="street-address"
         />

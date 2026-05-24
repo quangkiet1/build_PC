@@ -58,7 +58,7 @@ function Countdown({ seconds, onEnd }: { seconds: number; onEnd: () => void }) {
   return (
     <div className="flex flex-col items-center gap-2">
       <svg width="56" height="56" viewBox="0 0 56 56" aria-hidden="true">
-        <circle cx="28" cy="28" r={radius} fill="none" stroke="rgb(226,232,240)" strokeWidth="3" />
+        <circle cx="28" cy="28" r={radius} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3" />
         <circle
           cx="28"
           cy="28"
@@ -84,7 +84,7 @@ function Countdown({ seconds, onEnd }: { seconds: number; onEnd: () => void }) {
           {left}s
         </text>
       </svg>
-      <span className="text-xs font-mono text-slate-500">Mã hết hạn sau</span>
+      <span className="text-xs font-mono text-[#94A3B8]">Mã hết hạn sau</span>
     </div>
   )
 }
@@ -105,10 +105,10 @@ function StepIndicator({ step }: { step: Step }) {
                   index < stepIndex
                     ? 'linear-gradient(135deg, #EA580C, #F7931A)'
                     : index === stepIndex
-                      ? 'rgba(247,147,26,0.12)'
-                      : 'rgb(248,250,252)',
-                borderColor: index <= stepIndex ? 'rgba(247,147,26,0.48)' : 'rgb(226,232,240)',
-                color: index <= stepIndex ? '#C2410C' : '#64748B',
+                      ? 'rgba(247,147,26,0.14)'
+                      : 'rgba(255,255,255,0.04)',
+                borderColor: index <= stepIndex ? 'rgba(247,147,26,0.56)' : 'rgba(255,255,255,0.1)',
+                color: index <= stepIndex ? '#FFD600' : '#64748B',
               }}
             >
               {index < stepIndex ? '✓' : index + 1}
@@ -122,7 +122,7 @@ function StepIndicator({ step }: { step: Step }) {
                 background:
                   index < stepIndex
                     ? 'linear-gradient(90deg, #F7931A, #FFD600)'
-                    : 'rgb(226,232,240)',
+                    : 'rgba(255,255,255,0.1)',
               }}
             />
           )}
@@ -306,7 +306,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <AuthPageShell tone="green">
+    <AuthPageShell tone="orange">
       <main className={authWorkspaceClass}>
         <section
           data-auth-card
@@ -317,16 +317,16 @@ export default function ForgotPasswordPage() {
             className="absolute inset-x-0 top-0 h-px"
             style={{
               background:
-                'linear-gradient(90deg, transparent, rgba(34,197,94,0.68), rgba(247,147,26,0.66), transparent)',
+                'linear-gradient(90deg, transparent, rgba(247,147,26,0.76), rgba(255,214,0,0.62), transparent)',
             }}
           />
 
           <div data-auth-item className="mb-6 flex flex-col items-center text-center">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg border border-green-100 bg-green-50">
-              <Cpu className="h-7 w-7 text-green-600" />
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border border-[#F7931A]/30 bg-[#F7931A]/10 shadow-[0_0_24px_-8px_rgba(247,147,26,0.72)]">
+              <Cpu className="h-7 w-7 text-[#F7931A]" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-950">Quên mật khẩu</h1>
-            <p className="mt-2 text-sm leading-6 text-slate-500">
+            <h1 className="font-heading text-2xl font-bold tracking-tight text-white">Quên mật khẩu</h1>
+            <p className="mt-2 text-sm leading-6 text-[#94A3B8]">
               Nhận OTP qua Gmail, xác thực rồi chọn đổi mật khẩu hoặc bỏ qua.
             </p>
           </div>
@@ -338,9 +338,9 @@ export default function ForgotPasswordPage() {
           {error && (
             <div
               data-auth-item
-              className="mb-5 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+              className="mb-5 flex items-start gap-3 rounded-xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-sm text-red-200"
             >
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-300" />
               <p>{error}</p>
             </div>
           )}
@@ -348,10 +348,10 @@ export default function ForgotPasswordPage() {
           <div ref={panelRef}>
             {step === 'email' && (
               <form onSubmit={handleSendOtp} className="space-y-5">
-                <div data-step-item className="rounded-lg border border-green-100 bg-green-50 px-4 py-3">
+                <div data-step-item className="rounded-xl border border-[#F7931A]/20 bg-[#F7931A]/10 px-4 py-3">
                   <div className="flex items-start gap-3">
-                    <Mail className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
-                    <p className="text-sm leading-6 text-slate-600">
+                    <Mail className="mt-0.5 h-4 w-4 shrink-0 text-[#FFD600]" />
+                    <p className="text-sm leading-6 text-[#CBD5E1]">
                       Nhập Gmail/email đã đăng ký. Tài khoản đại diện của PC Builder sẽ gửi mã OTP 6 chữ số đến hộp thư đó.
                     </p>
                   </div>
@@ -380,7 +380,7 @@ export default function ForgotPasswordPage() {
                   data-step-item
                   type="submit"
                   disabled={loading}
-                  className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-gradient-to-r from-[#16A34A] via-[#22C55E] to-[#F7931A] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_16px_34px_-22px_rgba(22,163,74,0.9)] transition hover:translate-y-[-1px] disabled:pointer-events-none disabled:opacity-60"
+                  className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[#EA580C] via-[#F7931A] to-[#FFD600] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_0_20px_-6px_rgba(247,147,26,0.7)] transition hover:translate-y-[-1px] hover:shadow-[0_0_30px_-6px_rgba(247,147,26,0.85)] disabled:pointer-events-none disabled:opacity-60"
                 >
                   {loading && (
                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/35 border-t-white" />
@@ -392,7 +392,7 @@ export default function ForgotPasswordPage() {
                 <div data-step-item className="text-center">
                   <Link
                     href="/login"
-                    className="inline-flex items-center gap-2 text-xs font-mono text-slate-500 transition hover:text-slate-800"
+                    className="inline-flex items-center gap-2 text-xs font-mono text-[#64748B] transition hover:text-[#CBD5E1]"
                   >
                     <ArrowLeft className="h-3.5 w-3.5" />
                     Quay lại đăng nhập
@@ -403,7 +403,7 @@ export default function ForgotPasswordPage() {
 
             {step === 'otp' && (
               <form onSubmit={handleVerifyOtp} className="space-y-5">
-                <div data-step-item className="text-center text-sm leading-6 text-slate-600">
+                <div data-step-item className="text-center text-sm leading-6 text-[#CBD5E1]">
                   Mã OTP đã được gửi đến{' '}
                   <span className="font-mono font-semibold text-[#F7931A]">{email}</span>.
                 </div>
@@ -413,14 +413,14 @@ export default function ForgotPasswordPage() {
                     data-step-item
                     type="button"
                     onClick={() => setOtp(devOtp)}
-                    className="w-full rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 text-left transition hover:bg-yellow-100"
+                    className="w-full rounded-xl border border-[#FFD600]/25 bg-[#FFD600]/10 px-4 py-3 text-left transition hover:bg-[#FFD600]/15"
                   >
-                    <span className="block text-[10px] font-mono uppercase tracking-widest text-yellow-700">
+                    <span className="block text-[10px] font-mono uppercase tracking-widest text-[#FFD600]/80">
                       Dev mode
                     </span>
-                    <span className="mt-1 block text-sm text-yellow-800">
+                    <span className="mt-1 block text-sm text-[#FFF7B0]">
                       OTP kiểm thử:{' '}
-                      <strong className="font-mono text-lg tracking-[0.28em] text-yellow-700">
+                      <strong className="font-mono text-lg tracking-[0.28em] text-[#FFD600]">
                         {devOtp}
                       </strong>
                     </span>
@@ -453,7 +453,7 @@ export default function ForgotPasswordPage() {
                   data-step-item
                   type="submit"
                   disabled={loading || otp.length !== 6}
-                  className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-gradient-to-r from-[#EA580C] via-[#F7931A] to-[#FFD600] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_16px_34px_-22px_rgba(234,88,12,0.9)] transition hover:translate-y-[-1px] disabled:pointer-events-none disabled:opacity-50"
+                  className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[#EA580C] via-[#F7931A] to-[#FFD600] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_0_20px_-6px_rgba(247,147,26,0.7)] transition hover:translate-y-[-1px] hover:shadow-[0_0_30px_-6px_rgba(247,147,26,0.85)] disabled:pointer-events-none disabled:opacity-50"
                 >
                   {loading && (
                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/35 border-t-white" />
@@ -470,7 +470,7 @@ export default function ForgotPasswordPage() {
                       setOtp('')
                       setError('')
                     }}
-                    className="text-slate-500 transition hover:text-slate-800"
+                    className="text-[#64748B] transition hover:text-[#CBD5E1]"
                   >
                     Đổi email
                   </button>
@@ -496,12 +496,12 @@ export default function ForgotPasswordPage() {
 
             {step === 'choice' && (
               <div className="space-y-5">
-                <div data-step-item className="rounded-lg border border-green-100 bg-green-50 px-4 py-4">
+                <div data-step-item className="rounded-xl border border-[#F7931A]/20 bg-[#F7931A]/10 px-4 py-4">
                   <div className="flex items-start gap-3">
-                    <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-green-600" />
+                    <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#FFD600]" />
                     <div>
-                      <p className="font-semibold text-green-700">Xác thực thành công</p>
-                      <p className="mt-1 text-sm leading-6 text-slate-600">
+                      <p className="font-semibold text-white">Xác thực thành công</p>
+                      <p className="mt-1 text-sm leading-6 text-[#CBD5E1]">
                         Bạn có muốn đổi mật khẩu ngay bây giờ không?
                       </p>
                     </div>
@@ -517,7 +517,7 @@ export default function ForgotPasswordPage() {
                     setError('')
                     setStep('reset')
                   }}
-                  className="group flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-[#EA580C] via-[#F7931A] to-[#FFD600] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_16px_34px_-22px_rgba(234,88,12,0.9)] transition hover:translate-y-[-1px]"
+                  className="group flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#EA580C] via-[#F7931A] to-[#FFD600] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_0_20px_-6px_rgba(247,147,26,0.7)] transition hover:translate-y-[-1px] hover:shadow-[0_0_30px_-6px_rgba(247,147,26,0.85)]"
                 >
                   Có, đổi mật khẩu mới
                   <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
@@ -528,7 +528,7 @@ export default function ForgotPasswordPage() {
                   type="button"
                   disabled={loading}
                   onClick={() => void handleSkip()}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-3.5 text-sm font-medium text-slate-700 transition hover:border-green-200 hover:bg-green-50 hover:text-green-700 disabled:pointer-events-none disabled:opacity-60"
+                  className="flex w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3.5 text-sm font-medium text-[#CBD5E1] transition hover:border-[#F7931A]/45 hover:bg-[#F7931A]/10 hover:text-white disabled:pointer-events-none disabled:opacity-60"
                 >
                   {loading && (
                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/35 border-t-white" />
@@ -540,10 +540,10 @@ export default function ForgotPasswordPage() {
 
             {step === 'reset' && (
               <form onSubmit={handleResetPassword} className="space-y-4">
-                <div data-step-item className="rounded-lg border border-orange-100 bg-orange-50 px-4 py-3">
+                <div data-step-item className="rounded-xl border border-[#F7931A]/20 bg-[#F7931A]/10 px-4 py-3">
                   <div className="flex items-start gap-3">
                     <KeyRound className="mt-0.5 h-4 w-4 shrink-0 text-[#F7931A]" />
-                    <p className="text-sm leading-6 text-slate-600">
+                    <p className="text-sm leading-6 text-[#CBD5E1]">
                       Đặt mật khẩu mới cho tài khoản{' '}
                       <span className="font-mono text-[#F7931A]">{email}</span>.
                     </p>
@@ -570,7 +570,7 @@ export default function ForgotPasswordPage() {
                       type="button"
                       onClick={() => setShowPassword((value) => !value)}
                       aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 transition hover:text-slate-950"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#64748B] transition hover:text-white"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -597,7 +597,7 @@ export default function ForgotPasswordPage() {
                       type="button"
                       onClick={() => setShowConfirm((value) => !value)}
                       aria-label={showConfirm ? 'Ẩn mật khẩu xác nhận' : 'Hiện mật khẩu xác nhận'}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 transition hover:text-slate-950"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#64748B] transition hover:text-white"
                     >
                       {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -608,7 +608,7 @@ export default function ForgotPasswordPage() {
                   data-step-item
                   type="submit"
                   disabled={loading}
-                  className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-gradient-to-r from-[#EA580C] via-[#F7931A] to-[#FFD600] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_16px_34px_-22px_rgba(234,88,12,0.9)] transition hover:translate-y-[-1px] disabled:pointer-events-none disabled:opacity-60"
+                  className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[#EA580C] via-[#F7931A] to-[#FFD600] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_0_20px_-6px_rgba(247,147,26,0.7)] transition hover:translate-y-[-1px] hover:shadow-[0_0_30px_-6px_rgba(247,147,26,0.85)] disabled:pointer-events-none disabled:opacity-60"
                 >
                   {loading && (
                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/35 border-t-white" />
@@ -624,7 +624,7 @@ export default function ForgotPasswordPage() {
                     setError('')
                     setStep('choice')
                   }}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
+                  className="w-full rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-medium text-[#CBD5E1] transition hover:bg-white/[0.08] hover:text-white"
                 >
                   Quay lại lựa chọn
                 </button>

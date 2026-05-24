@@ -133,9 +133,9 @@ export default function AdminCategoriesPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#07080d] text-white flex items-center justify-center">
+      <main className="flex min-h-screen items-center justify-center bg-[#030304] text-white">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 text-indigo-400 animate-spin mx-auto mb-3" />
+          <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-[#FFD600]" />
           <p className="text-slate-400">Đang tải danh mục...</p>
         </div>
       </main>
@@ -143,19 +143,19 @@ export default function AdminCategoriesPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#07080d] text-white px-4 py-10 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[#030304] px-4 py-10 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <Link
               href="/admin"
-              className="rounded-xl border border-slate-800 bg-[#0f1117] p-2.5 text-slate-400 transition hover:border-indigo-500/40 hover:text-white"
+              className="rounded-xl border border-white/10 bg-[#0F1115] p-2.5 text-slate-400 transition hover:border-[#F7931A]/40 hover:text-white"
             >
               <ArrowLeft className="h-5 w-5" />
             </Link>
             <div>
               <h1 className="flex items-center gap-2.5 text-2xl font-bold sm:text-3xl">
-                <Folder className="h-7 w-7 text-indigo-400" />
+                <Folder className="h-7 w-7 text-[#FFD600]" />
                 Quản lý Danh mục
               </h1>
               <p className="mt-1 text-sm text-slate-400">{categories.length} danh mục hiện có.</p>
@@ -164,7 +164,7 @@ export default function AdminCategoriesPage() {
           <button
             type="button"
             onClick={() => openForm()}
-            className="gaming-gradient inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-950/30 transition hover:brightness-110"
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-black/30 transition hover:brightness-110"
           >
             <Plus className="h-4 w-4" /> Thêm danh mục
           </button>
@@ -177,7 +177,7 @@ export default function AdminCategoriesPage() {
             placeholder="Tìm danh mục..."
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
-            className="w-full rounded-xl border border-slate-800 bg-[#0f1117] py-3 pl-11 pr-4 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/25"
+            className="w-full rounded-xl border border-white/10 bg-[#0F1115] py-3 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#F7931A]/50 focus:ring-1 focus:ring-[#F7931A]/20"
           />
         </div>
 
@@ -208,7 +208,7 @@ export default function AdminCategoriesPage() {
                           <button
                             type="button"
                             onClick={() => openForm(category)}
-                            className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-[#111827] px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-indigo-500/40 hover:text-white"
+                            className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-[#111827] px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-[#F7931A]/40 hover:text-white"
                           >
                             <Edit2 className="h-4 w-4" />
                             Sửa
@@ -245,7 +245,7 @@ export default function AdminCategoriesPage() {
               <button
                 type="button"
                 onClick={closeForm}
-                className="rounded-full border border-slate-700 bg-[#111827] p-2 text-slate-300 transition hover:border-indigo-500/40 hover:text-white"
+                className="rounded-full border border-white/10 bg-[#111827] p-2 text-slate-300 transition hover:border-[#F7931A]/40 hover:text-white"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -257,7 +257,7 @@ export default function AdminCategoriesPage() {
                 <input
                   value={formData.tenDanhMuc}
                   onChange={(event) => setFormData((prev) => ({ ...prev, tenDanhMuc: event.target.value }))}
-                  className="mt-2 w-full rounded-2xl border border-slate-700 bg-[#0f1117] px-4 py-3 text-white outline-none transition focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/25"
+                  className="mt-2 w-full rounded-2xl border border-white/10 bg-[#0F1115] px-4 py-3 text-white outline-none transition focus:border-[#F7931A]/50 focus:ring-1 focus:ring-[#F7931A]/20"
                   placeholder="Ví dụ: Card đồ họa"
                 />
               </label>
@@ -267,7 +267,7 @@ export default function AdminCategoriesPage() {
                 <textarea
                   value={formData.moTa}
                   onChange={(event) => setFormData((prev) => ({ ...prev, moTa: event.target.value }))}
-                  className="mt-2 h-28 w-full rounded-2xl border border-slate-700 bg-[#0f1117] px-4 py-3 text-white outline-none transition focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/25"
+                  className="mt-2 h-28 w-full rounded-2xl border border-white/10 bg-[#0F1115] px-4 py-3 text-white outline-none transition focus:border-[#F7931A]/50 focus:ring-1 focus:ring-[#F7931A]/20"
                   placeholder="Mô tả ngắn gọn về danh mục"
                 />
               </label>
@@ -276,13 +276,13 @@ export default function AdminCategoriesPage() {
                 <button
                   type="button"
                   onClick={closeForm}
-                  className="rounded-2xl border border-slate-700 bg-[#111827] px-5 py-3 text-sm font-semibold text-slate-300 transition hover:border-indigo-500/40 hover:text-white"
+                  className="rounded-2xl border border-white/10 bg-[#111827] px-5 py-3 text-sm font-semibold text-slate-300 transition hover:border-[#F7931A]/40 hover:text-white"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="rounded-2xl bg-indigo-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-400"
+                  className="rounded-2xl bg-[#F7931A] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#ff9f2d]"
                 >
                   {selectedCategory ? 'Cập nhật' : 'Tạo danh mục'}
                 </button>

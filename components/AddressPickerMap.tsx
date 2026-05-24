@@ -10,6 +10,10 @@ interface AddressPickerMapProps {
   error?: string
 }
 
+interface SearchResult {
+  display_name: string
+}
+
 export function AddressPickerMap({
   value,
   onChange,
@@ -17,7 +21,7 @@ export function AddressPickerMap({
   error,
 }: AddressPickerMapProps) {
   const searchInputRef = useRef<HTMLInputElement>(null)
-  const [searchResults, setSearchResults] = useState<any[]>([])
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const debounceTimer = useRef<NodeJS.Timeout | null>(null)
 
@@ -33,7 +37,7 @@ export function AddressPickerMap({
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&countrycodes=vn`
       )
-      const data = await response.json()
+      const data = await response.json() as SearchResult[]
       setSearchResults(data)
     } catch (error) {
       console.error('Search failed:', error)
@@ -55,7 +59,7 @@ export function AddressPickerMap({
     }, 500)
   }
 
-  const selectResult = (result: any) => {
+  const selectResult = (result: SearchResult) => {
     const address = result.display_name
     
     onChange(address)
@@ -69,7 +73,7 @@ export function AddressPickerMap({
     <div className="space-y-3">
       {/* Search Input */}
       <div className="relative z-50">
-        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-indigo-400 pointer-events-none z-10" />
+        <MapPin className="pointer-events-none absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-[#FFD600]" />
         <input
           ref={searchInputRef}
           type="text"
@@ -79,12 +83,12 @@ export function AddressPickerMap({
           className={`w-full rounded-xl border bg-[#141a26] px-4 py-3 pl-11 text-sm text-white placeholder:text-slate-500 outline-none transition relative z-20 ${
             error
               ? 'border-rose-500/50 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/20'
-              : 'border-[#1e2535] focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20'
+              : 'border-white/10 focus:border-[#F7931A]/50 focus:ring-1 focus:ring-[#F7931A]/20'
           }`}
           autoComplete="off"
         />
         {isSearching && (
-          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-400 animate-spin pointer-events-none" />
+          <Loader2 className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[#FFD600]" />
         )}
 
         {/* Search Results Dropdown */}

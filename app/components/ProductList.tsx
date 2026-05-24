@@ -54,7 +54,7 @@ export function ProductList({ limit = 12, showPagination = false }: ProductListP
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="space-y-4 rounded-xl border border-slate-700 bg-slate-800/30 p-4">
+          <div key={i} className="space-y-4 rounded-2xl border border-white/10 bg-[#0F1115]/70 p-4 shadow-[0_18px_45px_rgba(0,0,0,0.2)]">
             <Skeleton className="h-44 w-full" />
             <Skeleton className="h-5 w-3/4" />
             <Skeleton className="h-4 w-full" />
@@ -67,7 +67,7 @@ export function ProductList({ limit = 12, showPagination = false }: ProductListP
 
   if (error) {
     return (
-      <div className="bg-red-500/10 border border-red-500 text-red-400 p-4 rounded-lg">
+      <div className="rounded-xl border border-red-500/25 bg-red-500/10 p-4 text-red-200">
         {error}
       </div>
     )
@@ -75,7 +75,7 @@ export function ProductList({ limit = 12, showPagination = false }: ProductListP
 
   if (products.length === 0) {
     return (
-      <div className="text-center py-12 text-slate-400">
+      <div className="py-12 text-center text-[#94A3B8]">
         <p className="text-lg">{t('empty')}</p>
       </div>
     )
@@ -100,17 +100,17 @@ export function ProductList({ limit = 12, showPagination = false }: ProductListP
           <button
             onClick={() => setPage(Math.max(1, page - 1))}
             disabled={page === 1}
-            className="px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 disabled:opacity-50 transition"
+            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[#CBD5E1] transition hover:border-[#F7931A]/40 hover:text-[#FFD600] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t('previous')}
           </button>
-          <div className="text-slate-300">
+          <div className="rounded-full border border-white/10 bg-[#0F1115]/80 px-4 py-2 text-sm font-medium text-[#CBD5E1]">
             {t('page', { page, totalPages })}
           </div>
           <button
             onClick={() => setPage(Math.min(totalPages, page + 1))}
             disabled={page === totalPages}
-            className="px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 disabled:opacity-50 transition"
+            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[#CBD5E1] transition hover:border-[#F7931A]/40 hover:text-[#FFD600] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t('next')}
           </button>

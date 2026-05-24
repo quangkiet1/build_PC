@@ -34,32 +34,33 @@ export default async function ProductPage({ params }: ProductPageProps) {
       : []
 
   return (
-    <div className="min-h-screen bg-[#07080d] text-white">
+    <div className="relative min-h-screen overflow-hidden bg-[#030304] text-white">
+      <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-30" />
+      <div className="pointer-events-none absolute -left-1/4 -top-1/4 h-3/4 w-3/4 bg-radial-blur" />
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.08),transparent_50%)] pointer-events-none" />
-        <p className="text-sm text-slate-500">
-          <Link href="/" className="transition hover:text-sky-300">Trang chu</Link> /{' '}
-          <Link href="/products" className="transition hover:text-sky-300">San pham</Link> / <span className="text-slate-300">{product.tenSanPham}</span>
+        <p className="relative z-10 text-sm text-slate-500">
+          <Link href="/" className="transition hover:text-[#F7931A]">Trang chu</Link> /{' '}
+          <Link href="/products" className="transition hover:text-[#F7931A]">San pham</Link> / <span className="text-slate-300">{product.tenSanPham}</span>
         </p>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] relative z-10">
           <div className="rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] p-8 shadow-2xl backdrop-blur-xl">
             <div className="relative aspect-square overflow-hidden rounded-[24px] bg-black/40 p-6 flex items-center justify-center">
-              <div className="absolute inset-0 bg-sky-400/10 blur-[100px] rounded-full scale-75" />
+              <div className="absolute inset-0 scale-75 rounded-full bg-[#F7931A]/10 blur-[100px]" />
               <Image
                 src={(product.hinhAnh || '/images/cpu-i7.svg').replace('via.placeholder.com', 'placehold.co')}
                 alt={product.tenSanPham}
                 fill
-                className="object-contain p-8 drop-shadow-[0_0_20px_rgba(56,189,248,0.2)] transition-transform duration-700 hover:scale-105"
+                className="object-contain p-8 drop-shadow-[0_0_20px_rgba(247,147,26,0.18)] transition-transform duration-700 hover:scale-105"
               />
             </div>
           </div>
 
           <div className="space-y-6">
             <div>
-              <p className="text-sm uppercase tracking-[0.3em] text-sky-300">{product.danhMuc?.tenDanhMuc || 'San pham'}</p>
+              <p className="text-sm uppercase tracking-[0.3em] text-[#F7931A]">{product.danhMuc?.tenDanhMuc || 'San pham'}</p>
               <h1 className="mt-3 text-4xl font-bold">{product.tenSanPham}</h1>
-              <p className="mt-4 text-3xl font-semibold text-sky-300">{product.gia.toLocaleString('vi-VN')} VND</p>
+              <p className="mt-4 text-3xl font-semibold text-[#FFD600]">{product.gia.toLocaleString('vi-VN')} VND</p>
               <p className="mt-4 text-slate-300">{product.moTa || 'San pham chua co mo ta chi tiet.'}</p>
             </div>
 
@@ -107,7 +108,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <section className="mt-14">
           <div className="mb-6 flex items-center justify-between gap-4">
             <h2 className="text-2xl font-semibold">San pham goi y tuong tu</h2>
-            <Link href="/products" className="text-sm text-sky-300 transition hover:text-sky-200">Xem them</Link>
+            <Link href="/products" className="text-sm text-[#F7931A] transition hover:text-[#FFD600]">Xem them</Link>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {relatedProducts.map((item) => (

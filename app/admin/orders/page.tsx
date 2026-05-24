@@ -105,9 +105,9 @@ export default function AdminOrdersPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#07080d] text-white flex items-center justify-center">
+      <main className="flex min-h-screen items-center justify-center bg-[#030304] text-white">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 text-indigo-400 animate-spin mx-auto mb-3" />
+          <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-[#FFD600]" />
           <p className="text-slate-400">Đang tải đơn hàng...</p>
         </div>
       </main>
@@ -115,19 +115,19 @@ export default function AdminOrdersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#07080d] text-white px-4 py-10 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[#030304] px-4 py-10 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <Link
               href="/admin"
-              className="rounded-xl border border-slate-800 bg-[#0f1117] p-2.5 text-slate-400 transition hover:border-indigo-500/40 hover:text-white"
+              className="rounded-xl border border-white/10 bg-[#0F1115] p-2.5 text-slate-400 transition hover:border-[#F7931A]/40 hover:text-white"
             >
               <ArrowLeft className="h-5 w-5" />
             </Link>
             <div>
               <h1 className="flex items-center gap-2.5 text-2xl font-bold sm:text-3xl">
-                <ClipboardList className="h-7 w-7 text-indigo-400" />
+                <ClipboardList className="h-7 w-7 text-[#FFD600]" />
                 Quản lý Đơn hàng
               </h1>
               <p className="mt-1 text-sm text-slate-400">{orders.length} đơn hàng đã được tạo.</p>
@@ -157,7 +157,7 @@ export default function AdminOrdersPage() {
             placeholder="Tìm theo mã đơn, tên khách hàng hoặc email..."
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
-            className="w-full rounded-xl border border-slate-800 bg-[#0f1117] py-3 pl-11 pr-4 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/25"
+            className="w-full rounded-xl border border-white/10 bg-[#0F1115] py-3 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#F7931A]/50 focus:ring-1 focus:ring-[#F7931A]/20"
           />
         </div>
 
@@ -194,7 +194,7 @@ export default function AdminOrdersPage() {
                         <select
                           value={order.trangThai}
                           onChange={(event) => updateStatus(order.id, event.target.value)}
-                          className="w-full rounded-xl border border-slate-700 bg-[#111827] px-3 py-2 text-sm text-white outline-none transition focus:border-indigo-500/50"
+                          className="w-full rounded-xl border border-white/10 bg-[#111827] px-3 py-2 text-sm text-white outline-none transition focus:border-[#F7931A]/50"
                         >
                           {statusOptions.map((option) => (
                             <option key={option.value} value={option.value}>

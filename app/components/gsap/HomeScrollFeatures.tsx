@@ -38,7 +38,7 @@ export function HomeScrollFeatures() {
 
     // Animate the cards on the right
     const cards = gsap.utils.toArray<HTMLElement>('.gsap-feature-card')
-    cards.forEach((card, i) => {
+    cards.forEach((card) => {
       gsap.fromTo(
         card,
         { opacity: 0, x: 100, scale: 0.9 },
@@ -64,7 +64,7 @@ export function HomeScrollFeatures() {
         {/* Left pinned section */}
         <div ref={leftRef} className="lg:w-1/2 lg:sticky lg:top-32 space-y-6">
           <h2 className="text-4xl md:text-6xl font-bold leading-tight" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-            <span className="bg-gradient-to-r from-sky-400 via-indigo-500 to-purple-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#F7931A] to-[#FFD600] bg-clip-text text-transparent">
               Build PC
             </span>
             <br />
@@ -84,11 +84,11 @@ export function HomeScrollFeatures() {
                 key={index}
                 className="gsap-feature-card bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl border border-white/10 rounded-[32px] p-8 lg:p-12 shadow-2xl relative overflow-hidden group"
               >
-                <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition duration-500 transform group-hover:scale-110">
-                  <Icon className="w-32 h-32 text-indigo-400" />
+                <div className="absolute right-0 top-0 p-10 opacity-5 transition duration-500 group-hover:scale-110 group-hover:opacity-10">
+                  <Icon className="h-32 w-32 text-[#F7931A]" />
                 </div>
-                <div className="w-16 h-16 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center mb-6 text-indigo-400 relative z-10">
-                  <Icon className="w-8 h-8" />
+                <div className="relative z-10 mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-[#F7931A]/25 bg-[#F7931A]/10 text-[#FFD600]">
+                  <Icon className="h-8 w-8" />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-3 relative z-10">{item.title}</h3>
                 <p className="text-slate-400 leading-relaxed relative z-10">

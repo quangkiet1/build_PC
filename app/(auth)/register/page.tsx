@@ -49,7 +49,7 @@ function PasswordStrength({ password }: { password: string }) {
           <div
             key={index}
             className="h-1 flex-1 rounded-full transition"
-            style={{ background: index <= strength ? colors[strength] : 'rgb(226,232,240)' }}
+            style={{ background: index <= strength ? colors[strength] : 'rgba(255,255,255,0.1)' }}
           />
         ))}
       </div>
@@ -86,17 +86,17 @@ function StepIndicator({ step }: { step: number }) {
               style={{
                 background:
                   index < step
-                    ? 'linear-gradient(135deg, #0EA5E9, #38BDF8)'
+                    ? 'linear-gradient(135deg, #EA580C, #F7931A)'
                     : index === step
-                      ? 'rgba(56,189,248,0.12)'
-                      : 'rgb(248,250,252)',
-                borderColor: index <= step ? 'rgba(56,189,248,0.48)' : 'rgb(226,232,240)',
-                color: index <= step ? '#0369A1' : '#64748B',
+                      ? 'rgba(247,147,26,0.14)'
+                      : 'rgba(255,255,255,0.04)',
+                borderColor: index <= step ? 'rgba(247,147,26,0.56)' : 'rgba(255,255,255,0.1)',
+                color: index <= step ? '#FFD600' : '#64748B',
               }}
             >
               {index < step ? '✓' : index + 1}
             </div>
-            <span className="text-[10px] font-mono text-slate-500">{label}</span>
+            <span className="text-[10px] font-mono text-[#64748B]">{label}</span>
           </div>
           {index < steps.length - 1 && (
             <div
@@ -104,8 +104,8 @@ function StepIndicator({ step }: { step: number }) {
               style={{
                 background:
                   index < step
-                    ? 'linear-gradient(90deg, #38BDF8, #F7931A)'
-                    : 'rgb(226,232,240)',
+                    ? 'linear-gradient(90deg, #F7931A, #FFD600)'
+                    : 'rgba(255,255,255,0.1)',
               }}
             />
           )}
@@ -179,7 +179,7 @@ export default function RegisterPage() {
           borderRadius: '12px',
           background: '#0f172a',
           color: '#e2e8f0',
-          border: '1px solid rgba(56,189,248,0.24)',
+          border: '1px solid rgba(247,147,26,0.28)',
         },
       })
       window.dispatchEvent(new Event('auth-changed'))
@@ -192,7 +192,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <AuthPageShell tone="cyan">
+    <AuthPageShell tone="orange">
       <main className={authWorkspaceClass}>
         <section
           data-auth-card
@@ -203,16 +203,16 @@ export default function RegisterPage() {
             className="absolute inset-x-0 top-0 h-px"
             style={{
               background:
-                'linear-gradient(90deg, transparent, rgba(56,189,248,0.76), rgba(247,147,26,0.64), transparent)',
+                'linear-gradient(90deg, transparent, rgba(247,147,26,0.76), rgba(255,214,0,0.62), transparent)',
             }}
           />
 
           <div data-auth-item className="mb-6 flex flex-col items-center text-center">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg border border-sky-100 bg-sky-50">
-              <Cpu className="h-7 w-7 text-[#38BDF8]" />
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border border-[#F7931A]/30 bg-[#F7931A]/10 shadow-[0_0_24px_-8px_rgba(247,147,26,0.72)]">
+              <Cpu className="h-7 w-7 text-[#F7931A]" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-950">Đăng ký</h1>
-            <p className="mt-2 text-sm leading-6 text-slate-500">
+            <h1 className="font-heading text-2xl font-bold tracking-tight text-white">Đăng ký</h1>
+            <p className="mt-2 text-sm leading-6 text-[#94A3B8]">
               Tạo tài khoản để lưu cấu hình, theo dõi đơn hàng và nhận ưu đãi.
             </p>
           </div>
@@ -221,8 +221,8 @@ export default function RegisterPage() {
             <StepIndicator step={step} />
           </div>
 
-          <div data-auth-item className="mb-6 rounded-lg border border-sky-100 bg-sky-50 px-4 py-3">
-            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-sky-700">
+          <div data-auth-item className="mb-6 rounded-xl border border-[#F7931A]/20 bg-[#F7931A]/10 px-4 py-3">
+            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#FFD600]">
               <ShieldCheck className="h-4 w-4" />
               {step === 0 ? 'Bảo vệ tài khoản' : 'Thông tin giao hàng'}
             </div>
@@ -231,9 +231,9 @@ export default function RegisterPage() {
           {error && (
             <div
               data-auth-item
-              className="mb-5 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+              className="mb-5 flex items-start gap-3 rounded-xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-sm text-red-200"
             >
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-300" />
               <p>{error}</p>
             </div>
           )}
@@ -298,7 +298,7 @@ export default function RegisterPage() {
                     type="button"
                     onClick={() => setShowPassword((value) => !value)}
                     aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 transition hover:text-slate-950"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#64748B] transition hover:text-white"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -332,7 +332,7 @@ export default function RegisterPage() {
                     type="button"
                     onClick={() => setShowConfirmPassword((value) => !value)}
                     aria-label={showConfirmPassword ? 'Ẩn mật khẩu xác nhận' : 'Hiện mật khẩu xác nhận'}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 transition hover:text-slate-950"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#64748B] transition hover:text-white"
                   >
                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -359,7 +359,7 @@ export default function RegisterPage() {
               <button
                 id="register-next-btn"
                 type="submit"
-                className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-gradient-to-r from-[#0EA5E9] via-[#38BDF8] to-[#7DD3FC] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_16px_34px_-22px_rgba(14,165,233,0.9)] transition hover:translate-y-[-1px]"
+                className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[#EA580C] via-[#F7931A] to-[#FFD600] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_0_20px_-6px_rgba(247,147,26,0.7)] transition hover:translate-y-[-1px] hover:shadow-[0_0_30px_-6px_rgba(247,147,26,0.85)]"
               >
                 Tiếp theo
                 <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
@@ -371,7 +371,7 @@ export default function RegisterPage() {
             <form data-auth-item onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <label htmlFor="reg-phone" className={authLabelClass}>
-                  Số điện thoại <span className="normal-case text-slate-500">(tùy chọn)</span>
+                  Số điện thoại <span className="normal-case text-[#64748B]">(tùy chọn)</span>
                 </label>
                 <div className="relative">
                   <Phone className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
@@ -389,7 +389,7 @@ export default function RegisterPage() {
 
               <div className="space-y-2">
                 <label htmlFor="reg-address" className={authLabelClass}>
-                  Địa chỉ <span className="normal-case text-slate-500">(tùy chọn)</span>
+                  Địa chỉ <span className="normal-case text-[#64748B]">(tùy chọn)</span>
                 </label>
                 <div className="relative">
                   <MapPin className="pointer-events-none absolute left-4 top-4 h-4 w-4 text-[#64748B]" />
@@ -404,18 +404,18 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-                <p className="mb-3 text-[10px] font-mono uppercase tracking-widest text-slate-500">
+              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="mb-3 text-[10px] font-mono uppercase tracking-widest text-[#64748B]">
                   Tài khoản
                 </p>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center justify-between gap-4">
-                    <span className="text-slate-500">Tên</span>
-                    <span className="truncate font-medium text-slate-950">{name}</span>
+                    <span className="text-[#94A3B8]">Tên</span>
+                    <span className="truncate font-medium text-white">{name}</span>
                   </div>
                   <div className="flex items-center justify-between gap-4">
-                    <span className="text-slate-500">Email</span>
-                    <span className="truncate font-mono text-sky-700">{email}</span>
+                    <span className="text-[#94A3B8]">Email</span>
+                    <span className="truncate font-mono text-[#FFD600]">{email}</span>
                   </div>
                 </div>
               </div>
@@ -427,7 +427,7 @@ export default function RegisterPage() {
                     setError('')
                     setStep(0)
                   }}
-                  className="flex-1 rounded-lg border border-slate-200 bg-white px-4 py-3.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
+                  className="flex-1 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3.5 text-sm font-medium text-[#CBD5E1] transition hover:bg-white/[0.08] hover:text-white"
                 >
                   Quay lại
                 </button>
@@ -435,7 +435,7 @@ export default function RegisterPage() {
                   id="register-submit-btn"
                   type="submit"
                   disabled={loading}
-                  className="group relative flex flex-[1.6] items-center justify-center gap-2 overflow-hidden rounded-lg bg-gradient-to-r from-[#EA580C] via-[#F7931A] to-[#FFD600] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_16px_34px_-22px_rgba(234,88,12,0.9)] transition hover:translate-y-[-1px] disabled:pointer-events-none disabled:opacity-60"
+                  className="group relative flex flex-[1.6] items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[#EA580C] via-[#F7931A] to-[#FFD600] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_0_20px_-6px_rgba(247,147,26,0.7)] transition hover:translate-y-[-1px] hover:shadow-[0_0_30px_-6px_rgba(247,147,26,0.85)] disabled:pointer-events-none disabled:opacity-60"
                 >
                   {loading && (
                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/35 border-t-white" />
@@ -448,18 +448,18 @@ export default function RegisterPage() {
           )}
 
           <div data-auth-item className="my-7 flex items-center gap-4">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-slate-200" />
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
             <span className="text-xs font-mono uppercase tracking-wider text-[#475569]">
               Đã có tài khoản?
             </span>
-            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-slate-200" />
+            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/10" />
           </div>
 
           <Link
             data-auth-item
             id="go-to-login-link"
             href="/login"
-            className="group flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-3.5 text-sm font-medium text-slate-700 transition hover:border-orange-200 hover:bg-orange-50 hover:text-[#F7931A]"
+            className="group flex w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3.5 text-sm font-medium text-white transition hover:border-[#F7931A]/45 hover:bg-[#F7931A]/10 hover:text-[#FFD600]"
           >
             Đăng nhập ngay
             <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
@@ -468,7 +468,7 @@ export default function RegisterPage() {
           <div data-auth-item className="mt-6 text-center">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-xs font-mono text-slate-500 transition hover:text-slate-800"
+              className="inline-flex items-center gap-2 text-xs font-mono text-[#64748B] transition hover:text-[#CBD5E1]"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               Về trang chủ
