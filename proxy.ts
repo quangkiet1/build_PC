@@ -24,7 +24,7 @@ function redirectWithAuthReason(request: NextRequest, reason: 'required' | 'forb
   return NextResponse.redirect(url)
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const token = request.cookies.get('pcbuilder_token')?.value
 
   if (!token) {

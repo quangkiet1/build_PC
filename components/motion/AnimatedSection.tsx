@@ -44,7 +44,6 @@ export function AnimatedSection({
 
         if (targets.length > 0) {
           animate(targets, {
-            opacity: [0, 1],
             translateY: [distance, 0],
             scale: [0.97, 1],
             delay: stagger(80, { start: delay }),
@@ -52,7 +51,6 @@ export function AnimatedSection({
           })
         } else {
           animate(root, {
-            opacity: [0, 1],
             translateY: [distance, 0],
             scale: [0.98, 1],
             delay,

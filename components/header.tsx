@@ -65,7 +65,6 @@ export function Header() {
 
     // Smooth slide-in animation with spring effect
     const animation = animate(targets.length > 0 ? targets : menu, {
-      opacity: [0, 1],
       translateY: [15, 0],
       duration: 350,
       delay: (_, index) => index * 45,

@@ -21,9 +21,8 @@ export function PageTransition({ children, className }: PageTransitionProps) {
       return
     }
 
-    // Smooth page fade-in with subtle scale
+    // Keep the page visible even if the animation runtime stalls.
     const animation = animate(node, {
-      opacity: [0, 1],
       translateY: [12, 0],
       scale: [0.99, 1],
       duration: 400,
