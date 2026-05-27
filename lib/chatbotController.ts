@@ -287,7 +287,7 @@ function lenDanhSachDiCho(nhungMonMuonDoi: any[], cacTheLoaiDaCo: string[], cacL
 // ============================================================
 // 5. ĐI CHỢ & RÁP THỬ TƯƠNG THÍCH
 // ============================================================
-async function diChoVaRapThu(
+export async function diChoVaRapThu(
     danhSachDiCho: any[], 
     danhSachTrenKe: any[], 
     nganSachConLai: number, 

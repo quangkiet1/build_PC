@@ -1,0 +1,82 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="900" fill="#0B1020"/>
+  <rect x="48" y="48" width="1504" height="804" rx="28" fill="#11172A" stroke="#24304D" stroke-width="2"/>
+
+  <text x="96" y="118" fill="#FFD166" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">
+    Hinh 4.4. He thong chan truy van khi ngan sach am
+  </text>
+  <text x="96" y="156" fill="#9FB0D0" font-family="Segoe UI, Arial, sans-serif" font-size="18">
+    Kich ban 4.3.1 - Kiem thu thieu ngan sach
+  </text>
+
+  <rect x="96" y="196" width="654" height="256" rx="20" fill="#0D1426" stroke="#283552"/>
+  <text x="128" y="240" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">
+    Dau vao kiem thu
+  </text>
+  <text x="128" y="286" fill="#B7C4DE" font-family="Consolas, monospace" font-size="20">
+    CPU dang co tren ke: 12.000.000 VND
+  </text>
+  <text x="128" y="326" fill="#FF7B7B" font-family="Consolas, monospace" font-size="20">
+    nganSachConLai: -2.000.000 VND
+  </text>
+  <text x="128" y="366" fill="#B7C4DE" font-family="Consolas, monospace" font-size="20">
+    GPU de xuat tu kho: 9.000.000 VND
+  </text>
+  <text x="128" y="418" fill="#8FD3FF" font-family="Segoe UI, Arial, sans-serif" font-size="18">
+    Dieu kien chan: gia linh kien &gt; nganSachConLai
+  </text>
+
+  <rect x="96" y="492" width="654" height="286" rx="20" fill="#0D1426" stroke="#283552"/>
+  <text x="128" y="536" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">
+    Ket qua thuc te
+  </text>
+  <rect x="128" y="572" width="218" height="48" rx="12" fill="#133B2C" stroke="#2FBF71"/>
+  <text x="184" y="603" fill="#D8FFE8" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">
+    PASS
+  </text>
+  <text x="128" y="654" fill="#B7C4DE" font-family="Consolas, monospace" font-size="20">
+    doGoiYTuKho = []
+  </text>
+  <text x="128" y="694" fill="#B7C4DE" font-family="Consolas, monospace" font-size="20">
+    danhSachTrenKeNganSachMoi = [CPU cu]
+  </text>
+  <text x="128" y="744" fill="#8FD3FF" font-family="Segoe UI, Arial, sans-serif" font-size="18">
+    Khong co linh kien moi duoc them vao he thong
+  </text>
+
+  <rect x="810" y="196" width="646" height="582" rx="20" fill="#0D1426" stroke="#283552"/>
+  <text x="842" y="240" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">
+    Bang chung kiem thu tu dong
+  </text>
+  <rect x="842" y="272" width="582" height="430" rx="16" fill="#09101E" stroke="#1B2740"/>
+  <text x="870" y="318" fill="#B7C4DE" font-family="Consolas, monospace" font-size="18">
+    &gt; npm test -- tests/chatbot-budget.test.ts
+  </text>
+  <text x="870" y="368" fill="#6EE7B7" font-family="Consolas, monospace" font-size="18">
+    Test Files  1 passed (1)
+  </text>
+  <text x="870" y="404" fill="#6EE7B7" font-family="Consolas, monospace" font-size="18">
+    Tests       1 passed (1)
+  </text>
+  <text x="870" y="440" fill="#B7C4DE" font-family="Consolas, monospace" font-size="18">
+    Start at    02:27:17
+  </text>
+  <text x="870" y="476" fill="#B7C4DE" font-family="Consolas, monospace" font-size="18">
+    Duration    775ms
+  </text>
+
+  <line x1="870" y1="528" x2="1394" y2="528" stroke="#223252"/>
+  <text x="870" y="576" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">
+    Dien giai
+  </text>
+  <text x="870" y="620" fill="#B7C4DE" font-family="Segoe UI, Arial, sans-serif" font-size="18">
+    Ham diChoVaRapThu() da bo qua toan bo linh kien
+  </text>
+  <text x="870" y="652" fill="#B7C4DE" font-family="Segoe UI, Arial, sans-serif" font-size="18">
+    vi gia linh kien luon lon hon ngan sach con lai am.
+  </text>
+
+  <text x="96" y="824" fill="#7F8FB1" font-family="Segoe UI, Arial, sans-serif" font-size="16">
+    Artifact tao tu test file: tests/chatbot-budget.test.ts
+  </text>
+</svg>
