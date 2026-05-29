@@ -1,8 +1,6 @@
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { Boxes, ArrowRight } from 'lucide-react'
-import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/server-user'
+import { AdminBrandsClient } from './brand-management-client'
 
 export default async function AdminBrandsPage() {
   const user = await getCurrentUser()
@@ -15,66 +13,5 @@ export default async function AdminBrandsPage() {
     redirect('/?auth=forbidden&next=/admin/brands')
   }
 
-  // Get all unique brands with product counts
-  const brandsWithCounts = await prisma.sanPham.groupBy({
-    by: ['thuongHieu'],
-    _count: {
-      id: true,
-    },
-    where: {
-      thuongHieu: {
-        not: null,
-      },
-    },
-    orderBy: {
-      thuongHieu: 'asc',
-    },
-  })
-
-  return (
-    <main className="min-h-screen bg-[#030304] px-4 py-10 text-white sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl space-y-8">
-        <header className="rounded-3xl border border-[#F7931A]/20 bg-gradient-to-r from-[#F7931A]/15 to-[#FFD600]/10 p-6">
-          <div className="flex items-center gap-3">
-            <Boxes className="h-6 w-6 text-amber-300" />
-            <h1 className="text-3xl font-bold">Quản lý thương hiệu</h1>
-          </div>
-          <p className="mt-2 text-slate-300">Xem danh sách các thương hiệu và số lượng sản phẩm.</p>
-        </header>
-
-        <section className="rounded-2xl border border-white/10 bg-[#0F1115] p-6">
-          <h2 className="text-xl font-semibold mb-4">Danh sách thương hiệu</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {brandsWithCounts.map((brand) => (
-              <BrandCard
-                key={brand.thuongHieu}
-                name={brand.thuongHieu!}
-                count={brand._count.id}
-              />
-            ))}
-          </div>
-        </section>
-      </div>
-    </main>
-  )
-}
-
-function BrandCard({ name, count }: { name: string; count: number }) {
-  return (
-    <article className="rounded-2xl border border-white/10 bg-[#141a26] p-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-lg font-semibold text-white">{name}</p>
-          <p className="text-sm text-slate-400">{count} sản phẩm</p>
-        </div>
-        <Boxes className="h-6 w-6 text-[#FFD600]" />
-      </div>
-      <Link
-        href={`/admin/products?brand=${encodeURIComponent(name)}`}
-        className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-[#FFD600] hover:text-[#F7931A]"
-      >
-        Xem sản phẩm <ArrowRight className="h-4 w-4" />
-      </Link>
-    </article>
-  )
+  return <AdminBrandsClient />
 }

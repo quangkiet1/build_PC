@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { aggregateProductBrands } from '@/lib/brands'
 
 export async function GET() {
   try {
-    // Get all distinct brands
     const brands = await prisma.sanPham.findMany({
       where: {
         thuongHieu: {
@@ -19,9 +19,7 @@ export async function GET() {
       }
     })
 
-    const uniqueBrands = brands
-      .map((p) => p.thuongHieu)
-      .filter((b) => b !== null) as string[]
+    const uniqueBrands = aggregateProductBrands(brands).map((brand) => brand.name)
 
     return NextResponse.json({
       success: true,

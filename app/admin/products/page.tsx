@@ -4,9 +4,10 @@ import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Plus, Edit2, Trash2, X, ArrowLeft, Search, Package, Loader2, Upload, Image as ImageIcon } from 'lucide-react'
+import { Plus, Edit2, Trash2, ArrowLeft, Search, Package, Loader2, Upload, Image as ImageIcon } from 'lucide-react'
 import { useToast } from '@/app/providers/toast-provider'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import { AdminModal } from '@/components/admin-modal'
 
 // Hàm tự động thay thế ảnh lỗi/trống thành ảnh demo trên mạng
 const getSafeDemoImage = (url?: string | null, fallbackName: string = 'Product') => {
@@ -26,6 +27,7 @@ interface Product {
   hinhAnhs: string[]
   moTa?: string | null
   soLuongTon: number
+  thuongHieu?: string | null
   thongSoKyThuat?: Record<string, unknown> | null
   danhMuc: {
     id: string
@@ -43,6 +45,7 @@ export default function AdminProductsPage() {
   const { addToast } = useToast()
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [brands, setBrands] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
@@ -57,6 +60,7 @@ export default function AdminProductsPage() {
     hinhAnhs: [] as string[],
     moTa: '',
     soLuongTon: 100,
+    thuongHieu: '',
     thongSoKyThuat: '',
     danhMucId: '',
   })
@@ -89,10 +93,34 @@ export default function AdminProductsPage() {
     }
   }, [])
 
+  const fetchBrands = useCallback(async () => {
+    try {
+      const response = await fetch('/api/admin/brands', { credentials: 'include' })
+      if (response.status === 401 || response.status === 403) {
+        router.push('/?auth=required&next=/admin/products')
+        return
+      }
+
+      const data = await response.json()
+      setBrands((data.brands || []).map((brand: { name: string }) => brand.name))
+    } catch (error) {
+      console.error('Error fetching brands:', error)
+    }
+  }, [router])
+
   useEffect(() => {
     fetchProducts()
     fetchCategories()
-  }, [fetchProducts, fetchCategories])
+    fetchBrands()
+  }, [fetchProducts, fetchCategories, fetchBrands])
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const brand = params.get('brand')
+    if (brand) {
+      setSearchTerm(brand)
+    }
+  }, [])
 
   const openForm = (product?: Product) => {
     if (product) {
@@ -105,6 +133,7 @@ export default function AdminProductsPage() {
         hinhAnhs: product.hinhAnhs || [],
         moTa: product.moTa || '',
         soLuongTon: product.soLuongTon,
+        thuongHieu: product.thuongHieu || '',
         thongSoKyThuat: product.thongSoKyThuat ? JSON.stringify(product.thongSoKyThuat, null, 2) : '',
         danhMucId: product.danhMuc.id,
       })
@@ -118,6 +147,7 @@ export default function AdminProductsPage() {
         hinhAnhs: [],
         moTa: '',
         soLuongTon: 100,
+        thuongHieu: '',
         thongSoKyThuat: '',
         danhMucId: '',
       })
@@ -226,6 +256,7 @@ export default function AdminProductsPage() {
       }
 
       await fetchProducts()
+      await fetchBrands()
       closeForm()
       addToast(selectedProduct ? 'Cập nhật sản phẩm thành công' : 'Thêm sản phẩm thành công', 'success')
     } catch (error) {
@@ -254,6 +285,7 @@ export default function AdminProductsPage() {
       }
 
       setProducts((current) => current.filter((product) => product.id !== productToDelete.id))
+      await fetchBrands()
       addToast('Xóa sản phẩm thành công', 'success')
       setProductToDelete(null)
     } catch (error) {
@@ -264,7 +296,8 @@ export default function AdminProductsPage() {
 
   const filteredProducts = products.filter((product) =>
     product.tenSanPham.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.danhMuc.tenDanhMuc.toLowerCase().includes(searchTerm.toLowerCase())
+    product.danhMuc.tenDanhMuc.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.thuongHieu?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   if (loading) {
@@ -311,7 +344,7 @@ export default function AdminProductsPage() {
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
           <input
             type="text"
-            placeholder="Tìm theo tên sản phẩm hoặc danh mục..."
+            placeholder="Tìm theo tên sản phẩm, danh mục hoặc thương hiệu..."
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             className="w-full rounded-xl border border-white/10 bg-[#0F1115] py-3 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#F7931A]/50 focus:ring-1 focus:ring-[#F7931A]/20"
@@ -325,6 +358,7 @@ export default function AdminProductsPage() {
                 <tr className="border-b border-slate-800">
                   <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Sản phẩm</th>
                   <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Danh mục</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Thương hiệu</th>
                   <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Giá</th>
                   <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Tồn kho</th>
                   <th className="px-5 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-400">Hành động</th>
@@ -333,7 +367,7 @@ export default function AdminProductsPage() {
               <tbody className="divide-y divide-slate-800/60">
                 {filteredProducts.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-5 py-16 text-center text-slate-500">
+                    <td colSpan={6} className="px-5 py-16 text-center text-slate-500">
                       Không tìm thấy sản phẩm phù hợp.
                     </td>
                   </tr>
@@ -362,6 +396,7 @@ export default function AdminProductsPage() {
                         </div>
                       </td>
                       <td className="px-5 py-4 text-sm text-slate-300">{product.danhMuc.tenDanhMuc}</td>
+                      <td className="px-5 py-4 text-sm text-slate-300">{product.thuongHieu || 'Chưa gán'}</td>
                       <td className="px-5 py-4 text-sm">
                         <div className="flex flex-col">
                           {product.phanTramGiam ? (
@@ -407,30 +442,30 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      {/* Form Modal */}
-      {isFormOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm sm:p-6">
-          
-          {/* CHUẨN HOÁ: Dùng thẻ div bọc ngoài để Flexbox tính toán chiều cao max-h-[90vh] chính xác trên mọi trình duyệt */}
-          <div className="flex w-full max-w-2xl max-h-[90vh] flex-col overflow-hidden rounded-2xl border border-slate-800 bg-[#0f1117] shadow-2xl">
-            
-            {/* Header Modal */}
-            <div className="flex shrink-0 items-center justify-between border-b border-slate-800 p-5 sm:p-6 bg-[#0f1117]">
-              <h2 className="text-xl font-bold text-white">
-                {selectedProduct ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}
-              </h2>
-              <button
-                type="button"
-                onClick={closeForm}
-                className="rounded-lg border border-slate-700 p-2 text-slate-400 transition hover:border-slate-600 hover:text-white"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            {/* Vùng cuộn độc lập */}
-            <div className="flex-1 overflow-y-auto p-5 sm:p-6 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-700 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-600">
-              <form id="product-form" onSubmit={handleSubmit} className="space-y-6">
+      <AdminModal
+        open={isFormOpen}
+        onClose={closeForm}
+        title={selectedProduct ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}
+        footer={(
+          <>
+            <button
+              type="button"
+              onClick={closeForm}
+              className="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-slate-600 hover:text-white"
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              form="product-form"
+              className="rounded-xl bg-[#F7931A] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#ff9f2d]"
+            >
+              {selectedProduct ? 'Cập nhật' : 'Thêm sản phẩm'}
+            </button>
+          </>
+        )}
+      >
+        <form id="product-form" onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">Tên sản phẩm *</label>
@@ -459,6 +494,23 @@ export default function AdminProductsPage() {
                       </option>
                     ))}
                   </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Thương hiệu</label>
+                  <input
+                    type="text"
+                    list="admin-brand-options"
+                    value={formData.thuongHieu}
+                    onChange={(e) => setFormData(prev => ({ ...prev, thuongHieu: e.target.value }))}
+                    className="w-full rounded-xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#F7931A]/50"
+                    placeholder="Ví dụ: ASUS, Intel, MSI"
+                  />
+                  <datalist id="admin-brand-options">
+                    {brands.map((brand) => (
+                      <option key={brand} value={brand} />
+                    ))}
+                  </datalist>
                 </div>
 
                 <div>
@@ -568,29 +620,8 @@ export default function AdminProductsPage() {
                   )}
                 </div>
               </div>
-              </form>
-            </div>
-
-            {/* Footer Modal - Gọi submit qua form="product-form" */}
-            <div className="flex shrink-0 justify-end gap-3 border-t border-slate-800 bg-[#0f1117] p-5 sm:p-6">
-              <button
-                type="button"
-                onClick={closeForm}
-                className="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-slate-600 hover:text-white"
-              >
-                Hủy
-              </button>
-              <button
-                type="submit"
-                form="product-form"
-                className="rounded-xl bg-[#F7931A] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#ff9f2d]"
-              >
-                {selectedProduct ? 'Cập nhật' : 'Thêm sản phẩm'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+        </form>
+      </AdminModal>
 
       <ConfirmDialog
         open={Boolean(productToDelete)}

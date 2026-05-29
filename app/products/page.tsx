@@ -4,6 +4,7 @@ import { ProductCard } from '@/app/components/ProductCard'
 import { getTranslator } from '@/i18n/server'
 import { AnimatedSection } from '@/components/motion/AnimatedSection'
 import { ShieldCheck, SlidersHorizontal } from 'lucide-react'
+import { aggregateProductBrands } from '@/lib/brands'
 
 type ProductsPageProps = {
   searchParams?: Promise<{
@@ -66,6 +67,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       orderBy: { thuongHieu: 'asc' },
     }),
   ])
+  const brandOptions = aggregateProductBrands(brands)
 
   const featuredProducts = products.slice(0, 4)
   const catalogProducts = products.slice(4)
@@ -126,9 +128,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
               className="md:w-48 bg-[#0F1115] border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-[#F7931A]/50 focus:shadow-[0_0_15px_rgba(247,147,26,0.15)] transition-all cursor-pointer"
             >
               <option value="">Tất cả thương hiệu</option>
-              {brands.map((item) => (
-                <option key={item.thuongHieu} value={item.thuongHieu!} className="bg-[#0F1115]">
-                  {item.thuongHieu}
+              {brandOptions.map((item) => (
+                <option key={item.name} value={item.name} className="bg-[#0F1115]">
+                  {item.name}
                 </option>
               ))}
             </select>

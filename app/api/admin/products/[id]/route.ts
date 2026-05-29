@@ -4,6 +4,19 @@ import { prisma } from '@/lib/prisma'
 import { authorizeRoles } from '@/lib/auth'
 import { generateUniqueProductSlug, validateAdminProductPayload } from '@/lib/products'
 
+async function ensureBrandExists(name?: string) {
+  if (!name) return
+
+  const existing = await prisma.thuongHieu.findFirst({
+    where: { tenThuongHieu: { equals: name, mode: 'insensitive' } },
+    select: { id: true },
+  })
+
+  if (!existing) {
+    await prisma.thuongHieu.create({ data: { tenThuongHieu: name } })
+  }
+}
+
 export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -33,6 +46,8 @@ export async function PUT(
       return Boolean(existing && existing.id !== id)
     })
 
+    await ensureBrandExists(validated.data.thuongHieu)
+
     const product = await prisma.sanPham.update({
       where: { id },
       data: {
@@ -41,6 +56,7 @@ export async function PUT(
         gia: validated.data.gia,
         soLuongTon: validated.data.soLuongTon,
         danhMucId: validated.data.danhMucId,
+        thuongHieu: validated.data.thuongHieu ?? null,
         moTa: validated.data.moTa,
         hinhAnhs: validated.data.hinhAnhs || [],
         hinhAnh: validated.data.hinhAnh ?? validated.data.hinhAnhs?.[0] ?? undefined,

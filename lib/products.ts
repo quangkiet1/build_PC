@@ -1,8 +1,11 @@
+import { normalizeBrandName } from './brands'
+
 export type ProductPayload = {
   tenSanPham: string
   gia: number
   soLuongTon: number
   danhMucId: string
+  thuongHieu?: string
   moTa?: string
   hinhAnh?: string
   hinhAnhs?: string[]
@@ -42,6 +45,7 @@ export function validateAdminProductPayload(input: Record<string, unknown>) {
   const moTa = typeof input.moTa === 'string' ? input.moTa.trim() : ''
   const gia = Number(input.gia)
   const soLuongTon = Number(input.soLuongTon)
+  const thuongHieu = normalizeBrandName(input.thuongHieu)
   const hinhAnh = typeof input.hinhAnh === 'string' ? input.hinhAnh.trim() : ''
   const hinhAnhs = Array.isArray(input.hinhAnhs) ? input.hinhAnhs.filter((url): url is string => typeof url === 'string' && url.trim().length > 0) : []
   const thongSoKyThuat = input.thongSoKyThuat
@@ -65,6 +69,7 @@ export function validateAdminProductPayload(input: Record<string, unknown>) {
       gia,
       soLuongTon,
       danhMucId,
+      thuongHieu: thuongHieu || undefined,
       moTa: moTa || undefined,
       hinhAnh: hinhAnh || undefined,
       hinhAnhs: hinhAnhs.length > 0 ? hinhAnhs : undefined,
