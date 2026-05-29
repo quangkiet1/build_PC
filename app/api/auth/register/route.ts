@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { hashPassword, createAccessToken, createAuthCookie, getJwtSecret } from '@/lib/auth'
+import { hashPassword, createAccessToken, getAuthCookieOptions, getJwtSecret, TOKEN_NAME } from '@/lib/auth'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -8,7 +8,11 @@ export async function POST(request: NextRequest) {
   try {
     getJwtSecret()
 
-    const body = await request.json()
+    const body = await request.json().catch(() => null)
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Du lieu dang ky khong hop le' }, { status: 400 })
+    }
+
     const name = typeof body.name === 'string' ? body.name.trim() : ''
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''
     const password = typeof body.password === 'string' ? body.password : ''
@@ -58,7 +62,7 @@ export async function POST(request: NextRequest) {
       user: { id: user.id, name: user.hoTen, email: user.email, role: user.vaiTro },
       message: 'Đăng ký thành công'
     })
-    response.headers.set('Set-Cookie', createAuthCookie(token))
+    response.cookies.set(TOKEN_NAME, token, getAuthCookieOptions())
 
     return response
   } catch (error) {

@@ -4,6 +4,7 @@ import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 export const TOKEN_NAME = 'pcbuilder_token'
+export const AUTH_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 type UserRole = 'KHACH_HANG' | 'QUAN_TRI_VIEN'
 
 export function getJwtSecret() {
@@ -45,14 +46,23 @@ export function verifyAccessToken(token: string) {
 }
 
 export function createAuthCookie(token: string) {
-  const maxAge = 60 * 60 * 24 * 7
   const secure = process.env.NODE_ENV === 'production' ? '; Secure' : ''
-  return `${TOKEN_NAME}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure}`
+  return `${TOKEN_NAME}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${AUTH_COOKIE_MAX_AGE}${secure}`
 }
 
 export function clearAuthCookie() {
   const secure = process.env.NODE_ENV === 'production' ? '; Secure' : ''
   return `${TOKEN_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`
+}
+
+export function getAuthCookieOptions(maxAge = AUTH_COOKIE_MAX_AGE) {
+  return {
+    httpOnly: true,
+    sameSite: 'lax' as const,
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge,
+  }
 }
 
 export function getTokenFromRequest(request: NextRequest) {

@@ -4,14 +4,26 @@ const bcrypt = require('bcryptjs')
 const prisma = new PrismaClient()
 
 async function main() {
-  const adminEmail = 'huynhkietzuki@gmail.com'
-  const newPassword = 'Admin@2026'
+  const adminEmail = 'admin@pcbuilder.com'
+  const newPassword = 'Admin@123'
 
   const hash = await bcrypt.hash(newPassword, 10)
 
-  const user = await prisma.nguoiDung.update({
+  const user = await prisma.nguoiDung.upsert({
     where: { email: adminEmail },
-    data: { matKhauHash: hash },
+    update: { matKhauHash: hash, vaiTro: 'QUAN_TRI_VIEN', hoTen: 'Admin' },
+    create: {
+      email: adminEmail,
+      hoTen: 'Admin',
+      matKhauHash: hash,
+      vaiTro: 'QUAN_TRI_VIEN',
+    },
+  })
+
+  await prisma.gioHang.upsert({
+    where: { nguoiDungId: user.id },
+    update: {},
+    create: { nguoiDungId: user.id },
   })
 
   console.log(`✅ Đặt lại mật khẩu thành công cho: ${user.email}`)

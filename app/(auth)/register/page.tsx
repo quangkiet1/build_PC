@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
 import {
   AlertCircle,
@@ -28,6 +28,11 @@ import {
   authLabelClass,
   authWorkspaceClass,
 } from '@/app/(auth)/_components/AuthPageShell'
+
+function getSafeNextUrl(next: string | null) {
+  if (!next || !next.startsWith('/') || next.startsWith('//')) return '/'
+  return next
+}
 
 function PasswordStrength({ password }: { password: string }) {
   const checks = [
@@ -117,6 +122,9 @@ function StepIndicator({ step }: { step: number }) {
 
 export default function RegisterPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const nextUrl = getSafeNextUrl(searchParams.get('next'))
+  const loginHref = nextUrl === '/' ? '/login' : `/login?next=${encodeURIComponent(nextUrl)}`
   const { refreshUser } = useAuth()
   const [step, setStep] = useState(0)
   const [name, setName] = useState('')
@@ -162,6 +170,7 @@ export default function RegisterPage() {
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, phone, address }),
       })
@@ -183,7 +192,7 @@ export default function RegisterPage() {
         },
       })
       window.dispatchEvent(new Event('auth-changed'))
-      router.push('/')
+      router.push(nextUrl)
       router.refresh()
     } catch {
       setError('Không thể kết nối máy chủ. Vui lòng thử lại.')
@@ -458,7 +467,7 @@ export default function RegisterPage() {
           <Link
             data-auth-item
             id="go-to-login-link"
-            href="/login"
+            href={loginHref}
             className="group flex w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3.5 text-sm font-medium text-white transition hover:border-[#F7931A]/45 hover:bg-[#F7931A]/10 hover:text-[#FFD600]"
           >
             Đăng nhập ngay

@@ -11,7 +11,7 @@ interface SaveBuildModalProps {
   currentBuild: Record<string, unknown>
 }
 
-export function SaveBuildModal({ isOpen, onClose, onSave, currentBuild }: SaveBuildModalProps) {
+export function SaveBuildModal({ isOpen, onClose, onSave }: SaveBuildModalProps) {
   const [name, setName] = useState('')
   const [isCompleted, setIsCompleted] = useState(false)
   const [isPublic, setIsPublic] = useState(false)

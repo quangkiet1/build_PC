@@ -39,17 +39,17 @@ async function main() {
   console.log('Creating default accounts...')
 
   const admin = await upsertUser({
-    email: 'admin_Kiet',
-    fullName: 'Admin Kiet',
+    email: 'admin@pcbuilder.com',
+    fullName: 'Admin',
     role: 'QUAN_TRI_VIEN',
-    rawPassword: '1'
+    rawPassword: 'Admin@123'
   })
 
   const user = await upsertUser({
-    email: 'phuc',
-    fullName: 'Phuc',
+    email: 'user@example.com',
+    fullName: 'Demo User',
     role: 'KHACH_HANG',
-    rawPassword: '1'
+    rawPassword: 'User@123'
   })
 
   console.log('Done.')

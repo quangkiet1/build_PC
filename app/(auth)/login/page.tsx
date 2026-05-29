@@ -30,6 +30,7 @@ export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const nextUrl = getSafeNextUrl(searchParams.get('next'))
+  const registerHref = nextUrl === '/' ? '/register' : `/register?next=${encodeURIComponent(nextUrl)}`
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -44,6 +45,7 @@ export default function LoginPage() {
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       })
@@ -183,7 +185,7 @@ export default function LoginPage() {
           <Link
             data-auth-item
             id="go-to-register-link"
-            href="/register"
+            href={registerHref}
             className="group flex w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3.5 text-sm font-medium text-white transition hover:border-[#F7931A]/45 hover:bg-[#F7931A]/10 hover:text-[#FFD600]"
           >
             Tạo tài khoản mới

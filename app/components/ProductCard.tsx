@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
 import { ArrowRight, BadgePercent, Scale, ShoppingCart } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useToast } from '@/app/providers/toast-provider'

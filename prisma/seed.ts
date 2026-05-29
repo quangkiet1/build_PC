@@ -2,6 +2,7 @@
 // Chạy với: npx prisma db seed
 
 import { PrismaClient, VaiTro } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
@@ -1297,11 +1298,14 @@ async function main() {
   }
 
   // Tạo người dùng demo
+  const demoUserPasswordHash = await bcrypt.hash('User@123', 10)
+  const demoAdminPasswordHash = await bcrypt.hash('Admin@123', 10)
+
   const user = await prisma.nguoiDung.create({
     data: {
       hoTen: 'Nguyễn Văn A',
       email: 'user@example.com',
-      matKhauHash: 'hashed_password_here',
+      matKhauHash: demoUserPasswordHash,
       vaiTro: VaiTro.KHACH_HANG,
       soDienThoai: '0123456789',
       diaChi: '123 Đường ABC, TP HCM',
@@ -1319,14 +1323,14 @@ async function main() {
   })
 
   // Tạo user admin nếu chưa tồn tại, rồi cập nhật vai trò
-const adminEmail = 'huynhkietzuki@gmail.com'
+const adminEmail = 'admin@pcbuilder.com'
 const existingAdmin = await prisma.nguoiDung.findUnique({ where: { email: adminEmail } })
 if (!existingAdmin) {
   await prisma.nguoiDung.create({
     data: {
-      hoTen: 'Admin User',
+      hoTen: 'Admin',
       email: adminEmail,
-      matKhauHash: '$2a$10$dummyhashfortestingonly',
+      matKhauHash: demoAdminPasswordHash,
       vaiTro: VaiTro.QUAN_TRI_VIEN
     }
   })
@@ -1334,7 +1338,7 @@ if (!existingAdmin) {
 } else {
   await prisma.nguoiDung.update({
     where: { email: adminEmail },
-    data: { vaiTro: VaiTro.QUAN_TRI_VIEN }
+    data: { hoTen: 'Admin', vaiTro: VaiTro.QUAN_TRI_VIEN, matKhauHash: demoAdminPasswordHash }
   })
   console.log(`✅ Updated admin role: ${adminEmail}`)
 }

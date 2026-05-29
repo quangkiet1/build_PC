@@ -10,7 +10,7 @@ interface SaveBuildModalProps {
   onSave: (name: string, isCompleted: boolean, isPublic: boolean) => Promise<void>
 }
 
-export function SaveBuildModal({ isOpen, onClose, buildId, onSave }: SaveBuildModalProps) {
+export function SaveBuildModal({ isOpen, onClose, onSave }: SaveBuildModalProps) {
   const [name, setName] = useState('Build mới')
   const [isCompleted, setIsCompleted] = useState(true)
   const [isPublic, setIsPublic] = useState(false)

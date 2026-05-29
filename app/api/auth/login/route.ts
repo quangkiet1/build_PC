@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { comparePassword, createAccessToken, createAuthCookie, getJwtSecret } from '@/lib/auth'
+import { comparePassword, createAccessToken, getAuthCookieOptions, getJwtSecret, TOKEN_NAME } from '@/lib/auth'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       user: { id: user.id, name: user.hoTen, email: user.email, role: user.vaiTro },
       message: 'Đăng nhập thành công'
     })
-    response.headers.set('Set-Cookie', createAuthCookie(token))
+    response.cookies.set(TOKEN_NAME, token, getAuthCookieOptions())
 
     return response
   } catch (error) {

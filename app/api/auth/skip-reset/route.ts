@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { createAccessToken, createAuthCookie } from '@/lib/auth'
+import { createAccessToken, getAuthCookieOptions, TOKEN_NAME } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       message: 'Đăng nhập thành công',
       user: { id: user.id, name: user.hoTen, email: user.email, role: user.vaiTro },
     })
-    response.headers.set('Set-Cookie', createAuthCookie(token))
+    response.cookies.set(TOKEN_NAME, token, getAuthCookieOptions())
 
     return response
   } catch (error) {

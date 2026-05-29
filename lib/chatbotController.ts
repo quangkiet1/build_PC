@@ -144,7 +144,7 @@ async function phanTich(tinNhanKhach: string, lichSuChat: any[]) {
     
     try {
         const rawText = await generateWithRetry(modelThuKy, cauLenhPhanTich);
-        let locnoidung = rawText
+        const locnoidung = rawText
             .replace(/```json/g, "").replace(/```/g, "").trim();
         return JSON.parse(locnoidung);
     } catch (e) { 
@@ -172,12 +172,12 @@ Khong hoi lai nhung thong tin he thong da cung cap.
 Neu cau hinh chua du linh kien vi ngan sach hoac kho hang, noi ro dang thieu mon nao va goi y tang ngan sach.`;
 
     // Định dạng kệ hàng hiện tại
-    let chuoiDangChon = danhSachTrenKe.length > 0
+    const chuoiDangChon = danhSachTrenKe.length > 0
         ? danhSachTrenKe.map(m => `- ${m.name || "Linh kiện"}: ${(m.price || 0).toLocaleString('vi-VN')}đ`).join("\n")
         : "Chưa có món nào trên kệ.";
 
     // Định dạng linh kiện đề xuất mới
-    let chuoiDeXuat = doGoiYTuKho.length > 0
+    const chuoiDeXuat = doGoiYTuKho.length > 0
         ? doGoiYTuKho.map(m => `- ${m.name || "Linh kiện"}: ${(m.price || 0).toLocaleString('vi-VN')}đ`).join("\n")
         : "";
 
@@ -244,8 +244,8 @@ ${tinNhanKhach}`;
 // 3. KIỂM KÊ HÀNG CŨ (loại bỏ món cần đổi)
 // ============================================================
 function kiemKeHangCu(keLinhKienHienTai: any, cacLoaiKhachDoi: string[]) {
-    let danhSachTrenKe: any[] = [];
-    let cacTheLoaiDaCo: string[] = [];
+    const danhSachTrenKe: any[] = [];
+    const cacTheLoaiDaCo: string[] = [];
     let tongTienDaTieu = 0;
 
     if (keLinhKienHienTai != null) {
@@ -293,12 +293,12 @@ export async function diChoVaRapThu(
     nganSachConLai: number, 
     cacLoaiKhachDoi: string[]
 ) {
-    let doGoiYTuKho: any[] = [];
+    const doGoiYTuKho: any[] = [];
     
     for (const monCanMua of danhSachDiCho) {
         const laNangCap = cacLoaiKhachDoi.includes(monCanMua.loai?.toLowerCase() || "");
         
-        let ketQuaTrongKho = await layTop3LinhKien(
+        const ketQuaTrongKho = await layTop3LinhKien(
             monCanMua.loai, 
             null, 
             monCanMua.tuKhoa, 
