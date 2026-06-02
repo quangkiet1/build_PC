@@ -1,10 +1,17 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { type NextRequest } from 'next/server'
+import { TOKEN_NAME } from '@/lib/auth-cookie'
 import { prisma } from '@/lib/prisma'
+export {
+  AUTH_COOKIE_MAX_AGE,
+  TOKEN_NAME,
+  clearAuthCookie,
+  createAuthCookie,
+  getAuthCookieOptions,
+  shouldUseSecureAuthCookie,
+} from '@/lib/auth-cookie'
 
-export const TOKEN_NAME = 'pcbuilder_token'
-export const AUTH_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 type UserRole = 'KHACH_HANG' | 'QUAN_TRI_VIEN'
 
 export function getJwtSecret() {
@@ -42,26 +49,6 @@ export function verifyAccessToken(token: string) {
     return jwt.verify(token, getJwtSecret()) as { sub: string; email: string; role: string }
   } catch {
     return null
-  }
-}
-
-export function createAuthCookie(token: string) {
-  const secure = process.env.NODE_ENV === 'production' ? '; Secure' : ''
-  return `${TOKEN_NAME}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${AUTH_COOKIE_MAX_AGE}${secure}`
-}
-
-export function clearAuthCookie() {
-  const secure = process.env.NODE_ENV === 'production' ? '; Secure' : ''
-  return `${TOKEN_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`
-}
-
-export function getAuthCookieOptions(maxAge = AUTH_COOKIE_MAX_AGE) {
-  return {
-    httpOnly: true,
-    sameSite: 'lax' as const,
-    secure: process.env.NODE_ENV === 'production',
-    path: '/',
-    maxAge,
   }
 }
 

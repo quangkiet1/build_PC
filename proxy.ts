@@ -1,39 +1,54 @@
 import { NextRequest, NextResponse } from 'next/server'
+import jwt, { type JwtPayload } from 'jsonwebtoken'
+import { getAuthCookieOptions, TOKEN_NAME } from '@/lib/auth-cookie'
 
-function decodeJwtPayload(token: string): Record<string, unknown> | null {
+type AuthTokenPayload = JwtPayload & {
+  sub?: unknown
+  role?: unknown
+}
+
+function verifyJwtPayload(token: string): AuthTokenPayload | null {
+  const secret = process.env.JWT_SECRET?.trim()
+  if (!secret) return null
+
   try {
-    const parts = token.split('.')
-    if (parts.length < 2) return null
-
-    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/')
-    const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4)
-    const json = atob(padded)
-    return JSON.parse(json) as Record<string, unknown>
+    const payload = jwt.verify(token, secret)
+    return typeof payload === 'object' && payload !== null ? (payload as AuthTokenPayload) : null
   } catch {
     return null
   }
 }
 
-function redirectWithAuthReason(request: NextRequest, reason: 'required' | 'forbidden') {
+function redirectWithAuthReason(
+  request: NextRequest,
+  reason: 'required' | 'forbidden',
+  options: { clearCookie?: boolean } = {}
+) {
   const url = request.nextUrl.clone()
   url.pathname = '/'
   url.searchParams.set('auth', reason)
   if (reason === 'required') {
     url.searchParams.set('next', `${request.nextUrl.pathname}${request.nextUrl.search}`)
   }
-  return NextResponse.redirect(url)
+
+  const response = NextResponse.redirect(url)
+  if (options.clearCookie) {
+    response.cookies.set(TOKEN_NAME, '', getAuthCookieOptions(0, request))
+  }
+
+  return response
 }
 
 export function proxy(request: NextRequest) {
-  const token = request.cookies.get('pcbuilder_token')?.value
+  const token = request.cookies.get(TOKEN_NAME)?.value
 
   if (!token) {
     return redirectWithAuthReason(request, 'required')
   }
 
-  const payload = decodeJwtPayload(token)
+  const payload = verifyJwtPayload(token)
   if (!payload || typeof payload.sub !== 'string') {
-    return redirectWithAuthReason(request, 'required')
+    return redirectWithAuthReason(request, 'required', { clearCookie: true })
   }
 
   if (request.nextUrl.pathname.startsWith('/admin')) {

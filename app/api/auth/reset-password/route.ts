@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       message: 'Đặt lại mật khẩu thành công',
       user: { id: user.id, name: user.hoTen, email: user.email, role: user.vaiTro },
     })
-    response.cookies.set(TOKEN_NAME, token, getAuthCookieOptions())
+    response.cookies.set(TOKEN_NAME, token, getAuthCookieOptions(undefined, request))
 
     return response
   } catch (error) {

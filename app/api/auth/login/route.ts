@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       user: { id: user.id, name: user.hoTen, email: user.email, role: user.vaiTro },
       message: 'Đăng nhập thành công'
     })
-    response.cookies.set(TOKEN_NAME, token, getAuthCookieOptions())
+    response.cookies.set(TOKEN_NAME, token, getAuthCookieOptions(undefined, request))
 
     return response
   } catch (error) {
