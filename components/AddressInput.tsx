@@ -11,8 +11,12 @@ interface AddressInputProps {
 }
 
 interface GoogleMapsAutocomplete {
-  addListener: (event: string, callback: () => void) => void
+  addListener: (event: string, callback: () => void) => GoogleMapsEventListener
   getPlace: () => { formatted_address?: string; geometry?: object; address_components?: object[] }
+}
+
+interface GoogleMapsEventListener {
+  remove: () => void
 }
 
 interface GoogleMapsPlaces {
@@ -34,13 +38,14 @@ declare global {
 export function AddressInput({ value, onChange, placeholder, error }: AddressInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const autocompleteRef = useRef<GoogleMapsAutocomplete | null>(null)
+  const listenerRef = useRef<GoogleMapsEventListener | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
   const [apiKeyMissing, setApiKeyMissing] = useState(false)
   const [apiError, setApiError] = useState(false)
   const loadingRef = useRef(false)
 
   const initializeAutocomplete = useCallback(() => {
-    if (!inputRef.current || !window.google) return
+    if (!inputRef.current || !window.google?.maps?.places) return
 
     // Prevent duplicate initialization
     if (autocompleteRef.current) return
@@ -57,7 +62,7 @@ export function AddressInput({ value, onChange, placeholder, error }: AddressInp
         options
       )
 
-      autocompleteRef.current.addListener('place_changed', () => {
+      listenerRef.current = autocompleteRef.current.addListener('place_changed', () => {
         const place = autocompleteRef.current?.getPlace()
         if (place && place.formatted_address) {
           onChange(place.formatted_address)
@@ -76,18 +81,30 @@ export function AddressInput({ value, onChange, placeholder, error }: AddressInp
       return
     }
 
-    // Check if script already exists
-    const existingScript = document.querySelector(
-      `script[src*="maps.googleapis.com/maps/api/js"]`
+    const existingScript = document.querySelector<HTMLScriptElement>(
+      'script[src*="maps.googleapis.com/maps/api/js"]'
     )
     if (existingScript) {
-      setIsLoaded(true)
+      if (window.google?.maps?.places) {
+        setIsLoaded(true)
+      } else {
+        loadingRef.current = true
+        existingScript.addEventListener('load', () => {
+          loadingRef.current = false
+          setIsLoaded(true)
+        }, { once: true })
+        existingScript.addEventListener('error', (err) => {
+          loadingRef.current = false
+          setApiError(true)
+          console.warn('Google Maps API not available:', err)
+        }, { once: true })
+      }
       return
     }
 
     loadingRef.current = true
     const script = document.createElement('script')
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=vi`
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=vi&loading=async`
     script.async = true
     script.defer = true
     script.onload = () => {
@@ -105,25 +122,26 @@ export function AddressInput({ value, onChange, placeholder, error }: AddressInp
   useEffect(() => {
     if (typeof window === 'undefined') return
 
-    // If Google Maps already loaded, initialize autocomplete
-    if (window.google && !autocompleteRef.current && inputRef.current) {
+    if (window.google?.maps?.places && !autocompleteRef.current && inputRef.current) {
       queueMicrotask(() => {
-        try {
-          initializeAutocomplete()
-          setIsLoaded(true)
-        } catch {
-          setApiError(true)
-          console.warn('Google Maps autocomplete not available (billing not enabled)')
-        }
+        initializeAutocomplete()
+        setIsLoaded(true)
       })
       return
     }
 
-    // If already loading or loaded, skip
     if (isLoaded || loadingRef.current || apiKeyMissing || apiError) return
 
     queueMicrotask(loadGoogleMapsScript)
   }, [apiError, apiKeyMissing, initializeAutocomplete, isLoaded, loadGoogleMapsScript])
+
+  useEffect(() => {
+    return () => {
+      listenerRef.current?.remove()
+      listenerRef.current = null
+      autocompleteRef.current = null
+    }
+  }, [])
 
   return (
     <div className="space-y-2">
@@ -136,14 +154,14 @@ export function AddressInput({ value, onChange, placeholder, error }: AddressInp
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           title={
-            apiKeyMissing 
-              ? 'Google Maps API key not configured' 
-              : apiError 
-              ? 'Google Maps API not available - enter address manually'
-              : ''
+            apiKeyMissing
+              ? 'Chưa cấu hình Google Maps API key'
+              : apiError
+                ? 'Google Maps chưa khả dụng - nhập địa chỉ thủ công'
+                : ''
           }
           className={`w-full rounded-xl border bg-[#141a26] px-4 py-3 pl-11 text-sm text-white placeholder:text-slate-500 outline-none transition ${
-            error 
+            error
               ? 'border-rose-500/50 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/20'
               : 'border-white/10 focus:border-[#F7931A]/50 focus:ring-1 focus:ring-[#F7931A]/20'
           }`}
@@ -153,12 +171,12 @@ export function AddressInput({ value, onChange, placeholder, error }: AddressInp
       {error && <p className="text-xs text-rose-400">{error}</p>}
       {apiKeyMissing && (
         <p className="text-xs text-slate-400">
-          💡 Add Google Maps API key to .env.local to enable autocomplete
+          Gợi ý: thêm Google Maps API key vào .env.local để bật tự động hoàn tất.
         </p>
       )}
       {apiError && !apiKeyMissing && (
         <p className="text-xs text-slate-400">
-          💡 Google Maps API unavailable. Please enter address manually. (Billing may not be enabled in Google Cloud)
+          Google Maps API chưa khả dụng. Vui lòng nhập địa chỉ thủ công.
         </p>
       )}
     </div>
