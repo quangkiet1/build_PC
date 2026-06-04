@@ -22,9 +22,11 @@ import { ProductCard } from '@/app/components/ProductCard'
 import { ProtectedLink } from '@/components/ProtectedLink'
 import { AnimatedSection } from '@/components/motion/AnimatedSection'
 import { getStorefrontData, normalizeCategoryName } from '@/lib/catalog'
-import { getTranslator } from '@/i18n/server'
+import { getI18nServer, getTranslator } from '@/i18n/server'
+import { formatCurrency } from '@/lib/format'
 import { InfiniteSlider } from '@/app/components/InfiniteSlider'
 import { Hero3DWrapper } from '@/app/components/webgl/Hero3DWrapper'
+import { getCategoryMessageKey } from '@/lib/category-i18n'
 
 const HERO_IMG = 'https://images.unsplash.com/photo-1621164071312-67bb68821b3f?auto=format&fit=crop&w=1400&q=75&fm=webp'
 const PC_IMG = 'https://images.unsplash.com/photo-1634003309303-442c7518f9e9?auto=format&fit=crop&w=1000&q=75&fm=webp'
@@ -45,6 +47,8 @@ const trustedBrands = ['Intel', 'AMD', 'ASUS', 'MSI', 'Gigabyte', 'Corsair', 'Sa
 export default async function HomePage() {
   const t = await getTranslator('home')
   const headerT = await getTranslator('header')
+  const categoryT = await getTranslator('categories')
+  const { locale } = await getI18nServer()
   const { categories, featuredProducts, latestProducts } = await getStorefrontData()
 
   const featured = featuredProducts.slice(0, 4)
@@ -87,8 +91,8 @@ export default async function HomePage() {
               </span>
               
               <h1 className="mt-6 text-5xl sm:text-6xl md:text-7xl font-heading font-bold leading-[1.1] tracking-tight">
-                Xây dựng cấu hình{' '}
-                <span className="bg-gradient-to-r from-[#F7931A] to-[#FFD600] bg-clip-text text-transparent whitespace-nowrap">PC thông minh hơn</span>
+                {t('titleStart')}{' '}
+                <span className="bg-gradient-to-r from-[#F7931A] to-[#FFD600] bg-clip-text text-transparent whitespace-nowrap">{t('titleAccent')}</span>
               </h1>
               
               <p className="mt-6 text-lg md:text-xl leading-relaxed text-muted max-w-2xl">
@@ -146,6 +150,7 @@ export default async function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
             {categories.map((category) => {
               const normalized = normalizeCategoryName(category.tenDanhMuc)
+              const categoryKey = getCategoryMessageKey(category.tenDanhMuc)
               const Icon = iconMap[normalized as keyof typeof iconMap] || Cpu
 
               return (
@@ -160,8 +165,10 @@ export default async function HomePage() {
                     <Icon className="h-6 w-6" strokeWidth={1.5} />
                   </div>
                   <div className="text-center relative z-10">
-                    <p className="text-sm font-semibold text-white">{category.tenDanhMuc}</p>
-                    <p className="text-xs font-mono text-muted mt-1">{t(`categorySubtitles.${normalized as keyof typeof iconMap}`)}</p>
+                    <p className="text-sm font-semibold text-white">{categoryKey ? categoryT(categoryKey) : category.tenDanhMuc}</p>
+                    <p className="text-xs font-mono text-muted mt-1">
+                      {normalized ? t(`categorySubtitles.${normalized}`) : t('categoryCount', { count: category._count.sanPhams })}
+                    </p>
                   </div>
                 </Link>
               )
@@ -261,7 +268,7 @@ export default async function HomePage() {
                     {t('mockupStatus')}
                   </span>
                 </div>
-                <p className="text-3xl font-heading font-bold text-white mb-4">25.480.000 VND</p>
+                <p className="text-3xl font-heading font-bold text-white mb-4">{formatCurrency(25_480_000, locale)}</p>
                 <div className="flex flex-wrap gap-2">
                   {['CPU', 'GPU', 'RAM', 'MB', 'SSD', 'PSU'].map((item) => (
                     <span key={item} className="rounded bg-black/50 border border-white/10 px-2 py-1 text-[10px] font-mono text-white">

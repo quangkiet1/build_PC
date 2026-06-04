@@ -8,6 +8,9 @@ import { Plus, Edit2, Trash2, ArrowLeft, Search, Package, Loader2, Upload, Image
 import { useToast } from '@/app/providers/toast-provider'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { AdminModal } from '@/components/admin-modal'
+import { useLocale, useTranslations } from 'next-intl'
+import type { AppLocale } from '@/i18n/config'
+import { formatCurrency } from '@/lib/format'
 
 // Hàm tự động thay thế ảnh lỗi/trống thành ảnh demo trên mạng
 const getSafeDemoImage = (url?: string | null, fallbackName: string = 'Product') => {
@@ -41,6 +44,9 @@ interface Category {
 }
 
 export default function AdminProductsPage() {
+  const t = useTranslations('admin.products')
+  const commonT = useTranslations('admin.common')
+  const locale = useLocale() as AppLocale
   const router = useRouter()
   const { addToast } = useToast()
   const [products, setProducts] = useState<Product[]>([])
@@ -77,11 +83,11 @@ export default function AdminProductsPage() {
       setProducts(data.products || [])
     } catch (error) {
       console.error('Error fetching products:', error)
-      addToast('Không thể tải danh sách sản phẩm', 'error')
+      addToast(t('loadError'), 'error')
     } finally {
       setLoading(false)
     }
-  }, [router, addToast])
+  }, [router, addToast, t])
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -168,7 +174,7 @@ export default function AdminProductsPage() {
       for (const file of Array.from(files)) {
         // Kiểm tra dung lượng ảnh (giới hạn 2MB để tránh lỗi Payload Too Large khi lưu DB)
         if (file.size > 2 * 1024 * 1024) {
-          addToast(`Ảnh "${file.name}" quá lớn. Vui lòng chọn ảnh nhỏ hơn 2MB`, 'error')
+          addToast(t('imageTooLarge', { name: file.name }), 'error')
           continue
         }
 
@@ -189,10 +195,10 @@ export default function AdminProductsPage() {
         hinhAnhs: [...prev.hinhAnhs, ...uploadedUrls]
       }))
 
-      addToast('Tải lên hình ảnh thành công', 'success')
+      addToast(t('uploadSuccess'), 'success')
     } catch (error) {
       console.error('Error uploading images:', error)
-      addToast('Lỗi khi tải lên hình ảnh', 'error')
+      addToast(t('uploadError'), 'error')
     } finally {
       setUploadingImages(false)
     }
@@ -209,7 +215,7 @@ export default function AdminProductsPage() {
     e.preventDefault()
 
     if (!formData.tenSanPham || !formData.danhMucId) {
-      addToast('Vui lòng điền tên sản phẩm và chọn danh mục', 'error')
+      addToast(t('required'), 'error')
       return
     }
 
@@ -221,7 +227,7 @@ export default function AdminProductsPage() {
     }
 
     if (formData.gia <= 0) {
-      addToast('Giá sản phẩm phải lớn hơn 0', 'error')
+      addToast(t('priceError'), 'error')
       return
     }
 
@@ -250,18 +256,17 @@ export default function AdminProductsPage() {
         return
       }
 
-      const data = await response.json()
       if (!response.ok) {
-        throw new Error(data.error || 'Lỗi khi lưu sản phẩm')
+        throw new Error(t('saveError'))
       }
 
       await fetchProducts()
       await fetchBrands()
       closeForm()
-      addToast(selectedProduct ? 'Cập nhật sản phẩm thành công' : 'Thêm sản phẩm thành công', 'success')
+      addToast(selectedProduct ? t('updateSuccess') : t('createSuccess'), 'success')
     } catch (error) {
       console.error('Error saving product:', error)
-      addToast(error instanceof Error ? error.message : 'Lỗi khi lưu sản phẩm', 'error')
+      addToast(error instanceof Error ? error.message : t('saveError'), 'error')
     }
   }
 
@@ -279,18 +284,17 @@ export default function AdminProductsPage() {
         return
       }
 
-      const data = await response.json()
       if (!response.ok) {
-        throw new Error(data.error || 'Lỗi khi xóa sản phẩm')
+        throw new Error(t('deleteError'))
       }
 
       setProducts((current) => current.filter((product) => product.id !== productToDelete.id))
       await fetchBrands()
-      addToast('Xóa sản phẩm thành công', 'success')
+      addToast(t('deleteSuccess'), 'success')
       setProductToDelete(null)
     } catch (error) {
       console.error('Error deleting product:', error)
-      addToast(error instanceof Error ? error.message : 'Lỗi khi xóa sản phẩm', 'error')
+      addToast(error instanceof Error ? error.message : t('deleteError'), 'error')
     }
   }
 
@@ -305,7 +309,7 @@ export default function AdminProductsPage() {
       <main className="flex min-h-screen items-center justify-center bg-[#030304] text-white">
         <div className="text-center">
           <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-[#FFD600]" />
-          <p className="text-slate-400">Đang tải sản phẩm...</p>
+          <p className="text-slate-400">{t('loading')}</p>
         </div>
       </main>
     )
@@ -325,9 +329,9 @@ export default function AdminProductsPage() {
             <div>
               <h1 className="flex items-center gap-2.5 text-2xl font-bold sm:text-3xl">
                 <Package className="h-7 w-7 text-[#FFD600]" />
-                Quản lý Sản phẩm
+                {t('title')}
               </h1>
-              <p className="mt-1 text-sm text-slate-400">{products.length} sản phẩm trong kho.</p>
+              <p className="mt-1 text-sm text-slate-400">{t('count', { count: products.length })}</p>
             </div>
           </div>
           <button
@@ -336,7 +340,7 @@ export default function AdminProductsPage() {
             className="inline-flex items-center gap-2 rounded-xl bg-[#F7931A] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#ff9f2d]"
           >
             <Plus className="h-4 w-4" />
-            Thêm sản phẩm
+            {t('add')}
           </button>
         </div>
 
@@ -344,7 +348,7 @@ export default function AdminProductsPage() {
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
           <input
             type="text"
-            placeholder="Tìm theo tên sản phẩm, danh mục hoặc thương hiệu..."
+            placeholder={t('search')}
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             className="w-full rounded-xl border border-white/10 bg-[#0F1115] py-3 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#F7931A]/50 focus:ring-1 focus:ring-[#F7931A]/20"
@@ -356,19 +360,19 @@ export default function AdminProductsPage() {
             <table className="w-full min-w-full">
               <thead>
                 <tr className="border-b border-slate-800">
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Sản phẩm</th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Danh mục</th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Thương hiệu</th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Giá</th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Tồn kho</th>
-                  <th className="px-5 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-400">Hành động</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">{t('columns.product')}</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">{t('columns.category')}</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">{t('columns.brand')}</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">{t('columns.price')}</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">{t('columns.stock')}</th>
+                  <th className="px-5 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-400">{commonT('actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
                 {filteredProducts.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-5 py-16 text-center text-slate-500">
-                      Không tìm thấy sản phẩm phù hợp.
+                      {t('empty')}
                     </td>
                   </tr>
                 ) : (
@@ -396,19 +400,19 @@ export default function AdminProductsPage() {
                         </div>
                       </td>
                       <td className="px-5 py-4 text-sm text-slate-300">{product.danhMuc.tenDanhMuc}</td>
-                      <td className="px-5 py-4 text-sm text-slate-300">{product.thuongHieu || 'Chưa gán'}</td>
+                      <td className="px-5 py-4 text-sm text-slate-300">{product.thuongHieu || t('unassigned')}</td>
                       <td className="px-5 py-4 text-sm">
                         <div className="flex flex-col">
                           {product.phanTramGiam ? (
                             <>
-                              <span className="line-through text-slate-400">{product.gia.toLocaleString('vi-VN')} VND</span>
+                              <span className="line-through text-slate-400">{formatCurrency(product.gia, locale)}</span>
                               <span className="text-emerald-400 font-semibold">
-                                {(product.gia * (100 - product.phanTramGiam) / 100).toLocaleString('vi-VN')} VND
+                                {formatCurrency(product.gia * (100 - product.phanTramGiam) / 100, locale)}
                               </span>
                               <span className="text-xs text-orange-400">-{product.phanTramGiam}%</span>
                             </>
                           ) : (
-                            <span className="text-white">{product.gia.toLocaleString('vi-VN')} VND</span>
+                            <span className="text-white">{formatCurrency(product.gia, locale)}</span>
                           )}
                         </div>
                       </td>
@@ -421,7 +425,7 @@ export default function AdminProductsPage() {
                             className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-[#111827] px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-[#F7931A]/40 hover:text-white"
                           >
                             <Edit2 className="h-3 w-3" />
-                            Sửa
+                            {commonT('edit')}
                           </button>
                           <button
                             type="button"
@@ -429,7 +433,7 @@ export default function AdminProductsPage() {
                             className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-[#111827] px-3 py-1.5 text-xs font-semibold text-rose-300 transition hover:border-rose-500/40 hover:text-white"
                           >
                             <Trash2 className="h-3 w-3" />
-                            Xóa
+                            {commonT('delete')}
                           </button>
                         </div>
                       </td>
@@ -445,7 +449,7 @@ export default function AdminProductsPage() {
       <AdminModal
         open={isFormOpen}
         onClose={closeForm}
-        title={selectedProduct ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}
+        title={selectedProduct ? t('editTitle') : t('addTitle')}
         footer={(
           <>
             <button
@@ -453,14 +457,14 @@ export default function AdminProductsPage() {
               onClick={closeForm}
               className="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-slate-600 hover:text-white"
             >
-              Hủy
+              {commonT('cancel')}
             </button>
             <button
               type="submit"
               form="product-form"
               className="rounded-xl bg-[#F7931A] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#ff9f2d]"
             >
-              {selectedProduct ? 'Cập nhật' : 'Thêm sản phẩm'}
+              {selectedProduct ? commonT('update') : t('add')}
             </button>
           </>
         )}
@@ -468,26 +472,26 @@ export default function AdminProductsPage() {
         <form id="product-form" onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Tên sản phẩm *</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">{t('name')}</label>
                   <input
                     type="text"
                     value={formData.tenSanPham}
                     onChange={(e) => setFormData(prev => ({ ...prev, tenSanPham: e.target.value }))}
                     className="w-full rounded-xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#F7931A]/50"
-                    placeholder="Nhập tên sản phẩm"
+                    placeholder={t('namePlaceholder')}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Danh mục *</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">{t('category')}</label>
                   <select
                     value={formData.danhMucId}
                     onChange={(e) => setFormData(prev => ({ ...prev, danhMucId: e.target.value }))}
                     className="w-full rounded-xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-white outline-none transition focus:border-[#F7931A]/50"
                     required
                   >
-                    <option value="">Chọn danh mục</option>
+                    <option value="">{t('chooseCategory')}</option>
                     {categories.map((category) => (
                       <option key={category.id} value={category.id}>
                         {category.tenDanhMuc}
@@ -497,14 +501,14 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Thương hiệu</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">{t('brand')}</label>
                   <input
                     type="text"
                     list="admin-brand-options"
                     value={formData.thuongHieu}
                     onChange={(e) => setFormData(prev => ({ ...prev, thuongHieu: e.target.value }))}
                     className="w-full rounded-xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#F7931A]/50"
-                    placeholder="Ví dụ: ASUS, Intel, MSI"
+                    placeholder={t('brandPlaceholder')}
                   />
                   <datalist id="admin-brand-options">
                     {brands.map((brand) => (
@@ -514,7 +518,7 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Giá (VND) *</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">{t('price')}</label>
                   <input
                     type="number"
                     value={formData.gia}
@@ -527,7 +531,7 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Giảm giá (%)</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">{t('discount')}</label>
                   <input
                     type="number"
                     value={formData.phanTramGiam}
@@ -540,7 +544,7 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Số lượng tồn kho</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">{t('stock')}</label>
                   <input
                     type="number"
                     value={formData.soLuongTon}
@@ -553,18 +557,18 @@ export default function AdminProductsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Mô tả</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">{t('description')}</label>
                 <textarea
                   value={formData.moTa}
                   onChange={(e) => setFormData(prev => ({ ...prev, moTa: e.target.value }))}
                   rows={3}
                   className="w-full rounded-xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#F7931A]/50"
-                  placeholder="Mô tả sản phẩm..."
+                  placeholder={t('descriptionPlaceholder')}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Thông số kỹ thuật (JSON)</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">{t('specifications')}</label>
                 <textarea
                   value={formData.thongSoKyThuat}
                   onChange={(e) => setFormData(prev => ({ ...prev, thongSoKyThuat: e.target.value }))}
@@ -575,7 +579,7 @@ export default function AdminProductsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Hình ảnh sản phẩm</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">{t('images')}</label>
                 <div className="space-y-4">
                   <div className="flex items-center gap-4">
                     <input
@@ -592,7 +596,7 @@ export default function AdminProductsPage() {
                       className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-slate-300 transition hover:border-[#F7931A]/40 hover:text-white"
                     >
                       {uploadingImages ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                      {uploadingImages ? 'Đang tải lên...' : 'Chọn hình ảnh'}
+                      {uploadingImages ? t('uploading') : t('chooseImages')}
                     </label>
                   </div>
 
@@ -625,10 +629,10 @@ export default function AdminProductsPage() {
 
       <ConfirmDialog
         open={Boolean(productToDelete)}
-        title="Xác nhận xóa sản phẩm"
-        description="Hành động này sẽ xóa sản phẩm và không thể hoàn tác. Bạn có chắc chắn muốn tiếp tục?"
-        confirmLabel="Xóa"
-        cancelLabel="Hủy"
+        title={t('confirmTitle')}
+        description={t('confirmDescription')}
+        confirmLabel={commonT('delete')}
+        cancelLabel={commonT('cancel')}
         confirmVariant="destructive"
         onConfirm={deleteProduct}
         onOpenChange={(open) => { if (!open) setProductToDelete(null) }}

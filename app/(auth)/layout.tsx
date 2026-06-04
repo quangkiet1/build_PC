@@ -1,10 +1,15 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
+import { getTranslator } from '@/i18n/server'
 import '../globals.css'
 
-export const metadata: Metadata = {
-  title: 'PC Builder - Đăng nhập / Đăng ký',
-  description: 'Đăng nhập hoặc tạo tài khoản PC Builder để bắt đầu xây dựng cấu hình PC của bạn.',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslator('auth')
+
+  return {
+    title: t('metadata.title'),
+    description: t('metadata.description'),
+  }
 }
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { X, Sparkles } from 'lucide-react'
 import { toast } from 'react-hot-toast'
+import { useTranslations } from 'next-intl'
 
 interface SaveBuildModalProps {
   isOpen: boolean
@@ -12,13 +13,14 @@ interface SaveBuildModalProps {
 }
 
 export function SaveBuildModal({ isOpen, onClose, onSave }: SaveBuildModalProps) {
+  const t = useTranslations('builder.saveModal')
   const [name, setName] = useState('')
   const [isCompleted, setIsCompleted] = useState(false)
   const [isPublic, setIsPublic] = useState(false)
 
   const handleSave = () => {
     if (!name.trim()) {
-      toast.error('Vui lòng nhập tên build')
+      toast.error(t('nameRequired'))
       return
     }
     onSave(name.trim(), isCompleted, isPublic)
@@ -40,24 +42,24 @@ export function SaveBuildModal({ isOpen, onClose, onSave }: SaveBuildModalProps)
           <div className="flex items-center justify-between mb-2">
             <div className="inline-flex items-center gap-2 rounded-full border border-[#F7931A]/30 bg-[#F7931A]/10 px-2.5 py-0.5 text-[10px] font-mono font-medium text-[#FFD600] uppercase tracking-widest">
               <Sparkles className="h-3 w-3" />
-              Lưu trữ
+              {t('badge')}
             </div>
             <button onClick={onClose} className="text-muted hover:text-white transition-colors">
               <X className="h-5 w-5" />
             </button>
           </div>
-          <h2 className="text-2xl font-heading font-bold text-white">Lưu cấu hình PC</h2>
-          <p className="mt-1 text-sm text-muted">Bảo mật cấu hình của bạn vào hệ thống</p>
+          <h2 className="text-2xl font-heading font-bold text-white">{t('title')}</h2>
+          <p className="mt-1 text-sm text-muted">{t('description')}</p>
 
           <div className="mt-6 space-y-5">
             <div>
-              <label className="block text-xs font-mono uppercase tracking-widest text-muted mb-2">Tên build</label>
+              <label className="block text-xs font-mono uppercase tracking-widest text-muted mb-2">{t('name')}</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full rounded-xl border border-white/10 bg-[#030304] px-4 py-3 text-sm text-white outline-none transition-all focus:border-[#F7931A]/50 focus:shadow-[0_0_15px_rgba(247,147,26,0.15)] placeholder:text-muted"
-                placeholder="VD: Gaming PC 2024..."
+                placeholder={t('placeholder')}
               />
             </div>
 
@@ -73,7 +75,7 @@ export function SaveBuildModal({ isOpen, onClose, onSave }: SaveBuildModalProps)
                   <svg className="absolute w-3 h-3 text-[#030304] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path></svg>
                 </div>
                 <span className="text-sm font-medium text-white group-hover:text-[#F7931A] transition-colors">
-                  Build hoàn thành
+                  {t('completed')}
                 </span>
               </label>
 
@@ -88,7 +90,7 @@ export function SaveBuildModal({ isOpen, onClose, onSave }: SaveBuildModalProps)
                   <svg className="absolute w-3 h-3 text-[#030304] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path></svg>
                 </div>
                 <span className="text-sm font-medium text-white group-hover:text-[#F7931A] transition-colors">
-                  Công khai build
+                  {t('public')}
                 </span>
               </label>
             </div>
@@ -99,13 +101,13 @@ export function SaveBuildModal({ isOpen, onClose, onSave }: SaveBuildModalProps)
               onClick={onClose}
               className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-mono font-medium text-muted transition hover:bg-white/10 hover:text-white"
             >
-              Hủy
+              {t('cancel')}
             </button>
             <button
               onClick={handleSave}
               className="flex-1 rounded-xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-4 py-3 text-sm font-semibold text-white shadow-[0_0_15px_-5px_rgba(247,147,26,0.5)] transition-all hover:scale-[1.02] hover:shadow-[0_0_20px_-5px_rgba(247,147,26,0.7)]"
             >
-              Lưu cấu hình
+              {t('save')}
             </button>
           </div>
         </div>

@@ -4,11 +4,14 @@ import { authenticateRequest } from '@/lib/auth';
 import { xuLyTinNhan } from "@/lib/chatbotController";
 
 export async function POST(request: NextRequest) {
+  const body = await request.json();
+  const locale = body.locale === 'en' ? 'en' : 'vi';
   const user = await authenticateRequest(request);
   if (user == null) {
-      return NextResponse.json({ error: 'Cần đăng nhập để dùng AI tư vấn' }, { status: 401 });
+      return NextResponse.json({
+          error: locale === 'en' ? 'Sign in to use the AI advisor' : 'Cần đăng nhập để dùng AI tư vấn'
+      }, { status: 401 });
   }
-  const body = await request.json();
   
   let prompt = body.prompt;
   if (prompt != null) {
@@ -26,11 +29,13 @@ export async function POST(request: NextRequest) {
   }
 
   if (prompt == null || prompt === "") {
-      return NextResponse.json({ error: 'Yêu cầu tư vấn không được để trống' }, { status: 400 });
+      return NextResponse.json({
+          error: locale === 'en' ? 'The request cannot be empty' : 'Yêu cầu tư vấn không được để trống'
+      }, { status: 400 });
   }
 
   try {
-      const ketQuaAI = await xuLyTinNhan(prompt, lichSuChat, keLinhKien);
+      const ketQuaAI = await xuLyTinNhan(prompt, lichSuChat, keLinhKien, locale);
       if (prisma.tinNhanChat != null) {
           await prisma.tinNhanChat.createMany({
               data: [
@@ -50,6 +55,8 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
       console.error("Lỗi hệ thống AI tại Router:", error);
-      return NextResponse.json({ error: 'Hệ thống AI đang bảo trì.' }, { status: 500 });
+      return NextResponse.json({
+          error: locale === 'en' ? 'The AI system is currently unavailable.' : 'Hệ thống AI đang bảo trì.'
+      }, { status: 500 });
   }
 }

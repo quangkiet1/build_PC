@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useLocale, useTranslations } from 'next-intl'
 import { gsap } from 'gsap'
 import {
   AlertCircle,
@@ -25,10 +26,12 @@ import {
   authLabelClass,
   authWorkspaceClass,
 } from '@/app/(auth)/_components/AuthPageShell'
+import { getLocalizedApiError } from '@/lib/localized-api-error'
 
 type Step = 'email' | 'otp' | 'choice' | 'reset'
 
 function Countdown({ seconds, onEnd }: { seconds: number; onEnd: () => void }) {
+  const t = useTranslations('auth.forgotPage')
   const [left, setLeft] = useState(() => seconds)
   const onEndRef = useRef(onEnd)
 
@@ -84,13 +87,14 @@ function Countdown({ seconds, onEnd }: { seconds: number; onEnd: () => void }) {
           {left}s
         </text>
       </svg>
-      <span className="text-xs font-mono text-[#94A3B8]">Mã hết hạn sau</span>
+      <span className="text-xs font-mono text-[#94A3B8]">{t('expires')}</span>
     </div>
   )
 }
 
 function StepIndicator({ step }: { step: Step }) {
-  const labels = ['Gmail', 'OTP', 'Xác nhận', 'Mật khẩu']
+  const t = useTranslations('auth.forgotPage')
+  const labels = [t('steps.gmail'), t('steps.otp'), t('steps.confirm'), t('steps.password')]
   const stepIndex = step === 'email' ? 0 : step === 'otp' ? 1 : step === 'choice' ? 2 : 3
 
   return (
@@ -133,6 +137,8 @@ function StepIndicator({ step }: { step: Step }) {
 }
 
 export default function ForgotPasswordPage() {
+  const t = useTranslations('auth')
+  const locale = useLocale()
   const router = useRouter()
   const panelRef = useRef<HTMLDivElement>(null)
   const [step, setStep] = useState<Step>('email')
@@ -169,7 +175,7 @@ export default function ForgotPasswordPage() {
     const normalizedEmail = email.trim().toLowerCase()
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      setError('Vui lòng nhập đúng địa chỉ Gmail/email đã đăng ký.')
+      setError(t('forgotPage.emailInvalid'))
       return
     }
 
@@ -188,7 +194,7 @@ export default function ForgotPasswordPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || 'Không thể gửi mã OTP')
+        setError(getLocalizedApiError(data, locale, t('forgotPage.sendFailed')))
         setLoading(false)
         return
       }
@@ -198,7 +204,7 @@ export default function ForgotPasswordPage() {
       setStep('otp')
       setTimerKey((key) => key + 1)
     } catch {
-      setError('Không thể kết nối máy chủ. Vui lòng thử lại.')
+      setError(t('serverRetry'))
     }
 
     setLoading(false)
@@ -209,7 +215,7 @@ export default function ForgotPasswordPage() {
     const trimmedOtp = otp.replace(/\D/g, '')
 
     if (trimmedOtp.length !== 6) {
-      setError('Vui lòng nhập đủ 6 chữ số OTP.')
+      setError(t('forgotPage.otpRequired'))
       return
     }
 
@@ -225,14 +231,14 @@ export default function ForgotPasswordPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || 'Mã OTP không đúng')
+        setError(getLocalizedApiError(data, locale, t('forgotPage.otpInvalid')))
         setLoading(false)
         return
       }
 
       setStep('choice')
     } catch {
-      setError('Không thể kết nối máy chủ. Vui lòng thử lại.')
+      setError(t('serverRetry'))
     }
 
     setLoading(false)
@@ -251,7 +257,7 @@ export default function ForgotPasswordPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || 'Không thể bỏ qua đổi mật khẩu')
+        setError(getLocalizedApiError(data, locale, t('forgotPage.skipFailed')))
         setLoading(false)
         return
       }
@@ -260,7 +266,7 @@ export default function ForgotPasswordPage() {
       router.push('/')
       router.refresh()
     } catch {
-      setError('Không thể kết nối máy chủ. Vui lòng thử lại.')
+      setError(t('serverRetry'))
     }
 
     setLoading(false)
@@ -270,11 +276,11 @@ export default function ForgotPasswordPage() {
     e.preventDefault()
 
     if (password.length < 6) {
-      setError('Mật khẩu mới phải có ít nhất 6 ký tự.')
+      setError(t('forgotPage.passwordMin'))
       return
     }
     if (password !== confirmPassword) {
-      setError('Mật khẩu xác nhận không khớp.')
+      setError(t('forgotPage.passwordMismatch'))
       return
     }
 
@@ -290,7 +296,7 @@ export default function ForgotPasswordPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || 'Không thể đặt lại mật khẩu')
+        setError(getLocalizedApiError(data, locale, t('forgotPage.resetFailed')))
         setLoading(false)
         return
       }
@@ -299,7 +305,7 @@ export default function ForgotPasswordPage() {
       router.push('/')
       router.refresh()
     } catch {
-      setError('Không thể kết nối máy chủ. Vui lòng thử lại.')
+      setError(t('serverRetry'))
     }
 
     setLoading(false)
@@ -325,9 +331,9 @@ export default function ForgotPasswordPage() {
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border border-[#F7931A]/30 bg-[#F7931A]/10 shadow-[0_0_24px_-8px_rgba(247,147,26,0.72)]">
               <Cpu className="h-7 w-7 text-[#F7931A]" />
             </div>
-            <h1 className="font-heading text-2xl font-bold tracking-tight text-white">Quên mật khẩu</h1>
+            <h1 className="font-heading text-2xl font-bold tracking-tight text-white">{t('forgotPage.title')}</h1>
             <p className="mt-2 text-sm leading-6 text-[#94A3B8]">
-              Nhận OTP qua Gmail, xác thực rồi chọn đổi mật khẩu hoặc bỏ qua.
+              {t('forgotPage.description')}
             </p>
           </div>
 
@@ -352,14 +358,14 @@ export default function ForgotPasswordPage() {
                   <div className="flex items-start gap-3">
                     <Mail className="mt-0.5 h-4 w-4 shrink-0 text-[#FFD600]" />
                     <p className="text-sm leading-6 text-[#CBD5E1]">
-                      Nhập Gmail/email đã đăng ký. Tài khoản đại diện của PC Builder sẽ gửi mã OTP 6 chữ số đến hộp thư đó.
+                      {t('forgotPage.emailHelp')}
                     </p>
                   </div>
                 </div>
 
                 <div data-step-item className="space-y-2">
                   <label htmlFor="fp-email" className={authLabelClass}>
-                    Gmail hoặc email
+                    {t('forgotPage.email')}
                   </label>
                   <div className="relative">
                     <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
@@ -385,7 +391,7 @@ export default function ForgotPasswordPage() {
                   {loading && (
                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/35 border-t-white" />
                   )}
-                  {loading ? 'Đang gửi OTP...' : 'Gửi mã OTP'}
+                  {loading ? t('forgotPage.sending') : t('forgotPage.send')}
                   {!loading && <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />}
                 </button>
 
@@ -395,7 +401,7 @@ export default function ForgotPasswordPage() {
                     className="inline-flex items-center gap-2 text-xs font-mono text-[#64748B] transition hover:text-[#CBD5E1]"
                   >
                     <ArrowLeft className="h-3.5 w-3.5" />
-                    Quay lại đăng nhập
+                    {t('forgotPage.backLogin')}
                   </Link>
                 </div>
               </form>
@@ -404,8 +410,7 @@ export default function ForgotPasswordPage() {
             {step === 'otp' && (
               <form onSubmit={handleVerifyOtp} className="space-y-5">
                 <div data-step-item className="text-center text-sm leading-6 text-[#CBD5E1]">
-                  Mã OTP đã được gửi đến{' '}
-                  <span className="font-mono font-semibold text-[#F7931A]">{email}</span>.
+                  {t('forgotPage.sentTo', { email })}
                 </div>
 
                 {devOtp && (
@@ -416,10 +421,10 @@ export default function ForgotPasswordPage() {
                     className="w-full rounded-xl border border-[#FFD600]/25 bg-[#FFD600]/10 px-4 py-3 text-left transition hover:bg-[#FFD600]/15"
                   >
                     <span className="block text-[10px] font-mono uppercase tracking-widest text-[#FFD600]/80">
-                      Dev mode
+                      {t('forgotPage.devMode')}
                     </span>
                     <span className="mt-1 block text-sm text-[#FFF7B0]">
-                      OTP kiểm thử:{' '}
+                      {t('forgotPage.devOtp')}{' '}
                       <strong className="font-mono text-lg tracking-[0.28em] text-[#FFD600]">
                         {devOtp}
                       </strong>
@@ -433,7 +438,7 @@ export default function ForgotPasswordPage() {
 
                 <div data-step-item className="space-y-2">
                   <label htmlFor="fp-otp" className={`${authLabelClass} text-center`}>
-                    Nhập mã OTP
+                    {t('forgotPage.enterOtp')}
                   </label>
                   <input
                     id="fp-otp"
@@ -446,7 +451,7 @@ export default function ForgotPasswordPage() {
                     placeholder="000000"
                     className={`${authInputClass} pl-4 pr-4 text-center text-3xl font-bold tracking-[0.42em]`}
                   />
-                  <p className="text-center text-xs font-mono text-[#64748B]">{otp.length}/6 chữ số</p>
+                  <p className="text-center text-xs font-mono text-[#64748B]">{t('forgotPage.digitCount', { count: otp.length })}</p>
                 </div>
 
                 <button
@@ -458,7 +463,7 @@ export default function ForgotPasswordPage() {
                   {loading && (
                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/35 border-t-white" />
                   )}
-                  {loading ? 'Đang xác thực...' : 'Xác thực OTP'}
+                  {loading ? t('forgotPage.verifying') : t('forgotPage.verify')}
                   {!loading && <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />}
                 </button>
 
@@ -472,7 +477,7 @@ export default function ForgotPasswordPage() {
                     }}
                     className="text-[#64748B] transition hover:text-[#CBD5E1]"
                   >
-                    Đổi email
+                    {t('forgotPage.changeEmail')}
                   </button>
                   {canResend ? (
                     <button
@@ -485,10 +490,10 @@ export default function ForgotPasswordPage() {
                       className="flex items-center gap-1.5 text-[#F7931A] transition hover:text-[#FFD600]"
                     >
                       <RotateCcw className="h-3.5 w-3.5" />
-                      Gửi lại mã
+                      {t('forgotPage.resend')}
                     </button>
                   ) : (
-                    <span className="text-[#475569]">Có thể gửi lại sau 120s</span>
+                    <span className="text-[#475569]">{t('forgotPage.resendWait')}</span>
                   )}
                 </div>
               </form>
@@ -500,9 +505,9 @@ export default function ForgotPasswordPage() {
                   <div className="flex items-start gap-3">
                     <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#FFD600]" />
                     <div>
-                      <p className="font-semibold text-white">Xác thực thành công</p>
+                      <p className="font-semibold text-white">{t('forgotPage.verified')}</p>
                       <p className="mt-1 text-sm leading-6 text-[#CBD5E1]">
-                        Bạn có muốn đổi mật khẩu ngay bây giờ không?
+                        {t('forgotPage.changeNowQuestion')}
                       </p>
                     </div>
                   </div>
@@ -519,7 +524,7 @@ export default function ForgotPasswordPage() {
                   }}
                   className="group flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#EA580C] via-[#F7931A] to-[#FFD600] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_0_20px_-6px_rgba(247,147,26,0.7)] transition hover:translate-y-[-1px] hover:shadow-[0_0_30px_-6px_rgba(247,147,26,0.85)]"
                 >
-                  Có, đổi mật khẩu mới
+                  {t('forgotPage.changeNow')}
                   <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
                 </button>
 
@@ -533,7 +538,7 @@ export default function ForgotPasswordPage() {
                   {loading && (
                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/35 border-t-white" />
                   )}
-                  {loading ? 'Đang xử lý...' : 'Bỏ qua'}
+                  {loading ? t('forgotPage.processing') : t('forgotPage.skip')}
                 </button>
               </div>
             )}
@@ -543,16 +548,13 @@ export default function ForgotPasswordPage() {
                 <div data-step-item className="rounded-xl border border-[#F7931A]/20 bg-[#F7931A]/10 px-4 py-3">
                   <div className="flex items-start gap-3">
                     <KeyRound className="mt-0.5 h-4 w-4 shrink-0 text-[#F7931A]" />
-                    <p className="text-sm leading-6 text-[#CBD5E1]">
-                      Đặt mật khẩu mới cho tài khoản{' '}
-                      <span className="font-mono text-[#F7931A]">{email}</span>.
-                    </p>
+                    <p className="text-sm leading-6 text-[#CBD5E1]">{t('forgotPage.resetHelp', { email })}</p>
                   </div>
                 </div>
 
                 <div data-step-item className="space-y-2">
                   <label htmlFor="fp-password" className={authLabelClass}>
-                    Mật khẩu mới
+                    {t('forgotPage.newPassword')}
                   </label>
                   <div className="relative">
                     <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
@@ -563,13 +565,13 @@ export default function ForgotPasswordPage() {
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Tối thiểu 6 ký tự"
+                      placeholder={t('passwordHint')}
                       className={`${authInputClass} pr-12`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword((value) => !value)}
-                      aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                      aria-label={showPassword ? t('hidePassword') : t('showPassword')}
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-[#64748B] transition hover:text-white"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -579,7 +581,7 @@ export default function ForgotPasswordPage() {
 
                 <div data-step-item className="space-y-2">
                   <label htmlFor="fp-confirm" className={authLabelClass}>
-                    Xác nhận mật khẩu mới
+                    {t('forgotPage.confirmNewPassword')}
                   </label>
                   <div className="relative">
                     <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
@@ -590,13 +592,13 @@ export default function ForgotPasswordPage() {
                       required
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Nhập lại mật khẩu mới"
+                      placeholder={t('forgotPage.confirmPlaceholder')}
                       className={`${authInputClass} pr-12`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirm((value) => !value)}
-                      aria-label={showConfirm ? 'Ẩn mật khẩu xác nhận' : 'Hiện mật khẩu xác nhận'}
+                      aria-label={showConfirm ? t('hideConfirmPassword') : t('showConfirmPassword')}
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-[#64748B] transition hover:text-white"
                     >
                       {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -613,7 +615,7 @@ export default function ForgotPasswordPage() {
                   {loading && (
                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/35 border-t-white" />
                   )}
-                  {loading ? 'Đang lưu...' : 'Lưu mật khẩu mới'}
+                  {loading ? t('forgotPage.saving') : t('forgotPage.save')}
                   {!loading && <CheckCircle className="h-4 w-4" />}
                 </button>
 
@@ -626,7 +628,7 @@ export default function ForgotPasswordPage() {
                   }}
                   className="w-full rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-medium text-[#CBD5E1] transition hover:bg-white/[0.08] hover:text-white"
                 >
-                  Quay lại lựa chọn
+                  {t('forgotPage.backChoice')}
                 </button>
               </form>
             )}

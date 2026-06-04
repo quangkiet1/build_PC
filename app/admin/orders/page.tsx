@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Search, Loader2, ClipboardList } from 'lucide-react'
 import { useToast } from '@/app/providers/toast-provider'
+import { useLocale, useTranslations } from 'next-intl'
+import type { AppLocale } from '@/i18n/config'
+import { formatCurrency, toIntlLocale } from '@/lib/format'
 
 interface OrderItem {
   id: string
@@ -29,15 +32,11 @@ interface Order {
   thanhToans: { phuongThuc: string; trangThai: string }[]
 }
 
-const statusOptions = [
-  { value: 'CHO_XAC_NHAN', label: 'Chờ xác nhận' },
-  { value: 'DA_XAC_NHAN', label: 'Đã xác nhận' },
-  { value: 'DANG_GIAO', label: 'Đang giao' },
-  { value: 'DA_GIAO', label: 'Đã giao' },
-  { value: 'DA_HUY', label: 'Đã hủy' },
-]
+const statusOptions = ['CHO_XAC_NHAN', 'DA_XAC_NHAN', 'DANG_GIAO', 'DA_GIAO', 'DA_HUY'] as const
 
 export default function AdminOrdersPage() {
+  const t = useTranslations('admin.orders')
+  const locale = useLocale() as AppLocale
   const router = useRouter()
   const { addToast } = useToast()
   const [orders, setOrders] = useState<Order[]>([])
@@ -56,11 +55,11 @@ export default function AdminOrdersPage() {
       setOrders(data.orders || [])
     } catch (error) {
       console.error('Error fetching orders:', error)
-      addToast('Không thể tải danh sách đơn hàng', 'error')
+      addToast(t('loadError'), 'error')
     } finally {
       setLoading(false)
     }
-  }, [router, addToast])
+  }, [router, addToast, t])
 
   useEffect(() => {
     fetchOrders()
@@ -82,14 +81,14 @@ export default function AdminOrdersPage() {
 
       const data = await response.json()
       if (!response.ok) {
-        throw new Error(data.error || 'Lỗi khi cập nhật trạng thái')
+        throw new Error(t('updateError'))
       }
 
       setOrders((current) => current.map((order) => order.id === orderId ? data.order : order))
-      addToast('Cập nhật trạng thái đơn hàng thành công', 'success')
+      addToast(t('updateSuccess'), 'success')
     } catch (error) {
       console.error('Error updating order status:', error)
-      addToast(error instanceof Error ? error.message : 'Lỗi khi cập nhật đơn hàng', 'error')
+      addToast(error instanceof Error ? error.message : t('orderUpdateError'), 'error')
     }
   }
 
@@ -108,7 +107,7 @@ export default function AdminOrdersPage() {
       <main className="flex min-h-screen items-center justify-center bg-[#030304] text-white">
         <div className="text-center">
           <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-[#FFD600]" />
-          <p className="text-slate-400">Đang tải đơn hàng...</p>
+          <p className="text-slate-400">{t('loading')}</p>
         </div>
       </main>
     )
@@ -128,24 +127,24 @@ export default function AdminOrdersPage() {
             <div>
               <h1 className="flex items-center gap-2.5 text-2xl font-bold sm:text-3xl">
                 <ClipboardList className="h-7 w-7 text-[#FFD600]" />
-                Quản lý Đơn hàng
+                {t('title')}
               </h1>
-              <p className="mt-1 text-sm text-slate-400">{orders.length} đơn hàng đã được tạo.</p>
+              <p className="mt-1 text-sm text-slate-400">{t('count', { count: orders.length })}</p>
             </div>
           </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
           <div className="rounded-2xl border border-slate-800 bg-[#0f1117] p-5">
-            <p className="text-sm text-slate-400">Tổng doanh thu</p>
-            <p className="mt-4 text-3xl font-bold text-white">{totalRevenue.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</p>
+            <p className="text-sm text-slate-400">{t('revenue')}</p>
+            <p className="mt-4 text-3xl font-bold text-white">{formatCurrency(totalRevenue, locale)}</p>
           </div>
           <div className="rounded-2xl border border-slate-800 bg-[#0f1117] p-5">
-            <p className="text-sm text-slate-400">Đơn chờ xử lý</p>
+            <p className="text-sm text-slate-400">{t('pending')}</p>
             <p className="mt-4 text-3xl font-bold text-white">{pending}</p>
           </div>
           <div className="rounded-2xl border border-slate-800 bg-[#0f1117] p-5">
-            <p className="text-sm text-slate-400">Đơn đã giao</p>
+            <p className="text-sm text-slate-400">{t('delivered')}</p>
             <p className="mt-4 text-3xl font-bold text-white">{delivered}</p>
           </div>
         </div>
@@ -154,7 +153,7 @@ export default function AdminOrdersPage() {
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
           <input
             type="text"
-            placeholder="Tìm theo mã đơn, tên khách hàng hoặc email..."
+            placeholder={t('search')}
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             className="w-full rounded-xl border border-white/10 bg-[#0F1115] py-3 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#F7931A]/50 focus:ring-1 focus:ring-[#F7931A]/20"
@@ -166,19 +165,19 @@ export default function AdminOrdersPage() {
             <table className="w-full min-w-full">
               <thead>
                 <tr className="border-b border-slate-800">
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Mã đơn</th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Khách hàng</th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Tổng tiền</th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Trạng thái</th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Thanh toán</th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Ngày tạo</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">{t('columns.code')}</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">{t('columns.customer')}</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">{t('columns.total')}</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">{t('columns.status')}</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">{t('columns.payment')}</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">{t('columns.created')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
                 {filteredOrders.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-5 py-16 text-center text-slate-500">
-                      Không có đơn hàng phù hợp.
+                      {t('empty')}
                     </td>
                   </tr>
                 ) : (
@@ -189,7 +188,7 @@ export default function AdminOrdersPage() {
                         <div>{order.nguoiDung.hoTen}</div>
                         <div className="text-xs text-slate-500">{order.nguoiDung.email}</div>
                       </td>
-                      <td className="px-5 py-4 text-sm text-white">{order.tongTien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+                      <td className="px-5 py-4 text-sm text-white">{formatCurrency(order.tongTien, locale)}</td>
                       <td className="px-5 py-4 text-sm text-white">
                         <select
                           value={order.trangThai}
@@ -197,8 +196,8 @@ export default function AdminOrdersPage() {
                           className="w-full rounded-xl border border-white/10 bg-[#111827] px-3 py-2 text-sm text-white outline-none transition focus:border-[#F7931A]/50"
                         >
                           {statusOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
+                            <option key={option} value={option}>
+                              {t(`status.${option}`)}
                             </option>
                           ))}
                         </select>
@@ -206,7 +205,7 @@ export default function AdminOrdersPage() {
                       <td className="px-5 py-4 text-sm text-slate-300">
                         {order.thanhToans[0]?.phuongThuc || 'COD'} - {order.thanhToans[0]?.trangThai || 'PENDING'}
                       </td>
-                      <td className="px-5 py-4 text-sm text-slate-300">{new Date(order.ngayTao).toLocaleString('vi-VN')}</td>
+                      <td className="px-5 py-4 text-sm text-slate-300">{new Date(order.ngayTao).toLocaleString(toIntlLocale(locale))}</td>
                     </tr>
                   ))
                 )}

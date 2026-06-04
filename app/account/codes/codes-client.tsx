@@ -3,6 +3,9 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Copy, Package, Percent, Wrench } from 'lucide-react'
+import { useLocale, useTranslations } from 'next-intl'
+import type { AppLocale } from '@/i18n/config'
+import { formatCurrency, formatDate } from '@/lib/format'
 
 type OrderCode = {
   id: string
@@ -35,10 +38,10 @@ type CouponCode = {
 
 type TabKey = 'orders' | 'builds' | 'coupons'
 
-const tabs: Array<{ key: TabKey; label: string; icon: typeof Package }> = [
-  { key: 'orders', label: 'Ma don hang', icon: Package },
-  { key: 'builds', label: 'Ma cau hinh PC', icon: Wrench },
-  { key: 'coupons', label: 'Ma khuyen mai', icon: Percent },
+const tabs: Array<{ key: TabKey; icon: typeof Package }> = [
+  { key: 'orders', icon: Package },
+  { key: 'builds', icon: Wrench },
+  { key: 'coupons', icon: Percent },
 ]
 
 export function CodesClient({
@@ -50,6 +53,8 @@ export function CodesClient({
   builds: BuildCode[]
   coupons: CouponCode[]
 }) {
+  const t = useTranslations('accountCodes')
+  const locale = useLocale() as AppLocale
   const [activeTab, setActiveTab] = useState<TabKey>('orders')
   const [copied, setCopied] = useState<string | null>(null)
 
@@ -77,7 +82,7 @@ export function CodesClient({
               }`}
             >
               <Icon className="h-4 w-4" />
-              {tab.label}
+              {t(`tabs.${tab.key}`)}
             </button>
           )
         })}
@@ -85,12 +90,12 @@ export function CodesClient({
 
       {activeTab === 'orders' && (
         <CodeGrid
-          empty="Chua co don hang."
+          empty={t('emptyOrders')}
           items={orders.map((order) => ({
             id: order.id,
             code: order.maDonHang,
             title: order.trangThai,
-            meta: `${formatPrice(order.tongTien)} - ${formatDate(order.ngayTao)}`,
+            meta: `${formatCurrency(order.tongTien, locale)} - ${formatDate(order.ngayTao, locale)}`,
             href: '/orders',
           }))}
           copied={copied}
@@ -100,12 +105,16 @@ export function CodesClient({
 
       {activeTab === 'builds' && (
         <CodeGrid
-          empty="Chua co cau hinh PC da luu."
+          empty={t('emptyBuilds')}
           items={builds.map((build) => ({
             id: build.id,
             code: build.id,
-            title: build.tenCauHinh || 'Cau hinh PC',
-            meta: `${build.items.length} linh kien - ${formatPrice(build.tongGia)} - ${formatDate(build.ngayTao)}`,
+            title: build.tenCauHinh || t('buildFallback'),
+            meta: t('buildMeta', {
+              count: build.items.length,
+              price: formatCurrency(build.tongGia, locale),
+              date: formatDate(build.ngayTao, locale),
+            }),
             href: '/my-builds',
           }))}
           copied={copied}
@@ -115,12 +124,12 @@ export function CodesClient({
 
       {activeTab === 'coupons' && (
         <CodeGrid
-          empty="Chua co ma khuyen mai kha dung."
+          empty={t('emptyCoupons')}
           items={coupons.map((coupon) => ({
             id: coupon.id,
             code: coupon.maKhuyenMai,
             title: coupon.tenKhuyenMai,
-            meta: `${formatDiscount(coupon)}${coupon.minOrderValue ? ` - don tu ${formatPrice(coupon.minOrderValue)}` : ''} - den ${formatDate(coupon.ngayKetThuc)}`,
+            meta: `${formatDiscount(coupon, locale)}${coupon.minOrderValue ? ` - ${t('minimumOrder', { price: formatCurrency(coupon.minOrderValue, locale) })}` : ''} - ${t('couponUntil', { date: formatDate(coupon.ngayKetThuc, locale) })}`,
             href: '/cart',
           }))}
           copied={copied}
@@ -142,6 +151,8 @@ function CodeGrid({
   copied: string | null
   onCopy: (code: string) => void
 }) {
+  const t = useTranslations('accountCodes')
+
   if (items.length === 0) {
     return <div className="rounded-2xl border border-dashed border-white/10 bg-white/5 p-10 text-center text-slate-400">{empty}</div>
   }
@@ -165,7 +176,7 @@ function CodeGrid({
           </div>
           <p className="mt-3 text-sm text-slate-400">{item.meta}</p>
           <Link href={item.href} className="mt-4 inline-flex text-sm font-semibold text-[#F7931A] transition hover:text-[#FFD600]">
-            {copied === item.code ? 'Da sao chep' : 'Mo chi tiet'}
+            {copied === item.code ? t('copied') : t('openDetails')}
           </Link>
         </article>
       ))}
@@ -173,16 +184,8 @@ function CodeGrid({
   )
 }
 
-function formatPrice(value: number) {
-  return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 })
-}
-
-function formatDate(value: string | Date) {
-  return new Intl.DateTimeFormat('vi-VN', { dateStyle: 'medium' }).format(new Date(value))
-}
-
-function formatDiscount(coupon: CouponCode) {
+function formatDiscount(coupon: CouponCode, locale: AppLocale) {
   return coupon.loaiGiamGia === 'SO_TIEN'
-    ? coupon.giaTriGiam.toLocaleString('vi-VN', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 })
+    ? formatCurrency(coupon.giaTriGiam, locale)
     : `${coupon.giaTriGiam || coupon.phanTramGiam}%`
 }

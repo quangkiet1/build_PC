@@ -4,11 +4,14 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, BadgePercent, Scale, ShoppingCart } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { useToast } from '@/app/providers/toast-provider'
 import { useCart } from '@/app/providers/cart-provider'
 import { useAuth } from '@/context/AuthContext'
 import { useCompare } from '@/components/compare-provider'
+import type { AppLocale } from '@/i18n/config'
+import { formatCurrency } from '@/lib/format'
+import { getCategoryMessageKey } from '@/lib/category-i18n'
 import { cn } from '@/lib/utils'
 import type { Product } from './types'
 
@@ -29,14 +32,6 @@ const specLabelMap: Record<string, string> = {
   chipset: 'Chipset',
   capacity: 'Capacity',
   capacity_storage: 'Storage',
-}
-
-function formatPrice(price: number) {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-    minimumFractionDigits: 0,
-  }).format(price)
 }
 
 function normalizeSpecLabel(key: string) {
@@ -65,9 +60,13 @@ export function ProductCard({ product, onAddToCart, className, featured = false 
   const { requireAuth } = useAuth()
   const { toggleProduct, isSelected } = useCompare()
   const t = useTranslations('productCard')
+  const categoryT = useTranslations('categories')
+  const locale = useLocale() as AppLocale
   const compared = isSelected(product.id)
 
-  const brand = product.thuongHieu?.trim() || product.danhMuc?.tenDanhMuc || 'PC Builder'
+  const categoryKey = getCategoryMessageKey(product.danhMuc?.tenDanhMuc)
+  const categoryLabel = categoryKey ? categoryT(categoryKey) : product.danhMuc?.tenDanhMuc
+  const brand = product.thuongHieu?.trim() || categoryLabel || 'PC Builder'
   const specHighlights = getSpecHighlights(product)
   const originalPrice =
     product.phanTramGiam && product.phanTramGiam > 0
@@ -85,7 +84,7 @@ export function ProductCard({ product, onAddToCart, className, featured = false 
           await addItem(product.id, 1)
         }
 
-        addToast('Da them vao gio hang', 'success')
+        addToast(t('added'), 'success')
       })
     } catch (error) {
       const message = error instanceof Error ? error.message : t('failed')
@@ -110,7 +109,7 @@ export function ProductCard({ product, onAddToCart, className, featured = false 
       <div className="relative border-b border-white/10 bg-black/40">
         <div className="absolute inset-x-0 top-0 flex items-start justify-between p-4 z-10">
           <span className="rounded-md border border-white/10 bg-black/50 backdrop-blur-md px-2.5 py-1 text-[10px] font-mono text-white">
-            {product.danhMuc?.tenDanhMuc || brand}
+            {categoryLabel || brand}
           </span>
           {product.phanTramGiam ? (
             <span className="inline-flex items-center gap-1 rounded-md border border-[#F7931A]/50 bg-[#F7931A]/20 backdrop-blur-md px-2.5 py-1 text-[10px] font-mono text-[#FFD600] shadow-[0_0_10px_rgba(247,147,26,0.3)]">
@@ -146,7 +145,7 @@ export function ProductCard({ product, onAddToCart, className, featured = false 
             <span>{brand}</span>
             <span className="h-1 w-1 rounded-full bg-white/20" />
             <span className={product.soLuongTon > 0 ? "text-[#F7931A]" : "text-red-400"}>
-              {product.soLuongTon > 0 ? t('stock', { count: product.soLuongTon }) : 'Out of stock'}
+              {product.soLuongTon > 0 ? t('stock', { count: product.soLuongTon }) : t('outOfStock')}
             </span>
           </div>
 
@@ -174,9 +173,9 @@ export function ProductCard({ product, onAddToCart, className, featured = false 
         <div className="mt-6 pt-5 border-t border-white/10">
           <div className="flex items-end justify-between gap-4 mb-5">
             <div>
-              <p className="text-xl font-heading font-bold text-white tracking-tight">{formatPrice(product.gia)}</p>
+              <p className="text-xl font-heading font-bold text-white tracking-tight">{formatCurrency(product.gia, locale)}</p>
               {originalPrice && (
-                <p className="mt-1 text-[11px] font-mono text-muted line-through">{formatPrice(originalPrice)}</p>
+                <p className="mt-1 text-[11px] font-mono text-muted line-through">{formatCurrency(originalPrice, locale)}</p>
               )}
             </div>
             <span
@@ -188,7 +187,7 @@ export function ProductCard({ product, onAddToCart, className, featured = false 
                     : 'border-red-500/30 bg-red-500/10 text-red-400'
               }`}
             >
-              {product.soLuongTon > 5 ? 'Ready' : product.soLuongTon > 0 ? 'Low stock' : 'Out'}
+              {product.soLuongTon > 5 ? t('ready') : product.soLuongTon > 0 ? t('lowStock') : t('out')}
             </span>
           </div>
 
@@ -218,8 +217,8 @@ export function ProductCard({ product, onAddToCart, className, featured = false 
                   ? 'border-[#F7931A]/50 bg-[#F7931A]/15 text-[#FFD600]'
                   : 'border-white/10 bg-white/5 text-white hover:bg-white/10 hover:border-white/20'
               }`}
-              aria-label="So sanh"
-              title="So sanh"
+              aria-label={t('compare')}
+              title={t('compare')}
             >
               <Scale className="h-4 w-4" />
             </button>

@@ -197,10 +197,10 @@ export function PCBuilder({ products }: PCBuilderProps) {
         throw new Error('Failed to save build')
       }
 
-      toast.success('Build đã được lưu thành công!')
+      toast.success(t('saveApiSuccess'))
     } catch (error) {
       console.error('Save build error:', error)
-      toast.error('Lỗi khi lưu build')
+      toast.error(t('saveApiError'))
     }
   }
 
@@ -233,12 +233,12 @@ export function PCBuilder({ products }: PCBuilderProps) {
       })
       const data = await response.json()
       if (!response.ok) {
-        throw new Error(data.error || 'Recommendation failed')
+        throw new Error(t('recommendation.error'))
       }
       setRecommendation(data.recommendation)
     } catch (error) {
       console.error('Recommendation error:', error)
-      toast.error('Khong the goi y cau hinh luc nay')
+      toast.error(t('recommendation.error'))
     } finally {
       setRecommendationLoading(false)
     }
@@ -247,7 +247,7 @@ export function PCBuilder({ products }: PCBuilderProps) {
   const applyRecommendation = () => {
     if (!recommendation) return
     recommendation.items.forEach((product) => setProduct(product))
-    toast.success('Da ap dung cau hinh goi y')
+    toast.success(t('recommendation.applied'))
   }
 
   return (
@@ -530,7 +530,7 @@ export function PCBuilder({ products }: PCBuilderProps) {
                   onClick={handleSaveBuild}
                   className="rounded-xl border border-[#F7931A]/30 bg-[#F7931A]/10 px-5 py-3 text-sm font-mono font-semibold text-[#FFD600] shadow-[0_0_15px_-5px_rgba(247,147,26,0.3)] transition hover:scale-[1.02] hover:shadow-[0_0_20px_-5px_rgba(247,147,26,0.5)]"
                 >
-                  Lưu build
+                  {t('openSaveModal')}
                 </button>
               </div>
 
@@ -701,7 +701,7 @@ export function PCBuilder({ products }: PCBuilderProps) {
                 <div className="rounded-lg bg-[#F7931A]/20 p-1.5 border border-[#F7931A]/30">
                   <Lightbulb className="h-4 w-4 text-[#FFD600]" />
                 </div>
-                Goi y cau hinh
+                {t('recommendation.title')}
               </h3>
               <div className="grid gap-3">
                 <select
@@ -709,10 +709,10 @@ export function PCBuilder({ products }: PCBuilderProps) {
                   onChange={(event) => setRecommendationPurpose(event.target.value)}
                   className="rounded-xl border border-white/10 bg-[#030304] px-3 py-2 text-sm text-white outline-none focus:border-[#F7931A]/50"
                 >
-                  <option value="office">Van phong</option>
-                  <option value="gaming">Gaming</option>
-                  <option value="graphics">Do hoa</option>
-                  <option value="programming">Lap trinh</option>
+                  <option value="office">{t('recommendation.office')}</option>
+                  <option value="gaming">{t('recommendation.gaming')}</option>
+                  <option value="graphics">{t('recommendation.graphics')}</option>
+                  <option value="programming">{t('recommendation.programming')}</option>
                 </select>
                 <input
                   type="number"
@@ -728,14 +728,14 @@ export function PCBuilder({ products }: PCBuilderProps) {
                   disabled={recommendationLoading}
                   className="rounded-xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-4 py-3 text-sm font-bold text-white transition hover:scale-[1.02] disabled:opacity-60"
                 >
-                  {recommendationLoading ? 'Dang goi y...' : 'Tao goi y'}
+                  {recommendationLoading ? t('recommendation.loading') : t('recommendation.create')}
                 </button>
               </div>
 
               {recommendation && (
                 <div className="mt-4 space-y-2">
                   <div className="flex items-center justify-between rounded-lg border border-white/10 bg-black/30 p-3">
-                    <span className="text-xs font-mono text-muted">Tong goi y</span>
+                    <span className="text-xs font-mono text-muted">{t('recommendation.total')}</span>
                     <span className={recommendation.overBudget ? 'text-red-300' : 'text-[#FFD600]'}>
                       {formatPrice(recommendation.total, locale)}
                     </span>
@@ -754,7 +754,7 @@ export function PCBuilder({ products }: PCBuilderProps) {
                     onClick={applyRecommendation}
                     className="w-full rounded-xl border border-[#F7931A]/30 bg-[#F7931A]/10 px-4 py-2.5 text-sm font-semibold text-[#FFD600] transition hover:bg-[#F7931A]/15"
                   >
-                    Ap dung goi y
+                    {t('recommendation.apply')}
                   </button>
                 </div>
               )}

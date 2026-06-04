@@ -2,24 +2,17 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 import { useBuilderStore } from '@/store/useBuilderStore';
+import type { AppLocale } from '@/i18n/config';
+import { formatCurrency } from '@/lib/format';
 
 type Message = { role: 'user' | 'model'; content: string };
 type PendingBuild = { products: any[]; totalPrice: number };
 
-const QUICK_ACTIONS = [
-  { label: '🎮 Gaming 20 triệu', prompt: 'Build cho tôi bộ PC gaming 20 triệu' },
-  { label: '💼 Văn phòng 10 triệu', prompt: 'Build PC văn phòng ngân sách 10 triệu' },
-  { label: '🎨 Đồ họa 30 triệu', prompt: 'Build PC làm đồ họa 30 triệu' },
-  { label: '⚡ Nâng cấp GPU', prompt: 'Tôi muốn nâng cấp card đồ họa' },
-];
-
-const CAT_LABELS: Record<string, string> = {
-  cpu: 'CPU', mainboard: 'Mainboard', motherboard: 'Mainboard', ram: 'RAM',
-  gpu: 'GPU', storage: 'Ổ cứng', psu: 'Nguồn', case: 'Vỏ case', cooling: 'Tản nhiệt',
-};
-
 export default function Chatbot() {
+  const t = useTranslations('chatbot');
+  const locale = useLocale() as AppLocale;
   const router = useRouter();
   const keLinhKien  = useBuilderStore(s => s.build);
   const setProduct  = useBuilderStore(s => s.setProduct);
@@ -30,11 +23,31 @@ export default function Chatbot() {
   const [input,        setInput]        = useState('');
   const [isLoading,    setIsLoading]    = useState(false);
   const [pendingBuild, setPendingBuild] = useState<PendingBuild | null>(null);
-  const [messages, setMessages] = useState<Message[]>([{
-    role: 'model',
-    content: '👋 Xin chào! Tôi là AI tư vấn PCStore.\n\n• Build cấu hình theo ngân sách\n• Đổi linh kiện bất kỳ\n• Kiểm tra tương thích\n\nThử: "Build PC gaming 20 triệu" 🚀',
-  }]);
+  const intro = t('intro');
+  const quickActions = [
+    { label: `🎮 ${t('quickActions.gaming20Label')}`, prompt: t('quickActions.gaming20Prompt') },
+    { label: `💼 ${t('quickActions.office10Label')}`, prompt: t('quickActions.office10Prompt') },
+    { label: `🎨 ${t('quickActions.graphics30Label')}`, prompt: t('quickActions.graphics30Prompt') },
+    { label: `⚡ ${t('quickActions.upgradeGpuLabel')}`, prompt: t('quickActions.upgradeGpuPrompt') },
+  ];
+  const categoryLabels: Record<string, string> = {
+    cpu: t('categories.cpu'),
+    mainboard: t('categories.mainboard'),
+    motherboard: t('categories.mainboard'),
+    ram: t('categories.ram'),
+    gpu: t('categories.gpu'),
+    storage: t('categories.storage'),
+    psu: t('categories.psu'),
+    case: t('categories.case'),
+    cooling: t('categories.cooling'),
+  };
+  const [messages, setMessages] = useState<Message[]>([{ role: 'model', content: intro }]);
   const endRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMessages([{ role: 'model', content: intro }]);
+    setPendingBuild(null);
+  }, [intro]);
 
   useEffect(() => {
     if (isOpen) endRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -55,11 +68,11 @@ export default function Chatbot() {
     try {
       const res  = await fetch('/api/ai/chat', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: text, lichSuChat: newMsgs, keLinhKien: ctx }),
+        body: JSON.stringify({ prompt: text, lichSuChat: newMsgs, keLinhKien: ctx, locale }),
       });
       const data = await res.json();
       if (data.error) { setMessages(p => [...p, { role: 'model', content: `⚠️ ${data.error}` }]); return; }
-      const reply = data.tinNhanBot?.trim() || 'Dạ, em đã xử lý xong!';
+      const reply = data.tinNhanBot?.trim() || t('fallbackReply');
       setMessages(p => [...p, { role: 'model', content: reply }]);
       const shelf: any[] = data.danhSachTrenKeMoi ?? [];
       const newly: any[] = data.duLieuGoiY ?? [];
@@ -71,26 +84,26 @@ export default function Chatbot() {
         }
       }
     } catch {
-      setMessages(p => [...p, { role: 'model', content: 'Kết nối bị gián đoạn, thử lại nhé!' }]);
+      setMessages(p => [...p, { role: 'model', content: t('networkError') }]);
     } finally { setIsLoading(false); }
-  }, [isLoading, messages, pendingBuild, keLinhKien, setProduct]);
+  }, [isLoading, messages, pendingBuild, keLinhKien, locale, setProduct, t]);
 
   const handleConfirm = () => {
     if (!pendingBuild) return;
     setBuildFromAI(pendingBuild.products);
-    setMessages(p => [...p, { role: 'model', content: `✅ Đã thêm ${pendingBuild.products.length} linh kiện!\nTổng: ${pendingBuild.totalPrice.toLocaleString('vi-VN')}đ` }]);
+    setMessages(p => [...p, { role: 'model', content: `✅ ${t('confirmMessage', { count: pendingBuild.products.length, total: formatCurrency(pendingBuild.totalPrice, locale) })}` }]);
     setPendingBuild(null);
     setTimeout(() => { router.push('/builder'); setIsOpen(false); }, 600);
   };
 
   const handleCancel = () => {
     setPendingBuild(null);
-    setMessages(p => [...p, { role: 'model', content: 'Đã huỷ. Bạn muốn thay đổi gì không? 😊' }]);
+    setMessages(p => [...p, { role: 'model', content: t('cancelMessage') }]);
   };
 
   const handleSwap = (item: any) => {
-    const label = CAT_LABELS[item.category] || item.category;
-    sendMessage(`Đổi ${label} sang loại khác phù hợp hơn`);
+    const label = categoryLabels[item.category] || item.category;
+    sendMessage(t('swapPrompt', { label }));
   };
 
   const buildCount = Object.keys(keLinhKien).length;
@@ -110,10 +123,10 @@ export default function Chatbot() {
                 ⚡
               </div>
               <div>
-                <div className="font-bold text-sm" style={{ color: '#FFD600', letterSpacing: '0.02em' }}>AI Tư Vấn PCStore</div>
+                <div className="font-bold text-sm" style={{ color: '#FFD600', letterSpacing: '0.02em' }}>{t('title')}</div>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[10px] text-emerald-400">Trực tuyến 24/7</span>
+                  <span className="text-[10px] text-emerald-400">{t('online')}</span>
                 </div>
               </div>
             </div>
@@ -130,7 +143,7 @@ export default function Chatbot() {
                   <button onClick={() => { router.push('/builder'); setIsOpen(false); }}
                     className="text-[11px] px-2.5 py-1 rounded-lg font-medium transition-all"
                     style={{ color: '#F7931A', border: '1px solid rgba(247,147,26,0.3)', background: 'rgba(247,147,26,0.08)' }}>
-                    🔧 {buildCount} món
+                    🔧 {t('itemCount', { count: buildCount })}
                   </button>
                 </>
               )}
@@ -163,7 +176,7 @@ export default function Chatbot() {
                   <span key={i} className="w-2 h-2 rounded-full animate-bounce"
                     style={{ background: '#F7931A', animationDelay: `${i * 0.18}s` }} />
                 ))}
-                <span className="text-[12px] text-slate-400 ml-1">AI đang xử lý...</span>
+                <span className="text-[12px] text-slate-400 ml-1">{t('processing')}</span>
               </div>
             )}
 
@@ -174,10 +187,10 @@ export default function Chatbot() {
                 <div className="flex items-center justify-between pb-2" style={{ borderBottom: '1px solid rgba(247,147,26,0.15)' }}>
                   <div className="flex items-center gap-2">
                     <span className="text-base">🛒</span>
-                    <span className="font-semibold text-[13px]" style={{ color: '#FFD600' }}>Cấu hình AI đề xuất</span>
+                    <span className="font-semibold text-[13px]" style={{ color: '#FFD600' }}>{t('proposal')}</span>
                   </div>
                   <span className="text-[11px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(247,147,26,0.15)', color: '#F7931A' }}>
-                    {pendingBuild.products.length} linh kiện
+                    {t('componentCount', { count: pendingBuild.products.length })}
                   </span>
                 </div>
 
@@ -186,11 +199,11 @@ export default function Chatbot() {
                     <div key={i} className="flex items-center gap-2 group">
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 w-[62px] text-center"
                         style={{ background: 'rgba(247,147,26,0.15)', color: '#F7931A' }}>
-                        {CAT_LABELS[p.category] || p.category}
+                        {categoryLabels[p.category] || p.category}
                       </span>
                       <span className="text-[12px] flex-1 truncate text-slate-300" title={p.name}>{p.name}</span>
                       <span className="text-[11px] shrink-0" style={{ color: '#FFD600' }}>
-                        {(p.price || 0).toLocaleString('vi-VN')}đ
+                        {formatCurrency(p.price || 0, locale)}
                       </span>
                       <button onClick={() => handleSwap(p)}
                         className="shrink-0 text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-all"
@@ -202,9 +215,9 @@ export default function Chatbot() {
                 </div>
 
                 <div className="flex items-center justify-between pt-1" style={{ borderTop: '1px solid rgba(247,147,26,0.15)' }}>
-                  <span className="text-[12px] text-slate-400">Tổng cộng:</span>
+                  <span className="text-[12px] text-slate-400">{t('total')}</span>
                   <span className="font-bold text-sm" style={{ color: '#FFD600' }}>
-                    {pendingBuild.totalPrice.toLocaleString('vi-VN')}đ
+                    {formatCurrency(pendingBuild.totalPrice, locale)}
                   </span>
                 </div>
 
@@ -214,16 +227,16 @@ export default function Chatbot() {
                     style={{ background: 'linear-gradient(135deg, #F7931A, #EA580C)', color: '#fff', boxShadow: '0 4px 16px rgba(247,147,26,0.3)' }}
                     onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
                     onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-                    ✅ Xác nhận & Vào Builder
+                    ✅ {t('confirm')}
                   </button>
                   <button onClick={handleCancel}
                     className="px-3 py-2 rounded-xl text-[12px] transition-all"
                     style={{ background: 'rgba(255,255,255,0.05)', color: '#64748B', border: '1px solid rgba(255,255,255,0.1)' }}>
-                    Huỷ
+                    {t('cancel')}
                   </button>
                 </div>
                 <p className="text-[10px] text-center" style={{ color: 'rgba(247,147,26,0.4)' }}>
-                  Hover vào linh kiện → 🔄 để đổi sang món khác
+                  {t('swapHint')}
                 </p>
               </div>
             )}
@@ -235,7 +248,7 @@ export default function Chatbot() {
           {messages.length <= 2 && !isLoading && (
             <div className="px-3 py-2 flex flex-wrap gap-1.5 shrink-0"
               style={{ background: '#06060b', borderTop: '1px solid rgba(247,147,26,0.1)' }}>
-              {QUICK_ACTIONS.map(a => (
+              {quickActions.map(a => (
                 <button key={a.label} onClick={() => sendMessage(a.prompt)}
                   className="text-[11px] px-2.5 py-1.5 rounded-full transition-all whitespace-nowrap"
                   style={{ background: 'rgba(247,147,26,0.08)', color: '#F7931A', border: '1px solid rgba(247,147,26,0.25)' }}
@@ -255,7 +268,7 @@ export default function Chatbot() {
               style={{ background: '#111118', border: '1px solid rgba(247,147,26,0.2)' }}
               onFocus={e => (e.currentTarget.style.border = '1px solid rgba(247,147,26,0.5)')}
               onBlur={e => (e.currentTarget.style.border = '1px solid rgba(247,147,26,0.2)')}
-              placeholder={pendingBuild ? 'Đổi linh kiện nào? (vd: đổi CPU)' : 'Hỏi về cấu hình PC...'}
+              placeholder={pendingBuild ? t('swapPlaceholder') : t('questionPlaceholder')}
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && !isLoading && sendMessage(input)}
@@ -265,7 +278,7 @@ export default function Chatbot() {
               disabled={isLoading || !input.trim()}
               className="px-4 rounded-xl text-[13px] font-bold transition-all disabled:opacity-30"
               style={{ background: 'linear-gradient(135deg, #F7931A, #EA580C)', color: '#fff', boxShadow: '0 4px 12px rgba(247,147,26,0.3)' }}>
-              Gửi
+              {t('send')}
             </button>
           </div>
         </div>

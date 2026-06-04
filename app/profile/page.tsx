@@ -89,25 +89,27 @@ export default async function ProfilePage() {
                 <Award className="h-6 w-6" />
               </div>
               <div>
-                <p className="text-sm uppercase tracking-wider text-slate-400">Diem thanh vien</p>
-                <p className="mt-1 text-3xl font-bold text-white">{user.diemTichLuy.toLocaleString('vi-VN')} diem</p>
+                <p className="text-sm uppercase tracking-wider text-slate-400">{t('pointsTitle')}</p>
+                <p className="mt-1 text-3xl font-bold text-white">{t('pointsUnit', { count: user.diemTichLuy.toLocaleString(locale === 'vi' ? 'vi-VN' : 'en-US') })}</p>
               </div>
             </div>
             <div className="rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-right">
-              <p className="text-xs uppercase tracking-wider text-slate-500">Hang</p>
+              <p className="text-xs uppercase tracking-wider text-slate-500">{t('tier')}</p>
               <p className="text-lg font-semibold text-amber-300">{tier}</p>
             </div>
           </div>
 
           <div className="mt-6 grid gap-3">
             {pointHistory.length === 0 ? (
-              <p className="rounded-xl border border-dashed border-white/10 bg-white/5 p-4 text-sm text-slate-400">Chua co lich su diem.</p>
+              <p className="rounded-xl border border-dashed border-white/10 bg-white/5 p-4 text-sm text-slate-400">{t('emptyPointHistory')}</p>
             ) : (
               pointHistory.map((item) => (
                 <div key={item.id} className="flex items-center justify-between gap-4 rounded-xl border border-white/10 bg-black/20 px-4 py-3">
                   <div>
-                    <p className="text-sm font-medium text-white">{item.lyDo}</p>
-                    <p className="mt-1 text-xs text-slate-500">{item.donHang?.maDonHang || 'Tai khoan'} - {new Intl.DateTimeFormat(locale === 'vi' ? 'vi-VN' : 'en-US', { dateStyle: 'medium' }).format(new Date(item.ngayTao))}</p>
+                    <p className="text-sm font-medium text-white">
+                      {item.donHang ? t('orderPointsReason', { code: item.donHang.maDonHang }) : item.lyDo}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">{item.donHang?.maDonHang || t('accountFallback')} - {new Intl.DateTimeFormat(locale === 'vi' ? 'vi-VN' : 'en-US', { dateStyle: 'medium' }).format(new Date(item.ngayTao))}</p>
                   </div>
                   <span className={item.loai === 'CONG' ? 'text-emerald-300' : 'text-rose-300'}>
                     {item.loai === 'CONG' ? '+' : '-'}{item.diem}
@@ -124,7 +126,7 @@ export default async function ProfilePage() {
           </Link>
           <Link href="/account/codes" className="inline-flex items-center gap-2 rounded-xl border border-[#F7931A]/35 bg-[#F7931A]/10 px-6 py-3 font-semibold text-[#FFD600] transition hover:bg-[#F7931A]/20">
             <KeyRound className="h-4 w-4" />
-            Ma cua toi
+            {t('myCodes')}
           </Link>
           {user.vaiTro === 'QUAN_TRI_VIEN' && (
             <Link href="/admin" className="rounded-[12px] border border-amber-500/40 bg-amber-500/10 px-6 py-3 font-semibold text-amber-300 hover:bg-amber-500/20 transition">

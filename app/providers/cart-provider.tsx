@@ -1,6 +1,8 @@
 'use client'
 
 import React, { createContext, useCallback, useContext, useState, type ReactNode } from 'react'
+import { useLocale, useTranslations } from 'next-intl'
+import { getLocalizedApiError } from '@/lib/localized-api-error'
 
 interface CartItem {
   id: string
@@ -24,6 +26,8 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const t = useTranslations('productCard')
+  const locale = useLocale()
   const [cartCount, setCartCount] = useState(0)
   const [items, setItems] = useState<CartItem[]>([])
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -66,17 +70,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     if (response.status === 401) {
       setIsAuthenticated(false)
-      throw new Error('Bạn cần đăng nhập để thêm vào giỏ hàng')
+      throw new Error(t('loginRequired'))
     }
 
     const result = await response.json().catch(() => ({}))
     if (!response.ok) {
-      throw new Error(result.error || 'Không thể thêm vào giỏ hàng')
+      throw new Error(getLocalizedApiError(result, locale, t('failed')))
     }
 
     setIsAuthenticated(true)
     await fetchCartCount()
-  }, [fetchCartCount])
+  }, [fetchCartCount, locale, t])
 
   return (
     <CartContext.Provider value={{ cartCount, items, isAuthenticated, fetchCartCount, addItem }}>

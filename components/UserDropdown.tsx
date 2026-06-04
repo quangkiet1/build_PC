@@ -58,7 +58,7 @@ export function UserDropdown() {
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => router.push('/account/codes')}>
           <KeyRound className="h-4 w-4" />
-          Ma cua toi
+          {t('codes')}
         </DropdownMenuItem>
         {user.role === 'QUAN_TRI_VIEN' && (
           <DropdownMenuItem onClick={() => router.push('/admin')}>

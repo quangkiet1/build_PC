@@ -3,11 +3,11 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowLeft, Scale, X } from 'lucide-react'
+import { useLocale, useTranslations } from 'next-intl'
 import { useCompare } from '@/components/compare-provider'
-
-function formatPrice(value: number) {
-  return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 })
-}
+import { formatCurrency } from '@/lib/format'
+import type { AppLocale } from '@/i18n/config'
+import { getCategoryMessageKey } from '@/lib/category-i18n'
 
 function specsOf(product: ReturnType<typeof useCompare>['products'][number]) {
   if (!product.thongSoKyThuat || typeof product.thongSoKyThuat !== 'object' || Array.isArray(product.thongSoKyThuat)) {
@@ -17,8 +17,8 @@ function specsOf(product: ReturnType<typeof useCompare>['products'][number]) {
   return product.thongSoKyThuat as Record<string, unknown>
 }
 
-function valueText(value: unknown) {
-  if (value === null || value === undefined || value === '') return 'Khong co'
+function valueText(value: unknown, fallback: string) {
+  if (value === null || value === undefined || value === '') return fallback
   if (typeof value === 'object') return JSON.stringify(value)
   return String(value)
 }
@@ -28,8 +28,15 @@ function different(values: string[]) {
 }
 
 export default function ComparePage() {
+  const t = useTranslations('comparePage')
+  const categoryT = useTranslations('categories')
+  const locale = useLocale() as AppLocale
   const { products, removeProduct, clear } = useCompare()
   const specKeys = Array.from(new Set(products.flatMap((product) => Object.keys(specsOf(product))))).sort()
+  const categoryName = (name?: string) => {
+    const key = getCategoryMessageKey(name)
+    return key ? categoryT(key) : name
+  }
 
   return (
     <main className="min-h-screen bg-[#030304] px-4 pb-32 pt-10 text-white sm:px-6 lg:px-8">
@@ -38,13 +45,13 @@ export default function ComparePage() {
           <div>
             <Link href="/products" className="mb-4 inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-[#F7931A]">
               <ArrowLeft className="h-4 w-4" />
-              Quay lai san pham
+              {t('back')}
             </Link>
             <h1 className="flex items-center gap-3 text-3xl font-bold">
               <Scale className="h-7 w-7 text-[#FFD600]" />
-              So sanh san pham
+              {t('title')}
             </h1>
-            <p className="mt-2 text-sm text-slate-400">Chon 2-3 san pham cung danh muc de xem khac biet ve gia, thuong hieu va thong so.</p>
+            <p className="mt-2 text-sm text-slate-400">{t('description')}</p>
           </div>
           {products.length > 0 && (
             <button
@@ -52,7 +59,7 @@ export default function ComparePage() {
               onClick={clear}
               className="w-fit rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:bg-white/5 hover:text-white"
             >
-              Xoa tat ca
+              {t('clear')}
             </button>
           )}
         </header>
@@ -60,10 +67,10 @@ export default function ComparePage() {
         {products.length < 2 ? (
           <section className="rounded-2xl border border-white/10 bg-[#0f1115] p-10 text-center">
             <Scale className="mx-auto h-10 w-10 text-slate-600" />
-            <h2 className="mt-4 text-xl font-semibold">Can it nhat 2 san pham</h2>
-            <p className="mt-2 text-sm text-slate-400">Hay quay lai danh sach san pham va bam nut so sanh tren ProductCard.</p>
+            <h2 className="mt-4 text-xl font-semibold">{t('minimumTitle')}</h2>
+            <p className="mt-2 text-sm text-slate-400">{t('minimumDescription')}</p>
             <Link href="/products" className="mt-6 inline-flex rounded-xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-5 py-3 text-sm font-semibold text-white">
-              Chon san pham
+              {t('choose')}
             </Link>
           </section>
         ) : (
@@ -72,7 +79,7 @@ export default function ComparePage() {
               <table className="w-full min-w-[760px] table-fixed">
                 <thead>
                   <tr className="border-b border-white/10 bg-white/5">
-                    <th className="w-48 px-5 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-500">Tieu chi</th>
+                    <th className="w-48 px-5 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-500">{t('criteria')}</th>
                     {products.map((product) => (
                       <th key={product.id} className="px-5 py-4 text-left align-top">
                         <div className="flex items-start gap-3">
@@ -87,7 +94,7 @@ export default function ComparePage() {
                             <Link href={`/products/${product.slug}`} className="line-clamp-2 text-sm font-semibold text-white transition hover:text-[#F7931A]">
                               {product.tenSanPham}
                             </Link>
-                            <p className="mt-1 text-xs text-slate-500">{product.danhMuc?.tenDanhMuc}</p>
+                            <p className="mt-1 text-xs text-slate-500">{categoryName(product.danhMuc?.tenDanhMuc)}</p>
                           </div>
                           <button
                             type="button"
@@ -102,10 +109,10 @@ export default function ComparePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/10">
-                  <CompareRow label="Gia" values={products.map((product) => formatPrice(product.gia))} />
-                  <CompareRow label="Thuong hieu" values={products.map((product) => product.thuongHieu || 'Khong co')} />
+                  <CompareRow label={t('price')} values={products.map((product) => formatCurrency(product.gia, locale))} />
+                  <CompareRow label={t('brand')} values={products.map((product) => product.thuongHieu || t('notAvailable'))} />
                   {specKeys.map((key) => (
-                    <CompareRow key={key} label={key.replace(/_/g, ' ')} values={products.map((product) => valueText(specsOf(product)[key]))} />
+                    <CompareRow key={key} label={key.replace(/_/g, ' ')} values={products.map((product) => valueText(specsOf(product)[key], t('notAvailable')))} />
                   ))}
                 </tbody>
               </table>
@@ -118,13 +125,14 @@ export default function ComparePage() {
 }
 
 function CompareRow({ label, values }: { label: string; values: string[] }) {
+  const t = useTranslations('comparePage')
   const hasDifference = different(values)
 
   return (
     <tr>
       <td className="px-5 py-4 text-sm font-medium capitalize text-slate-400">
         {label}
-        {hasDifference && <span className="ml-2 rounded bg-[#F7931A]/10 px-2 py-0.5 text-[10px] uppercase tracking-widest text-[#FFD600]">Khac</span>}
+        {hasDifference && <span className="ml-2 rounded bg-[#F7931A]/10 px-2 py-0.5 text-[10px] uppercase tracking-widest text-[#FFD600]">{t('different')}</span>}
       </td>
       {values.map((value, index) => (
         <td key={`${label}-${index}`} className={`px-5 py-4 text-sm ${hasDifference ? 'bg-[#F7931A]/5 text-white' : 'text-slate-300'}`}>

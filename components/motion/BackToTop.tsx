@@ -3,8 +3,10 @@
 import { useEffect, useState, useRef } from 'react'
 import { animate } from 'animejs'
 import { ChevronUp } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export function BackToTop() {
+  const t = useTranslations('common')
   const [isVisible, setIsVisible] = useState(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
@@ -46,7 +48,7 @@ export function BackToTop() {
       ref={buttonRef}
       onClick={handleClick}
       className="fixed bottom-24 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-[#F7931A]/30 bg-[#F7931A]/90 text-white shadow-[0_8px_30px_rgba(247,147,26,0.36)] transition-all hover:scale-110 hover:bg-[#ff9f2d] focus:outline-none focus:ring-2 focus:ring-[#F7931A] focus:ring-offset-2 focus:ring-offset-[#030304]"
-      aria-label="Lên đầu trang"
+      aria-label={t('backToTop')}
     >
       <ChevronUp className="h-6 w-6" />
     </button>

@@ -3,9 +3,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useLocale, useTranslations } from 'next-intl'
 import { Plus, Edit2, Trash2, X, ArrowLeft, Search, Percent, Loader2 } from 'lucide-react'
 import { useToast } from '@/app/providers/toast-provider'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import type { AppLocale } from '@/i18n/config'
+import { formatCurrency, toIntlLocale } from '@/lib/format'
 
 interface Promotion {
   id: string
@@ -28,6 +31,9 @@ interface Promotion {
 export default function AdminPromotions() {
   const router = useRouter()
   const { addToast } = useToast()
+  const t = useTranslations('admin.promotions')
+  const commonT = useTranslations('admin.common')
+  const locale = useLocale() as AppLocale
   const [promotions, setPromotions] = useState<Promotion[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(null)
@@ -60,18 +66,18 @@ export default function AdminPromotions() {
       }
 
       if (!response.ok) {
-        throw new Error('Failed to fetch promotions')
+        throw new Error(t('loadError'))
       }
 
       const data = await response.json()
       setPromotions(data.promotions || [])
     } catch (error) {
       console.error('Error fetching promotions:', error)
-      addToast('Lỗi khi tải danh sách khuyến mãi', 'error')
+      addToast(t('loadError'), 'error')
     } finally {
       setLoading(false)
     }
-  }, [addToast, router])
+  }, [addToast, router, t])
 
   useEffect(() => {
     fetchData()
@@ -124,12 +130,12 @@ export default function AdminPromotions() {
     e.preventDefault()
 
     if (!formData.maKhuyenMai || !formData.tenKhuyenMai) {
-      addToast('Vui lòng điền mã và tên khuyến mãi', 'error')
+      addToast(t('required'), 'error')
       return
     }
 
     if (formData.giaTriGiam <= 0 || (formData.loaiGiamGia === 'PHAN_TRAM' && (formData.giaTriGiam < 1 || formData.giaTriGiam > 100))) {
-      addToast('Phần trăm giảm phải từ 1 đến 100', 'error')
+      addToast(t('percentageError'), 'error')
       return
     }
 
@@ -158,14 +164,13 @@ export default function AdminPromotions() {
         return
       }
 
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Failed to save promotion')
+      if (!response.ok) throw new Error(t('saveError'))
       await fetchData()
       closeForm()
-      addToast(selectedPromotion ? 'Đã cập nhật khuyến mãi' : 'Đã tạo khuyến mãi mới', 'success')
+      addToast(selectedPromotion ? t('updateSuccess') : t('createSuccess'), 'success')
     } catch (error) {
       console.error('Error saving promotion:', error)
-      addToast(error instanceof Error ? error.message : 'Lỗi khi lưu khuyến mãi', 'error')
+      addToast(error instanceof Error ? error.message : t('saveError'), 'error')
     }
   }
 
@@ -183,21 +188,20 @@ export default function AdminPromotions() {
         return
       }
 
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Failed to delete promotion')
+      if (!response.ok) throw new Error(t('deleteError'))
       await fetchData()
-      addToast('Đã xóa khuyến mãi', 'success')
+      addToast(t('deleteSuccess'), 'success')
       setPromotionToDelete(null)
     } catch (error) {
       console.error('Error deleting promotion:', error)
-      addToast(error instanceof Error ? error.message : 'Lỗi khi xóa khuyến mãi', 'error')
+      addToast(error instanceof Error ? error.message : t('deleteError'), 'error')
     }
   }
 
-  const formatDate = (dateString: string) => new Date(dateString).toLocaleString('vi-VN')
+  const formatDate = (dateString: string) => new Date(dateString).toLocaleString(toIntlLocale(locale))
   const formatDiscount = (promo: Promotion) =>
     promo.loaiGiamGia === 'SO_TIEN'
-      ? `${promo.giaTriGiam.toLocaleString('vi-VN')} VND`
+      ? formatCurrency(promo.giaTriGiam, locale)
       : `${promo.giaTriGiam || promo.phanTramGiam}%`
 
   const filtered = promotions.filter((p) =>
@@ -211,7 +215,7 @@ export default function AdminPromotions() {
         <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-30" />
         <div className="text-center relative z-10">
           <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-[#FFD600]" />
-          <p className="text-slate-400">Đang tải khuyến mãi...</p>
+          <p className="text-slate-400">{t('loading')}</p>
         </div>
       </div>
     )
@@ -225,21 +229,21 @@ export default function AdminPromotions() {
       <div className="bg-black/40 backdrop-blur-2xl border-b border-white/10 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <Link href="/admin" className="mb-4 inline-flex items-center gap-1.5 text-sm text-slate-400 transition hover:text-[#FFD600]">
-            <ArrowLeft className="w-4 h-4" /> Quay lại Dashboard
+            <ArrowLeft className="w-4 h-4" /> {commonT('backDashboard')}
           </Link>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold flex items-center gap-2">
                 <Percent className="h-6 w-6 text-[#FFD600]" />
-                Quản lý Khuyến mãi
+                {t('title')}
               </h1>
-              <p className="text-slate-400 text-sm mt-1">{promotions.length} khuyến mãi trong hệ thống</p>
+              <p className="text-slate-400 text-sm mt-1">{t('count', { count: promotions.length })}</p>
             </div>
             <button
               onClick={() => openForm()}
               className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
             >
-              <Plus className="w-4 h-4" /> Thêm khuyến mãi
+              <Plus className="w-4 h-4" /> {t('add')}
             </button>
           </div>
         </div>
@@ -254,7 +258,7 @@ export default function AdminPromotions() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm theo mã hoặc tên..."
+              placeholder={t('search')}
               className="w-full rounded-2xl border border-white/10 bg-[#0F1115]/85 py-2.5 pl-10 pr-4 text-sm text-white outline-none transition placeholder:text-slate-500 hover:bg-black/20 focus:border-[#F7931A]/50"
             />
           </div>
@@ -266,14 +270,14 @@ export default function AdminPromotions() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-white/10 bg-black/20">
-                  <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500">Mã</th>
-                  <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500">Tên</th>
-                  <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500">Giảm</th>
-                  <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500">Da dung</th>
-                  <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500 hidden md:table-cell">Bắt đầu</th>
-                  <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500 hidden md:table-cell">Kết thúc</th>
-                  <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500">Trạng thái</th>
-                  <th className="text-center px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500">Hành động</th>
+                  <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500">{t('columns.code')}</th>
+                  <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500">{t('columns.name')}</th>
+                  <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500">{t('columns.discount')}</th>
+                  <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500">{t('columns.used')}</th>
+                  <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500 hidden md:table-cell">{t('columns.start')}</th>
+                  <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500 hidden md:table-cell">{t('columns.end')}</th>
+                  <th className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500">{t('columns.status')}</th>
+                  <th className="text-center px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500">{commonT('actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -281,7 +285,7 @@ export default function AdminPromotions() {
                   <tr>
                     <td colSpan={8} className="px-5 py-10 text-center text-slate-500">
                       <Percent className="w-8 h-8 mx-auto mb-2 text-slate-700" />
-                      Không có khuyến mãi nào
+                      {t('empty')}
                     </td>
                   </tr>
                 ) : (
@@ -306,7 +310,7 @@ export default function AdminPromotions() {
                             ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                             : 'bg-slate-800 text-slate-400 border border-slate-700'
                         }`}>
-                          {promo.isActive ? 'Hoạt động' : 'Tắt'}
+                          {promo.isActive ? t('active') : t('inactive')}
                         </span>
                       </td>
                       <td className="px-5 py-3.5">
@@ -340,7 +344,7 @@ export default function AdminPromotions() {
           <div className="bg-[linear-gradient(180deg,rgba(20,25,40,0.9),rgba(10,15,25,0.95))] backdrop-blur-2xl border border-white/10 rounded-[24px] shadow-2xl max-w-2xl w-full overflow-hidden">
             <div className="flex items-center justify-between p-5 border-b border-[#1e2535]">
               <h2 className="text-lg font-semibold text-white">
-                {selectedPromotion ? 'Sửa Khuyến mãi' : 'Thêm Khuyến mãi'}
+                {selectedPromotion ? t('editTitle') : t('addTitle')}
               </h2>
               <button onClick={closeForm} className="p-1.5 rounded-lg text-slate-400 hover:bg-rose-500/10 hover:text-rose-400 transition">
                 <X className="w-5 h-5" />
@@ -349,12 +353,12 @@ export default function AdminPromotions() {
 
             <form onSubmit={handleSubmit} className="p-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1.5">Mã khuyến mãi</label>
+                <label className="block text-sm font-medium text-slate-400 mb-1.5">{t('code')}</label>
                 <input
                   type="text"
                   value={formData.maKhuyenMai}
                   onChange={(e) => setFormData({ ...formData, maKhuyenMai: e.target.value })}
-                  placeholder="VD: SALE2024"
+                  placeholder={t('codePlaceholder')}
                   className="w-full rounded-xl border border-white/10 bg-[#141a26] px-4 py-2.5 text-sm text-white outline-none placeholder:text-slate-600 focus:border-[#F7931A]/50 disabled:opacity-50"
                   disabled={!!selectedPromotion}
                   required
@@ -362,43 +366,43 @@ export default function AdminPromotions() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1.5">Tên khuyến mãi</label>
+                <label className="block text-sm font-medium text-slate-400 mb-1.5">{t('name')}</label>
                 <input
                   type="text"
                   value={formData.tenKhuyenMai}
                   onChange={(e) => setFormData({ ...formData, tenKhuyenMai: e.target.value })}
-                  placeholder="VD: Giảm giá mùa hè"
+                  placeholder={t('namePlaceholder')}
                   className="w-full rounded-xl border border-white/10 bg-[#141a26] px-4 py-2.5 text-sm text-white outline-none placeholder:text-slate-600 focus:border-[#F7931A]/50"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1.5">Mo ta</label>
+                <label className="block text-sm font-medium text-slate-400 mb-1.5">{t('description')}</label>
                 <textarea
                   value={formData.moTa}
                   onChange={(e) => setFormData({ ...formData, moTa: e.target.value })}
                   rows={2}
                   className="w-full rounded-xl border border-white/10 bg-[#141a26] px-4 py-2.5 text-sm text-white outline-none placeholder:text-slate-600 focus:border-[#F7931A]/50"
-                  placeholder="Dieu kien hoac ghi chu ngan"
+                  placeholder={t('descriptionPlaceholder')}
                 />
               </div>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-slate-400 mb-1.5">Loai giam</label>
+                  <label className="block text-sm font-medium text-slate-400 mb-1.5">{t('discountType')}</label>
                   <select
                     value={formData.loaiGiamGia}
                     onChange={(e) => setFormData({ ...formData, loaiGiamGia: e.target.value as 'PHAN_TRAM' | 'SO_TIEN' })}
                     className="scheme-dark w-full rounded-xl border border-white/10 bg-[#141a26] px-4 py-2.5 text-sm text-white outline-none focus:border-[#F7931A]/50"
                   >
-                    <option value="PHAN_TRAM">Phan tram</option>
-                    <option value="SO_TIEN">So tien co dinh</option>
+                    <option value="PHAN_TRAM">{t('percentage')}</option>
+                    <option value="SO_TIEN">{t('fixedAmount')}</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-400 mb-1.5">
-                    Gia tri giam {formData.loaiGiamGia === 'PHAN_TRAM' ? '(%)' : '(VND)'}
+                    {t('discountValue')} {formData.loaiGiamGia === 'PHAN_TRAM' ? '(%)' : '(VND)'}
                   </label>
                   <input
                     type="number"
@@ -414,29 +418,29 @@ export default function AdminPromotions() {
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div>
-                  <label className="block text-sm font-medium text-slate-400 mb-1.5">Don toi thieu</label>
+                  <label className="block text-sm font-medium text-slate-400 mb-1.5">{t('minimumOrder')}</label>
                   <input
                     type="number"
                     min="0"
                     value={formData.minOrderValue}
                     onChange={(e) => setFormData({ ...formData, minOrderValue: e.target.value })}
-                    placeholder="Khong bat buoc"
+                    placeholder={t('optional')}
                     className="w-full rounded-xl border border-white/10 bg-[#141a26] px-4 py-2.5 text-sm text-white outline-none placeholder:text-slate-600 focus:border-[#F7931A]/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-400 mb-1.5">Tong luot</label>
+                  <label className="block text-sm font-medium text-slate-400 mb-1.5">{t('totalUses')}</label>
                   <input
                     type="number"
                     min="1"
                     value={formData.gioiHanTong}
                     onChange={(e) => setFormData({ ...formData, gioiHanTong: e.target.value })}
-                    placeholder="Khong gioi han"
+                    placeholder={t('unlimited')}
                     className="w-full rounded-xl border border-white/10 bg-[#141a26] px-4 py-2.5 text-sm text-white outline-none placeholder:text-slate-600 focus:border-[#F7931A]/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-400 mb-1.5">Luot/tai khoan</label>
+                  <label className="block text-sm font-medium text-slate-400 mb-1.5">{t('usesPerAccount')}</label>
                   <input
                     type="number"
                     min="1"
@@ -450,7 +454,7 @@ export default function AdminPromotions() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-slate-400 mb-1.5">Ngày bắt đầu</label>
+                  <label className="block text-sm font-medium text-slate-400 mb-1.5">{t('startDate')}</label>
                   <input
                     type="datetime-local"
                     value={formData.ngayBatDau}
@@ -460,7 +464,7 @@ export default function AdminPromotions() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-400 mb-1.5">Ngày kết thúc</label>
+                  <label className="block text-sm font-medium text-slate-400 mb-1.5">{t('endDate')}</label>
                   <input
                     type="datetime-local"
                     value={formData.ngayKetThuc}
@@ -480,7 +484,7 @@ export default function AdminPromotions() {
                   id="isActive"
                 />
                 <label htmlFor="isActive" className="text-sm text-slate-300">
-                  Kích hoạt khuyến mãi
+                  {t('activate')}
                 </label>
               </div>
 
@@ -489,14 +493,14 @@ export default function AdminPromotions() {
                   type="submit"
                   className="flex-1 rounded-xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
                 >
-                  {selectedPromotion ? 'Cập nhật' : 'Thêm'}
+                  {selectedPromotion ? commonT('update') : commonT('add')}
                 </button>
                 <button
                   type="button"
                   onClick={closeForm}
                   className="flex-1 py-2.5 rounded-xl border border-[#1e2535] text-slate-300 text-sm font-medium hover:bg-[#141a26] transition"
                 >
-                  Hủy
+                  {commonT('cancel')}
                 </button>
               </div>
             </form>
@@ -506,9 +510,9 @@ export default function AdminPromotions() {
 
       <ConfirmDialog
         open={Boolean(promotionToDelete)}
-        title="Xóa khuyến mãi"
-        description={promotionToDelete ? `Bạn có chắc muốn xóa mã ${promotionToDelete.maKhuyenMai}?` : ''}
-        confirmLabel="Xóa khuyến mãi"
+        title={t('confirmTitle')}
+        description={promotionToDelete ? t('confirmDescription', { code: promotionToDelete.maKhuyenMai }) : ''}
+        confirmLabel={t('confirmButton')}
         onConfirm={handleDelete}
         onOpenChange={(open) => {
           if (!open) {

@@ -10,11 +10,18 @@ import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/context/AuthContext'
 import { ProtectedLink } from '@/components/ProtectedLink'
 import { useCart } from '@/app/providers/cart-provider'
+import { getLocalizedApiError } from '@/lib/localized-api-error'
+import { getCategoryMessageKey } from '@/lib/category-i18n'
+
+function AddressMapLoading() {
+  const t = useTranslations('cartPage')
+  return <div className="h-96 bg-[#141a26] rounded-xl border border-[#1e2535] flex items-center justify-center text-slate-400">{t('mapLoading')}</div>
+}
 
 // Dynamic import Leaflet component to avoid server-side rendering issues
 const AddressPickerMap = dynamic(() => import('@/components/AddressPickerMap').then(mod => ({ default: mod.AddressPickerMap })), {
   ssr: false,
-  loading: () => <div className="h-96 bg-[#141a26] rounded-xl border border-[#1e2535] flex items-center justify-center text-slate-400">Đang tải bản đồ...</div>
+  loading: AddressMapLoading
 })
 
 import {
@@ -66,6 +73,7 @@ type AppliedPromotion = {
 
 export default function CartPage() {
   const t = useTranslations('cartPage')
+  const categoryT = useTranslations('categories')
   const locale = useLocale()
   const { requireAuth } = useAuth()
   const { fetchCartCount } = useCart()
@@ -93,6 +101,10 @@ export default function CartPage() {
 
   const formatPrice = (value: number) =>
     value.toLocaleString(locale === 'vi' ? 'vi-VN' : 'en-US', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 })
+  const categoryName = (name?: string | null) => {
+    const key = getCategoryMessageKey(name)
+    return key ? categoryT(key) : name
+  }
 
   const subtotal = useMemo(
     () => items.reduce((sum, item) => sum + item.sanPham.gia * item.soLuong, 0),
@@ -125,7 +137,7 @@ export default function CartPage() {
           setItems([])
           return
         }
-        setError(data.error || t('loadError'))
+        setError(getLocalizedApiError(data, locale, t('loadError')))
         setItems([])
       } else {
         setItems(data.cart?.items ?? [])
@@ -157,7 +169,7 @@ export default function CartPage() {
       })
       const data = await response.json()
       if (!response.ok) {
-        setError(data.error || t('updateFailed'))
+        setError(getLocalizedApiError(data, locale, t('updateFailed')))
       } else {
         setItems((prev) =>
           prev.map((item) =>
@@ -185,7 +197,7 @@ export default function CartPage() {
       })
       const data = await response.json()
       if (!response.ok) {
-        setError(data.error || t('removeFailed'))
+        setError(getLocalizedApiError(data, locale, t('removeFailed')))
       } else {
         setItems((prev) => prev.filter((item) => item.id !== itemId))
       }
@@ -248,7 +260,7 @@ export default function CartPage() {
 
       if (!response.ok) {
         setCouponApplied(false)
-        setCouponMessage(data.error || t('couponInvalid'))
+        setCouponMessage(getLocalizedApiError(data, locale, t('couponInvalid')))
         setAppliedPromotion(null)
         setCouponDiscount(0)
       } else {
@@ -291,7 +303,7 @@ export default function CartPage() {
       }
 
       if (!response.ok) {
-        setError(data.error || t('createOrderFailed'))
+        setError(getLocalizedApiError(data, locale, t('createOrderFailed')))
         return
       }
 
@@ -453,7 +465,7 @@ export default function CartPage() {
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <p className="mb-1 text-[10px] uppercase tracking-[0.18em] text-[#F7931A]">
-                            {item.sanPham.danhMuc?.tenDanhMuc ?? t('fallbackCategory')}
+                            {categoryName(item.sanPham.danhMuc?.tenDanhMuc) ?? t('fallbackCategory')}
                           </p>
                           <Link href={`/products/${item.sanPham.slug}`} className="line-clamp-2 text-sm font-semibold text-white transition hover:text-[#FFD600]">
                             {item.sanPham.tenSanPham}

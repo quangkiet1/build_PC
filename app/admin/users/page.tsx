@@ -6,6 +6,9 @@ import Link from 'next/link'
 import { ArrowLeft, Search, Loader2, Users } from 'lucide-react'
 import { useToast } from '@/app/providers/toast-provider'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import { useLocale, useTranslations } from 'next-intl'
+import type { AppLocale } from '@/i18n/config'
+import { toIntlLocale } from '@/lib/format'
 
 interface User {
   id: string
@@ -17,12 +20,12 @@ interface User {
   ngayTao: string
 }
 
-const roleOptions = [
-  { value: 'KHACH_HANG', label: 'Khách hàng' },
-  { value: 'QUAN_TRI_VIEN', label: 'Quản trị viên' },
-]
+const roleOptions = ['KHACH_HANG', 'QUAN_TRI_VIEN'] as const
 
 export default function AdminUsersPage() {
+  const t = useTranslations('admin.users')
+  const commonT = useTranslations('admin.common')
+  const locale = useLocale() as AppLocale
   const router = useRouter()
   const { addToast } = useToast()
   const [users, setUsers] = useState<User[]>([])
@@ -42,11 +45,11 @@ export default function AdminUsersPage() {
       setUsers(data.users || [])
     } catch (error) {
       console.error('Error fetching users:', error)
-      addToast('Không thể tải danh sách người dùng', 'error')
+      addToast(t('loadError'), 'error')
     } finally {
       setLoading(false)
     }
-  }, [router, addToast])
+  }, [router, addToast, t])
 
   useEffect(() => {
     fetchUsers()
@@ -68,14 +71,14 @@ export default function AdminUsersPage() {
 
       const data = await response.json()
       if (!response.ok) {
-        throw new Error(data.error || 'Lỗi khi cập nhật vai trò')
+        throw new Error(t('updateError'))
       }
 
       setUsers((current) => current.map((user) => user.id === userId ? data.user : user))
-      addToast('Cập nhật vai trò thành công', 'success')
+      addToast(t('updateSuccess'), 'success')
     } catch (error) {
       console.error('Error updating user role:', error)
-      addToast(error instanceof Error ? error.message : 'Lỗi khi cập nhật người dùng', 'error')
+      addToast(error instanceof Error ? error.message : t('userUpdateError'), 'error')
     }
   }
 
@@ -93,18 +96,16 @@ export default function AdminUsersPage() {
         return
       }
 
-      const data = await response.json()
       if (!response.ok) {
-        const errorMsg = data.error || data.details || 'Lỗi khi xóa người dùng'
-        throw new Error(errorMsg)
+        throw new Error(t('deleteError'))
       }
 
       setUsers((current) => current.filter((user) => user.id !== userToDelete.id))
-      addToast('Xóa người dùng thành công', 'success')
+      addToast(t('deleteSuccess'), 'success')
       setUserToDelete(null)
     } catch (error) {
       console.error('Error deleting user:', error)
-      addToast(error instanceof Error ? error.message : 'Lỗi khi xóa người dùng', 'error')
+      addToast(error instanceof Error ? error.message : t('deleteError'), 'error')
     }
   }
 
@@ -118,7 +119,7 @@ export default function AdminUsersPage() {
       <main className="flex min-h-screen items-center justify-center bg-[#030304] text-white">
         <div className="text-center">
           <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-[#FFD600]" />
-          <p className="text-slate-400">Đang tải người dùng...</p>
+          <p className="text-slate-400">{t('loading')}</p>
         </div>
       </main>
     )
@@ -138,9 +139,9 @@ export default function AdminUsersPage() {
             <div>
               <h1 className="flex items-center gap-2.5 text-2xl font-bold sm:text-3xl">
                 <Users className="h-7 w-7 text-[#FFD600]" />
-                Quản lý Người dùng
+                {t('title')}
               </h1>
-              <p className="mt-1 text-sm text-slate-400">{users.length} tài khoản đã đăng ký.</p>
+              <p className="mt-1 text-sm text-slate-400">{t('count', { count: users.length })}</p>
             </div>
           </div>
         </div>
@@ -149,7 +150,7 @@ export default function AdminUsersPage() {
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
           <input
             type="text"
-            placeholder="Tìm theo tên hoặc email..."
+            placeholder={t('search')}
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             className="w-full rounded-xl border border-white/10 bg-[#0F1115] py-3 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#F7931A]/50 focus:ring-1 focus:ring-[#F7931A]/20"
@@ -161,18 +162,18 @@ export default function AdminUsersPage() {
             <table className="w-full min-w-full">
               <thead>
                 <tr className="border-b border-slate-800">
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Tên</th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Email</th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Vai trò</th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Đăng ký</th>
-                  <th className="px-5 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-400">Hành động</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">{t('columns.name')}</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">{t('columns.email')}</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">{t('columns.role')}</th>
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">{t('columns.registered')}</th>
+                  <th className="px-5 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-400">{commonT('actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
                 {filteredUsers.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="px-5 py-16 text-center text-slate-500">
-                      Không tìm thấy tài khoản phù hợp.
+                      {t('empty')}
                     </td>
                   </tr>
                 ) : (
@@ -187,20 +188,20 @@ export default function AdminUsersPage() {
                           className="w-full rounded-xl border border-white/10 bg-[#111827] px-3 py-2 text-sm text-white outline-none transition focus:border-[#F7931A]/50"
                         >
                           {roleOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
+                            <option key={option} value={option}>
+                              {t(`roles.${option}`)}
                             </option>
                           ))}
                         </select>
                       </td>
-                      <td className="px-5 py-4 text-sm text-slate-300">{new Date(user.ngayTao).toLocaleDateString('vi-VN')}</td>
+                      <td className="px-5 py-4 text-sm text-slate-300">{new Date(user.ngayTao).toLocaleDateString(toIntlLocale(locale))}</td>
                       <td className="px-5 py-4 text-center">
                         <button
                           type="button"
                           onClick={() => setUserToDelete(user)}
                           className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-[#111827] px-3 py-2 text-xs font-semibold text-rose-300 transition hover:border-rose-500/40 hover:text-white"
                         >
-                          Xóa
+                          {commonT('delete')}
                         </button>
                       </td>
                     </tr>
@@ -214,10 +215,10 @@ export default function AdminUsersPage() {
 
       <ConfirmDialog
         open={Boolean(userToDelete)}
-        title="Xác nhận xóa người dùng"
-        description="Hành động này sẽ xóa tài khoản và không thể hoàn tác. Bạn có chắc chắn muốn tiếp tục?"
-        confirmLabel="Xóa"
-        cancelLabel="Hủy"
+        title={t('confirmTitle')}
+        description={t('confirmDescription')}
+        confirmLabel={commonT('delete')}
+        cancelLabel={commonT('cancel')}
         confirmVariant="destructive"
         onConfirm={deleteUser}
         onOpenChange={(open) => { if (!open) setUserToDelete(null) }}

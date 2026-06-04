@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { MapPin, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface AddressPickerMapProps {
   value: string
@@ -17,9 +18,10 @@ interface SearchResult {
 export function AddressPickerMap({
   value,
   onChange,
-  placeholder = 'Nhập địa chỉ...',
+  placeholder,
   error,
 }: AddressPickerMapProps) {
+  const t = useTranslations('cartPage')
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -103,7 +105,7 @@ export function AddressPickerMap({
           type="text"
           value={value}
           onChange={(e) => handleSearchInput(e.target.value)}
-          placeholder={placeholder}
+          placeholder={placeholder || t('shippingPlaceholder')}
           className={`relative z-20 w-full rounded-xl border bg-[#141a26] px-4 py-3 pl-11 text-sm text-white placeholder:text-slate-500 outline-none transition ${
             error
               ? 'border-rose-500/50 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/20'

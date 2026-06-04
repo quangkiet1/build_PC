@@ -6,6 +6,9 @@ import { ProductCard } from '@/app/components/ProductCard'
 import { readSpecString } from '@/lib/types'
 import { AddToCartButton } from '@/components/add-to-cart-button'
 import { getSimilarProducts } from '@/lib/recommendations'
+import { formatCurrency } from '@/lib/format'
+import { getI18nServer, getTranslator } from '@/i18n/server'
+import { getCategoryMessageKey } from '@/lib/category-i18n'
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>
@@ -13,6 +16,9 @@ type ProductPageProps = {
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params
+  const t = await getTranslator('productDetail')
+  const categoryT = await getTranslator('categories')
+  const { locale } = await getI18nServer()
 
   const product = await prisma.sanPham.findFirst({
     where: {
@@ -27,6 +33,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const recommendationResult = await getSimilarProducts(product.id, 4)
   const relatedProducts = recommendationResult?.recommendations || []
+  const categoryKey = getCategoryMessageKey(product.danhMuc?.tenDanhMuc)
 
   const specs =
     product.thongSoKyThuat && typeof product.thongSoKyThuat === 'object' && !Array.isArray(product.thongSoKyThuat)
@@ -39,8 +46,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <div className="pointer-events-none absolute -left-1/4 -top-1/4 h-3/4 w-3/4 bg-radial-blur" />
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <p className="relative z-10 text-sm text-slate-500">
-          <Link href="/" className="transition hover:text-[#F7931A]">Trang chu</Link> /{' '}
-          <Link href="/products" className="transition hover:text-[#F7931A]">San pham</Link> / <span className="text-slate-300">{product.tenSanPham}</span>
+          <Link href="/" className="transition hover:text-[#F7931A]">{t('home')}</Link> /{' '}
+          <Link href="/products" className="transition hover:text-[#F7931A]">{t('products')}</Link> / <span className="text-slate-300">{product.tenSanPham}</span>
         </p>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] relative z-10">
@@ -58,36 +65,36 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           <div className="space-y-6">
             <div>
-              <p className="text-sm uppercase tracking-[0.3em] text-[#F7931A]">{product.danhMuc?.tenDanhMuc || 'San pham'}</p>
+              <p className="text-sm uppercase tracking-[0.3em] text-[#F7931A]">{categoryKey ? categoryT(categoryKey) : product.danhMuc?.tenDanhMuc || t('productFallback')}</p>
               <h1 className="mt-3 text-4xl font-bold">{product.tenSanPham}</h1>
-              <p className="mt-4 text-3xl font-semibold text-[#FFD600]">{product.gia.toLocaleString('vi-VN')} VND</p>
-              <p className="mt-4 text-slate-300">{product.moTa || 'San pham chua co mo ta chi tiet.'}</p>
+              <p className="mt-4 text-3xl font-semibold text-[#FFD600]">{formatCurrency(product.gia, locale)}</p>
+              <p className="mt-4 text-slate-300">{product.moTa || t('descriptionFallback')}</p>
             </div>
 
             <div className="grid gap-4 rounded-[24px] border border-white/10 bg-white/5 p-6 text-sm text-slate-300 sm:grid-cols-2 backdrop-blur-md">
               <div>
-                <p className="text-slate-500">Ton kho</p>
-                <p className="mt-1 font-semibold text-white">{product.soLuongTon > 0 ? `${product.soLuongTon} san pham` : 'Het hang'}</p>
+                <p className="text-slate-500">{t('stock')}</p>
+                <p className="mt-1 font-semibold text-white">{product.soLuongTon > 0 ? t('stockCount', { count: product.soLuongTon }) : t('outOfStock')}</p>
               </div>
               <div>
-                <p className="text-slate-500">Thuong hieu</p>
-                <p className="mt-1 font-semibold text-white">{product.tenSanPham.split(' ').slice(0, 2).join(' ')}</p>
+                <p className="text-slate-500">{t('brand')}</p>
+                <p className="mt-1 font-semibold text-white">{product.thuongHieu || product.tenSanPham.split(' ').slice(0, 2).join(' ')}</p>
               </div>
               <div>
-                <p className="text-slate-500">Socket</p>
-                <p className="mt-1 font-semibold text-white">{readSpecString(product.thongSoKyThuat, 'socket') || 'Khong co'}</p>
+                <p className="text-slate-500">{t('socket')}</p>
+                <p className="mt-1 font-semibold text-white">{readSpecString(product.thongSoKyThuat, 'socket') || t('notAvailable')}</p>
               </div>
               <div>
-                <p className="text-slate-500">RAM type</p>
-                <p className="mt-1 font-semibold text-white">{readSpecString(product.thongSoKyThuat, 'ram_type', 'type', 'memory') || 'Khong co'}</p>
+                <p className="text-slate-500">{t('ramType')}</p>
+                <p className="mt-1 font-semibold text-white">{readSpecString(product.thongSoKyThuat, 'ram_type', 'type', 'memory') || t('notAvailable')}</p>
               </div>
             </div>
 
             <div className="rounded-[24px] border border-white/10 bg-white/5 p-6 backdrop-blur-md">
-              <h2 className="text-lg font-semibold text-white">Thong so ky thuat</h2>
+              <h2 className="text-lg font-semibold text-white">{t('specifications')}</h2>
               <div className="mt-5 grid gap-3 text-sm">
                 {specs.length === 0 ? (
-                  <p className="text-slate-400">Chua co du lieu thong so ky thuat.</p>
+                  <p className="text-slate-400">{t('noSpecifications')}</p>
                 ) : (
                   specs.map(([key, value]) => (
                     <div key={key} className="flex items-center justify-between gap-4 rounded-2xl border border-white/5 bg-black/20 px-5 py-3 transition hover:bg-black/30">
@@ -107,8 +114,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
         <section className="mt-14">
           <div className="mb-6 flex items-center justify-between gap-4">
-            <h2 className="text-2xl font-semibold">San pham goi y tuong tu</h2>
-            <Link href="/products" className="text-sm text-[#F7931A] transition hover:text-[#FFD600]">Xem them</Link>
+            <h2 className="text-2xl font-semibold">{t('related')}</h2>
+            <Link href="/products" className="text-sm text-[#F7931A] transition hover:text-[#FFD600]">{t('viewMore')}</Link>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {relatedProducts.map((item) => (

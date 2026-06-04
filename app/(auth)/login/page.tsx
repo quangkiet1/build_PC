@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useLocale, useTranslations } from 'next-intl'
 import {
   AlertCircle,
   ArrowLeft,
@@ -20,6 +21,7 @@ import {
   authLabelClass,
   authWorkspaceClass,
 } from '@/app/(auth)/_components/AuthPageShell'
+import { getLocalizedApiError } from '@/lib/localized-api-error'
 
 function getSafeNextUrl(next: string | null) {
   if (!next || !next.startsWith('/') || next.startsWith('//')) return '/'
@@ -27,6 +29,8 @@ function getSafeNextUrl(next: string | null) {
 }
 
 export default function LoginPage() {
+  const t = useTranslations('auth')
+  const locale = useLocale()
   const router = useRouter()
   const searchParams = useSearchParams()
   const nextUrl = getSafeNextUrl(searchParams.get('next'))
@@ -52,7 +56,7 @@ export default function LoginPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || 'Đăng nhập thất bại')
+        setError(getLocalizedApiError(data, locale, t('loginFailed')))
         setLoading(false)
         return
       }
@@ -61,7 +65,7 @@ export default function LoginPage() {
       router.push(nextUrl)
       router.refresh()
     } catch {
-      setError('Không thể kết nối máy chủ. Vui lòng thử lại.')
+      setError(t('serverRetry'))
       setLoading(false)
     }
   }
@@ -86,9 +90,9 @@ export default function LoginPage() {
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border border-[#F7931A]/30 bg-[#F7931A]/10 shadow-[0_0_24px_-8px_rgba(247,147,26,0.72)]">
               <Cpu className="h-7 w-7 text-[#F7931A]" />
             </div>
-            <h1 className="font-heading text-2xl font-bold tracking-tight text-white">Đăng nhập</h1>
+            <h1 className="font-heading text-2xl font-bold tracking-tight text-white">{t('login')}</h1>
             <p className="mt-2 text-sm leading-6 text-[#94A3B8]">
-              Trở lại PC Builder để tiếp tục cấu hình, giỏ hàng và đơn của bạn.
+              {t('loginPage.description')}
             </p>
           </div>
 
@@ -105,7 +109,7 @@ export default function LoginPage() {
           <form data-auth-item onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <label htmlFor="login-email" className={authLabelClass}>
-                Địa chỉ email
+                {t('loginPage.email')}
               </label>
               <div className="relative">
                 <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
@@ -125,13 +129,13 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-4">
                 <label htmlFor="login-password" className={authLabelClass}>
-                  Mật khẩu
+                  {t('password')}
                 </label>
                 <Link
                   href="/forgot-password"
                   className="text-xs font-mono text-[#F7931A] transition hover:text-[#FFD600]"
                 >
-                  Quên mật khẩu?
+                  {t('loginPage.forgot')}
                 </Link>
               </div>
               <div className="relative">
@@ -149,7 +153,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((value) => !value)}
-                  aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                  aria-label={showPassword ? t('hidePassword') : t('showPassword')}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-[#64748B] transition hover:text-white"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -168,7 +172,7 @@ export default function LoginPage() {
                 {loading && (
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/35 border-t-white" />
                 )}
-                {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+                {loading ? t('loginPage.loading') : t('login')}
                 {!loading && <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />}
               </span>
             </button>
@@ -177,7 +181,7 @@ export default function LoginPage() {
           <div data-auth-item className="my-7 flex items-center gap-4">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
             <span className="text-xs font-mono uppercase tracking-wider text-[#475569]">
-              Chưa có tài khoản?
+              {t('loginPage.noAccount')}
             </span>
             <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/10" />
           </div>
@@ -188,7 +192,7 @@ export default function LoginPage() {
             href={registerHref}
             className="group flex w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3.5 text-sm font-medium text-white transition hover:border-[#F7931A]/45 hover:bg-[#F7931A]/10 hover:text-[#FFD600]"
           >
-            Tạo tài khoản mới
+            {t('loginPage.create')}
             <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
           </Link>
 
@@ -198,7 +202,7 @@ export default function LoginPage() {
               className="inline-flex items-center gap-2 text-xs font-mono text-[#64748B] transition hover:text-[#CBD5E1]"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              Về trang chủ
+              {t('loginPage.home')}
             </Link>
           </div>
         </section>

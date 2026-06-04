@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useLocale, useTranslations } from 'next-intl'
 import toast from 'react-hot-toast'
 import {
   AlertCircle,
@@ -28,6 +29,7 @@ import {
   authLabelClass,
   authWorkspaceClass,
 } from '@/app/(auth)/_components/AuthPageShell'
+import { getLocalizedApiError } from '@/lib/localized-api-error'
 
 function getSafeNextUrl(next: string | null) {
   if (!next || !next.startsWith('/') || next.startsWith('//')) return '/'
@@ -35,15 +37,16 @@ function getSafeNextUrl(next: string | null) {
 }
 
 function PasswordStrength({ password }: { password: string }) {
+  const t = useTranslations('auth.registerPage')
   const checks = [
-    { label: '6 ký tự', pass: password.length >= 6 },
-    { label: 'Chữ hoa', pass: /[A-Z]/.test(password) },
-    { label: 'Chữ số', pass: /[0-9]/.test(password) },
-    { label: 'Ký tự đặc biệt', pass: /[^A-Za-z0-9]/.test(password) },
+    { label: t('checks.length'), pass: password.length >= 6 },
+    { label: t('checks.uppercase'), pass: /[A-Z]/.test(password) },
+    { label: t('checks.number'), pass: /[0-9]/.test(password) },
+    { label: t('checks.special'), pass: /[^A-Za-z0-9]/.test(password) },
   ]
   const strength = checks.filter((check) => check.pass).length
   const colors = ['#475569', '#EF4444', '#F7931A', '#FFD600', '#22C55E']
-  const labels = ['', 'Rất yếu', 'Yếu', 'Ổn', 'Mạnh']
+  const labels = ['', t('strength.veryWeak'), t('strength.weak'), t('strength.fair'), t('strength.strong')]
 
   if (!password) return null
 
@@ -79,7 +82,8 @@ function PasswordStrength({ password }: { password: string }) {
   )
 }
 function StepIndicator({ step }: { step: number }) {
-  const steps = ['Tài khoản', 'Thông tin']
+  const t = useTranslations('auth.registerPage')
+  const steps = [t('steps.account'), t('steps.information')]
 
   return (
     <div className="mb-7 flex items-center justify-center gap-2">
@@ -121,6 +125,8 @@ function StepIndicator({ step }: { step: number }) {
 }
 
 export default function RegisterPage() {
+  const t = useTranslations('auth')
+  const locale = useLocale()
   const router = useRouter()
   const searchParams = useSearchParams()
   const nextUrl = getSafeNextUrl(searchParams.get('next'))
@@ -143,19 +149,19 @@ export default function RegisterPage() {
     setError('')
 
     if (!name.trim()) {
-      setError('Vui lòng nhập họ tên.')
+      setError(t('registerPage.nameRequired'))
       return
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('Email không đúng định dạng.')
+      setError(t('registerPage.emailInvalid'))
       return
     }
     if (password.length < 6) {
-      setError('Mật khẩu phải có ít nhất 6 ký tự.')
+      setError(t('registerPage.passwordMin'))
       return
     }
     if (password !== confirmPassword) {
-      setError('Mật khẩu xác nhận không khớp.')
+      setError(t('registerPage.passwordMismatch'))
       return
     }
 
@@ -177,13 +183,13 @@ export default function RegisterPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || 'Đăng ký thất bại')
+        setError(getLocalizedApiError(data, locale, t('registerFailed')))
         setLoading(false)
         return
       }
 
       await refreshUser()
-      toast.success('Đăng ký thành công. Chào mừng bạn đến với PC Builder!', {
+      toast.success(t('registerPage.success'), {
         style: {
           borderRadius: '12px',
           background: '#0f172a',
@@ -195,7 +201,7 @@ export default function RegisterPage() {
       router.push(nextUrl)
       router.refresh()
     } catch {
-      setError('Không thể kết nối máy chủ. Vui lòng thử lại.')
+      setError(t('serverRetry'))
       setLoading(false)
     }
   }
@@ -220,9 +226,9 @@ export default function RegisterPage() {
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border border-[#F7931A]/30 bg-[#F7931A]/10 shadow-[0_0_24px_-8px_rgba(247,147,26,0.72)]">
               <Cpu className="h-7 w-7 text-[#F7931A]" />
             </div>
-            <h1 className="font-heading text-2xl font-bold tracking-tight text-white">Đăng ký</h1>
+            <h1 className="font-heading text-2xl font-bold tracking-tight text-white">{t('registerPage.title')}</h1>
             <p className="mt-2 text-sm leading-6 text-[#94A3B8]">
-              Tạo tài khoản để lưu cấu hình, theo dõi đơn hàng và nhận ưu đãi.
+              {t('registerPage.description')}
             </p>
           </div>
 
@@ -233,7 +239,7 @@ export default function RegisterPage() {
           <div data-auth-item className="mb-6 rounded-xl border border-[#F7931A]/20 bg-[#F7931A]/10 px-4 py-3">
             <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#FFD600]">
               <ShieldCheck className="h-4 w-4" />
-              {step === 0 ? 'Bảo vệ tài khoản' : 'Thông tin giao hàng'}
+              {step === 0 ? t('registerPage.protectAccount') : t('registerPage.shippingInfo')}
             </div>
           </div>
 
@@ -251,7 +257,7 @@ export default function RegisterPage() {
             <form data-auth-item onSubmit={handleNextStep} className="space-y-4">
               <div className="space-y-2">
                 <label htmlFor="reg-name" className={authLabelClass}>
-                  Họ và tên
+                  {t('registerPage.fullName')}
                 </label>
                 <div className="relative">
                   <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
@@ -262,7 +268,7 @@ export default function RegisterPage() {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Nguyễn Văn A"
+                    placeholder={t('namePlaceholder')}
                     className={authInputClass}
                   />
                 </div>
@@ -270,7 +276,7 @@ export default function RegisterPage() {
 
               <div className="space-y-2">
                 <label htmlFor="reg-email" className={authLabelClass}>
-                  Địa chỉ email
+                  {t('registerPage.email')}
                 </label>
                 <div className="relative">
                   <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
@@ -281,7 +287,7 @@ export default function RegisterPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="email@example.com"
+                    placeholder={t('emailPlaceholder')}
                     className={authInputClass}
                   />
                 </div>
@@ -289,7 +295,7 @@ export default function RegisterPage() {
 
               <div className="space-y-2">
                 <label htmlFor="reg-password" className={authLabelClass}>
-                  Mật khẩu
+                  {t('password')}
                 </label>
                 <div className="relative">
                   <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
@@ -300,13 +306,13 @@ export default function RegisterPage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Tối thiểu 6 ký tự"
+                    placeholder={t('passwordHint')}
                     className={`${authInputClass} pr-12`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((value) => !value)}
-                    aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                    aria-label={showPassword ? t('hidePassword') : t('showPassword')}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-[#64748B] transition hover:text-white"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -317,7 +323,7 @@ export default function RegisterPage() {
 
               <div className="space-y-2">
                 <label htmlFor="reg-confirm" className={authLabelClass}>
-                  Xác nhận mật khẩu
+                  {t('registerPage.confirmPassword')}
                 </label>
                 <div className="relative">
                   <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
@@ -328,7 +334,7 @@ export default function RegisterPage() {
                     required
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Nhập lại mật khẩu"
+                    placeholder={t('registerPage.confirmPlaceholder')}
                     className={`${authInputClass} pr-12 ${
                       confirmPassword && confirmPassword === password
                         ? 'border-green-500/60'
@@ -340,7 +346,7 @@ export default function RegisterPage() {
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword((value) => !value)}
-                    aria-label={showConfirmPassword ? 'Ẩn mật khẩu xác nhận' : 'Hiện mật khẩu xác nhận'}
+                    aria-label={showConfirmPassword ? t('hideConfirmPassword') : t('showConfirmPassword')}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-[#64748B] transition hover:text-white"
                   >
                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -354,11 +360,11 @@ export default function RegisterPage() {
                   >
                     {confirmPassword === password ? (
                       <>
-                        <CheckCircle className="h-3.5 w-3.5" /> Mật khẩu khớp
+                        <CheckCircle className="h-3.5 w-3.5" /> {t('registerPage.passwordMatches')}
                       </>
                     ) : (
                       <>
-                        <AlertCircle className="h-3.5 w-3.5" /> Mật khẩu chưa khớp
+                        <AlertCircle className="h-3.5 w-3.5" /> {t('registerPage.passwordNotMatches')}
                       </>
                     )}
                   </p>
@@ -370,7 +376,7 @@ export default function RegisterPage() {
                 type="submit"
                 className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[#EA580C] via-[#F7931A] to-[#FFD600] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_0_20px_-6px_rgba(247,147,26,0.7)] transition hover:translate-y-[-1px] hover:shadow-[0_0_30px_-6px_rgba(247,147,26,0.85)]"
               >
-                Tiếp theo
+                {t('registerPage.next')}
                 <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
               </button>
             </form>
@@ -380,7 +386,7 @@ export default function RegisterPage() {
             <form data-auth-item onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <label htmlFor="reg-phone" className={authLabelClass}>
-                  Số điện thoại <span className="normal-case text-[#64748B]">(tùy chọn)</span>
+                  {t('registerPage.phone')} <span className="normal-case text-[#64748B]">{t('registerPage.optional')}</span>
                 </label>
                 <div className="relative">
                   <Phone className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
@@ -398,7 +404,7 @@ export default function RegisterPage() {
 
               <div className="space-y-2">
                 <label htmlFor="reg-address" className={authLabelClass}>
-                  Địa chỉ <span className="normal-case text-[#64748B]">(tùy chọn)</span>
+                  {t('registerPage.address')} <span className="normal-case text-[#64748B]">{t('registerPage.optional')}</span>
                 </label>
                 <div className="relative">
                   <MapPin className="pointer-events-none absolute left-4 top-4 h-4 w-4 text-[#64748B]" />
@@ -407,7 +413,7 @@ export default function RegisterPage() {
                     rows={3}
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    placeholder="123 Đường ABC, Quận 1, TP.HCM"
+                    placeholder={t('registerPage.addressPlaceholder')}
                     className={`${authInputClass} resize-none`}
                   />
                 </div>
@@ -415,11 +421,11 @@ export default function RegisterPage() {
 
               <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
                 <p className="mb-3 text-[10px] font-mono uppercase tracking-widest text-[#64748B]">
-                  Tài khoản
+                  {t('registerPage.accountSummary')}
                 </p>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center justify-between gap-4">
-                    <span className="text-[#94A3B8]">Tên</span>
+                    <span className="text-[#94A3B8]">{t('registerPage.name')}</span>
                     <span className="truncate font-medium text-white">{name}</span>
                   </div>
                   <div className="flex items-center justify-between gap-4">
@@ -438,7 +444,7 @@ export default function RegisterPage() {
                   }}
                   className="flex-1 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3.5 text-sm font-medium text-[#CBD5E1] transition hover:bg-white/[0.08] hover:text-white"
                 >
-                  Quay lại
+                  {t('registerPage.back')}
                 </button>
                 <button
                   id="register-submit-btn"
@@ -449,7 +455,7 @@ export default function RegisterPage() {
                   {loading && (
                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/35 border-t-white" />
                   )}
-                  {loading ? 'Đang tạo...' : 'Hoàn tất'}
+                  {loading ? t('registerPage.creating') : t('registerPage.finish')}
                   {!loading && <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />}
                 </button>
               </div>
@@ -459,7 +465,7 @@ export default function RegisterPage() {
           <div data-auth-item className="my-7 flex items-center gap-4">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
             <span className="text-xs font-mono uppercase tracking-wider text-[#475569]">
-              Đã có tài khoản?
+              {t('registerPage.hasAccount')}
             </span>
             <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/10" />
           </div>
@@ -470,7 +476,7 @@ export default function RegisterPage() {
             href={loginHref}
             className="group flex w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3.5 text-sm font-medium text-white transition hover:border-[#F7931A]/45 hover:bg-[#F7931A]/10 hover:text-[#FFD600]"
           >
-            Đăng nhập ngay
+            {t('registerPage.loginNow')}
             <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
           </Link>
 
@@ -480,7 +486,7 @@ export default function RegisterPage() {
               className="inline-flex items-center gap-2 text-xs font-mono text-[#64748B] transition hover:text-[#CBD5E1]"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              Về trang chủ
+              {t('registerPage.home')}
             </Link>
           </div>
         </section>

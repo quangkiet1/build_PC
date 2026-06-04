@@ -12,13 +12,17 @@ import { AuthModal } from '@/components/AuthModal'
 import { PageTransition } from '@/components/motion/PageTransition'
 import { BackToTop } from '@/components/motion/BackToTop'
 import { AuthProvider } from '@/context/AuthContext'
-import { getI18nServer } from '@/i18n/server'
+import { getI18nServer, getTranslator } from '@/i18n/server'
 import { ChatbotWrapper } from '@/components/ChatbotWrapper'
 import { ContentWrapper } from '@/components/ContentWrapper'
 
-export const metadata: Metadata = {
-  title: 'PC Builder - Xay dung cau hinh PC cua ban',
-  description: 'Nen tang ban linh kien va xay dung cau hinh truc tuyen voi bo loc thong minh va kiem tra tuong thich',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslator('metadata')
+
+  return {
+    title: t('title'),
+    description: t('description'),
+  }
 }
 
 export default async function RootLayout({

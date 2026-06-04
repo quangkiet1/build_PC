@@ -91,7 +91,7 @@ export async function layTop3LinhKien(tenLoai: string, mucGiaToiDa?: number | nu
             const sanPhamChuan: Product = {
                 id: monHang.id,
                 name: monHang.tenSanPham,
-                brand: thongSo.brand || monHang.thuongHieu || 'Đang cập nhật',
+                brand: thongSo.brand || monHang.thuongHieu || 'PC Builder',
                 category: theLoaiChuan as Category,
                 price: monHang.gia,
                 image: hinhAnhBia, 

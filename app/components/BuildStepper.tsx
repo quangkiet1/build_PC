@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import type { Build } from '@/app/lib/builder-utils'
 import type { Category } from '@/app/types/builder'
@@ -19,6 +20,7 @@ interface BuildStepperProps {
 }
 
 export function BuildStepper({ build, activeSlot, steps, onStepClick }: BuildStepperProps) {
+  const t = useTranslations('builder')
   const firstIncompleteIndex = Math.max(
     steps.findIndex((step) => !build[step.category]),
     0
@@ -72,7 +74,7 @@ export function BuildStepper({ build, activeSlot, steps, onStepClick }: BuildSte
 
                 <div className="min-w-0">
                   <p className="font-mono text-[10px] uppercase tracking-widest text-muted">
-                    Step {String(index + 1).padStart(2, '0')}
+                    {t('step')} {String(index + 1).padStart(2, '0')}
                   </p>
                   <p className="mt-1 text-sm font-semibold text-white font-heading">{step.label}</p>
                 </div>

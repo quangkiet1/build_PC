@@ -5,6 +5,7 @@ import { getTranslator } from '@/i18n/server'
 import { AnimatedSection } from '@/components/motion/AnimatedSection'
 import { ShieldCheck, SlidersHorizontal } from 'lucide-react'
 import { aggregateProductBrands } from '@/lib/brands'
+import { getCategoryMessageKey } from '@/lib/category-i18n'
 
 type ProductsPageProps = {
   searchParams?: Promise<{
@@ -17,6 +18,7 @@ type ProductsPageProps = {
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const t = await getTranslator('productsPage')
+  const categoryT = await getTranslator('categories')
   const params = (await searchParams) || {}
   const search = params.search?.trim() || ''
   const category = params.category?.trim() || ''
@@ -116,18 +118,21 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
               className="md:w-48 bg-[#0F1115] border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-[#F7931A]/50 focus:shadow-[0_0_15px_rgba(247,147,26,0.15)] transition-all cursor-pointer"
             >
               <option value="">{t('allCategories')}</option>
-              {categories.map((item) => (
-                <option key={item.id} value={item.tenDanhMuc} className="bg-[#0F1115]">
-                  {item.tenDanhMuc}
-                </option>
-              ))}
+              {categories.map((item) => {
+                const categoryKey = getCategoryMessageKey(item.tenDanhMuc)
+                return (
+                  <option key={item.id} value={item.tenDanhMuc} className="bg-[#0F1115]">
+                    {categoryKey ? categoryT(categoryKey) : item.tenDanhMuc}
+                  </option>
+                )
+              })}
             </select>
             <select
               name="brand"
               defaultValue={brand}
               className="md:w-48 bg-[#0F1115] border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-[#F7931A]/50 focus:shadow-[0_0_15px_rgba(247,147,26,0.15)] transition-all cursor-pointer"
             >
-              <option value="">Tất cả thương hiệu</option>
+              <option value="">{t('allBrands')}</option>
               {brandOptions.map((item) => (
                 <option key={item.name} value={item.name} className="bg-[#0F1115]">
                   {item.name}
@@ -185,23 +190,22 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                     <div className="relative z-10">
                       <div className="inline-flex items-center gap-2 rounded-full border border-[#F7931A]/30 bg-[#F7931A]/10 px-3 py-1 mb-6 text-[10px] font-mono text-[#FFD600] uppercase tracking-widest shadow-[0_0_10px_rgba(247,147,26,0.2)]">
                         <ShieldCheck className="h-3 w-3" />
-                        Premium Selection
+                        {t('premiumSelection')}
                       </div>
                       
-                      <h2 className="text-3xl font-heading font-bold leading-tight mb-4">Không gian mua linh kiện gọn hơn</h2>
+                      <h2 className="text-3xl font-heading font-bold leading-tight mb-4">{t('editorialTitle')}</h2>
                       <p className="text-sm text-muted leading-relaxed mb-8">
-                        Khu vực nổi bật được thiết kế theo kiểu editorial shelf: nhiều card cạnh nhau, ít cảm giác phóng to,
-                        nhìn premium hơn và dễ quét hơn trên desktop lẫn mobile.
+                        {t('editorialDescription')}
                       </p>
                     </div>
 
                     <div className="mt-auto grid grid-cols-2 gap-3 relative z-10">
                       <div className="border border-white/10 rounded-xl bg-white/5 p-4 backdrop-blur-sm">
-                        <p className="text-[10px] font-mono text-muted uppercase tracking-widest">Hiển thị</p>
+                        <p className="text-[10px] font-mono text-muted uppercase tracking-widest">{t('displayed')}</p>
                         <p className="mt-1 text-2xl font-heading font-bold">{products.length}</p>
                       </div>
                       <div className="border border-white/10 rounded-xl bg-white/5 p-4 backdrop-blur-sm">
-                        <p className="text-[10px] font-mono text-muted uppercase tracking-widest">Bộ lọc</p>
+                        <p className="text-[10px] font-mono text-muted uppercase tracking-widest">{t('filters')}</p>
                         <p className="mt-1 text-2xl font-heading font-bold">{activeFilterCount}</p>
                       </div>
                     </div>
@@ -223,11 +227,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 <section>
                   <div data-animate-item className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
                     <div>
-                      <h2 className="text-3xl font-heading font-bold">Tất cả sản phẩm</h2>
-                      <p className="mt-2 text-sm text-muted">Khám phá toàn bộ danh mục linh kiện PC cao cấp.</p>
+                      <h2 className="text-3xl font-heading font-bold">{t('allProductsTitle')}</h2>
+                      <p className="mt-2 text-sm text-muted">{t('allProductsDescription')}</p>
                     </div>
                     <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-mono text-muted uppercase tracking-widest">
-                      {catalogProducts.length} sản phẩm
+                      {t('productCount', { count: catalogProducts.length })}
                     </span>
                   </div>
 

@@ -7,6 +7,15 @@ const genAI = new GoogleGenerativeAI(apiKey);
 const TEN_MODEL_AI = "gemini-2.5-flash";
 const MODEL_DU_PHONG = "gemini-2.5-flash-lite"; // Fallback khi model chính hết quota
 const TAT_CA_THE_LOAI = ["cpu", "mainboard", "ram", "gpu", "storage", "psu", "case", "cooling"];
+type ChatLocale = "vi" | "en";
+
+function formatChatPrice(value: number, locale: ChatLocale) {
+    return new Intl.NumberFormat(locale === "en" ? "en-US" : "vi-VN", {
+        style: "currency",
+        currency: "VND",
+        minimumFractionDigits: 0,
+    }).format(value);
+}
 
 function chuanHoaLoaiLinhKien(loai: unknown) {
     const value = String(loai || "")
@@ -163,28 +172,32 @@ async function messWithUser(
     danhSachTrenKe: any[], 
     doGoiYTuKho: any[], 
     thieuNganSach: boolean,
-    chiHoiTuVan: boolean
+    chiHoiTuVan: boolean,
+    locale: ChatLocale
 ) {
+    const languageInstruction = locale === "en"
+        ? "Reply in English, concise and friendly."
+        : "Trả lời bằng tiếng Việt, ngắn gọn, thân thiện.";
     const promptAgent = `Ban la AI tu van PCStore, chuyen build PC va nang cap linh kien.
-Tra loi bang tieng Viet, ngan gon, than thien.
+${languageInstruction}
 Chi dua ra nhan xet dua tren [TRANG THAI KE HANG HIEN TAI CUA KHACH] va [HE THONG VUA LAY THEM LINH KIEN MOI].
 Khong hoi lai nhung thong tin he thong da cung cap.
 Neu cau hinh chua du linh kien vi ngan sach hoac kho hang, noi ro dang thieu mon nao va goi y tang ngan sach.`;
 
     // Định dạng kệ hàng hiện tại
     const chuoiDangChon = danhSachTrenKe.length > 0
-        ? danhSachTrenKe.map(m => `- ${m.name || "Linh kiện"}: ${(m.price || 0).toLocaleString('vi-VN')}đ`).join("\n")
-        : "Chưa có món nào trên kệ.";
+        ? danhSachTrenKe.map(m => `- ${m.name || (locale === "en" ? "Component" : "Linh kiện")}: ${formatChatPrice(m.price || 0, locale)}`).join("\n")
+        : (locale === "en" ? "No components selected." : "Chưa có món nào trên kệ.");
 
     // Định dạng linh kiện đề xuất mới
     const chuoiDeXuat = doGoiYTuKho.length > 0
-        ? doGoiYTuKho.map(m => `- ${m.name || "Linh kiện"}: ${(m.price || 0).toLocaleString('vi-VN')}đ`).join("\n")
+        ? doGoiYTuKho.map(m => `- ${m.name || (locale === "en" ? "Component" : "Linh kiện")}: ${formatChatPrice(m.price || 0, locale)}`).join("\n")
         : "";
 
     // Gom lịch sử
     let chuoiLichSu = "";
     for (let i = 0; i < lichSuChat.length - 1; i++) {
-        const ng = lichSuChat[i].role === 'user' ? "Khách" : "AI";
+        const ng = lichSuChat[i].role === 'user' ? (locale === "en" ? "User" : "Khách") : "AI";
         chuoiLichSu += ng + ": " + lichSuChat[i].content + "\n";
     }
 
@@ -203,7 +216,7 @@ ${chuoiDeXuat ? `[HE THONG VUA LAY THEM LINH KIEN MOI]\n${chuoiDeXuat}\n` : ""}
 [LENH TOI CAO - PHAI TUAN THU 100%]
 1. TUYET DOI KHONG HOI khach hang dang co linh kien gi (he thong da cung cap danh sach o tren).
 2. KHONG SU DUNG MARKDOWN (khong dung **, *, #).
-3. Tra loi bang tieng Viet, than thien, ngan gon (toi da 3 dong tru khi can giai thich ky).
+3. ${languageInstruction} Keep the answer to at most 3 lines unless a technical explanation is needed.
 ${lenhDacBiet}
 
 [LICH SU HOI THOAI]
@@ -219,7 +232,9 @@ ${tinNhanKhach}`;
         });
         const cauTraLoi = await generateWithRetry(modelChuyenGia, promptGop);
         if (!cauTraLoi || cauTraLoi.trim() === "") {
-            return "Dạ, anh/chị xem các linh kiện trên kệ nhé!";
+            return locale === "en"
+                ? "Please review the recommended components."
+                : "Dạ, anh/chị xem các linh kiện trên kệ nhé!";
         }
         return cauTraLoi;
     } catch (error: any) { 
@@ -231,11 +246,17 @@ ${tinNhanKhach}`;
                 ?.violations?.map((v: any) => v.quotaId) ?? [];
             const hetQuotaNgay = violations.some((v: string) => v.includes('PerDay'));
             if (hetQuotaNgay) {
-                return "⚠️ AI đã dùng hết quota miễn phí cho hôm nay. Quota sẽ reset lúc 7h sáng mai (giờ VN). Anh/chị vui lòng thử lại sau nhé!";
+                return locale === "en"
+                    ? "The AI has reached today's free quota. Please try again tomorrow."
+                    : "⚠️ AI đã dùng hết quota miễn phí cho hôm nay. Quota sẽ reset lúc 7h sáng mai (giờ VN). Anh/chị vui lòng thử lại sau nhé!";
             }
-            return "Dạ, AI đang bận xử lý, anh/chị thử lại sau vài giây nhé! 🙏";
+            return locale === "en"
+                ? "The AI is busy. Please try again in a few seconds."
+                : "Dạ, AI đang bận xử lý, anh/chị thử lại sau vài giây nhé! 🙏";
         }
-        return "Dạ, hệ thống gặp sự cố tạm thời, anh/chị thử lại nhé!";
+        return locale === "en"
+            ? "The system encountered a temporary issue. Please try again."
+            : "Dạ, hệ thống gặp sự cố tạm thời, anh/chị thử lại nhé!";
     }
 }
 
@@ -338,11 +359,18 @@ export async function diChoVaRapThu(
 // ============================================================
 // MAIN EXPORT
 // ============================================================
-export async function xuLyTinNhan(tinNhanCuaKhach: string, lichSuChat: any[], keLinhKienHienTai: any) {
+export async function xuLyTinNhan(
+    tinNhanCuaKhach: string,
+    lichSuChat: any[],
+    keLinhKienHienTai: any,
+    locale: ChatLocale = "vi"
+) {
     // Kiểm tra API key trước
     if (!apiKey) {
         return {
-            tinNhanBot: "⚠️ Chatbot chưa được cấu hình API Key. Vui lòng liên hệ admin.",
+            tinNhanBot: locale === "en"
+                ? "The chatbot API key has not been configured. Please contact an administrator."
+                : "⚠️ Chatbot chưa được cấu hình API Key. Vui lòng liên hệ admin.",
             duLieuGoiY: [],
             hieuLenhUI: null,
             yeuCauBuildPC: false,
@@ -385,7 +413,7 @@ export async function xuLyTinNhan(tinNhanCuaKhach: string, lichSuChat: any[], ke
     }
 
     const tinNhanBot = await messWithUser(
-        tinNhanCuaKhach, lichSuChat, danhSachTrenKeMoi, doGoiYTuKho, thieuNganSach, chiHoiTuVan
+        tinNhanCuaKhach, lichSuChat, danhSachTrenKeMoi, doGoiYTuKho, thieuNganSach, chiHoiTuVan, locale
     );
 
     return {

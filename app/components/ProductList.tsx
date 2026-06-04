@@ -2,10 +2,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { ProductCard } from './ProductCard'
 import { useCart } from '@/app/providers/cart-provider'
 import { Skeleton } from '@/components/Skeleton'
+import { getLocalizedApiError } from '@/lib/localized-api-error'
 import type { Product } from './types'
 
 interface ProductListProps {
@@ -21,6 +22,7 @@ export function ProductList({ limit = 12, showPagination = false }: ProductListP
   const [totalPages, setTotalPages] = useState(1)
   const { addItem } = useCart()
   const t = useTranslations('productList')
+  const locale = useLocale()
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -33,7 +35,7 @@ export function ProductList({ limit = 12, showPagination = false }: ProductListP
           setProducts(data.data)
           setTotalPages(data.pagination.totalPages)
         } else {
-          setError(data.error || t('fetchError'))
+          setError(getLocalizedApiError(data, locale, t('fetchError')))
         }
       } catch (err) {
         setError(t('networkError'))
@@ -44,7 +46,7 @@ export function ProductList({ limit = 12, showPagination = false }: ProductListP
     }
 
     fetchProducts()
-  }, [page, limit, t])
+  }, [page, limit, locale, t])
 
   const handleAddToCart = async (product: Product) => {
     await addItem(product.id, 1)

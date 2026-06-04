@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from 'react'
 import { Scale, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import type { Product } from '@/app/components/types'
 
 const STORAGE_KEY = 'pc-builder-compare-products'
@@ -38,6 +39,7 @@ function categoryKey(product: CompareProduct) {
 }
 
 export function CompareProvider({ children }: { children: ReactNode }) {
+  const t = useTranslations('comparePage')
   const [products, setProducts] = useState<CompareProduct[]>([])
   const [loaded, setLoaded] = useState(false)
 
@@ -87,20 +89,20 @@ export function CompareProvider({ children }: { children: ReactNode }) {
 
     if (products.some((item) => item.id === product.id)) {
       setProducts((current) => current.filter((item) => item.id !== product.id))
-      return { ok: true, message: 'Da xoa khoi so sanh' }
+      return { ok: true, message: t('removed') }
     }
 
     if (products.length > 0 && categoryKey(products[0]) !== categoryKey(nextProduct)) {
-      return { ok: false, message: 'Chi co the so sanh san pham cung danh muc' }
+      return { ok: false, message: t('sameCategoryOnly') }
     }
 
     if (products.length >= MAX_COMPARE_ITEMS) {
-      return { ok: false, message: 'Chi so sanh toi da 3 san pham' }
+      return { ok: false, message: t('maxItems', { count: MAX_COMPARE_ITEMS }) }
     }
 
     setProducts((current) => [...current, nextProduct])
-    return { ok: true, message: 'Da them vao so sanh' }
-  }, [products])
+    return { ok: true, message: t('added') }
+  }, [products, t])
 
   const value = useMemo(
     () => ({ products, toggleProduct, removeProduct, clear, isSelected }),
@@ -126,6 +128,7 @@ export function useCompare() {
 
 function CompareBar() {
   const { products, removeProduct, clear } = useCompare()
+  const t = useTranslations('comparePage')
 
   if (products.length === 0) return null
 
@@ -137,7 +140,7 @@ function CompareBar() {
             <Scale className="h-5 w-5" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-mono uppercase tracking-widest text-muted">Dang so sanh {products.length}/3</p>
+            <p className="text-xs font-mono uppercase tracking-widest text-muted">{t('barCount', { count: products.length, max: MAX_COMPARE_ITEMS })}</p>
             <div className="mt-1 flex flex-wrap gap-2">
               {products.map((product) => (
                 <span key={product.id} className="inline-flex max-w-[16rem] items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-200">
@@ -146,7 +149,7 @@ function CompareBar() {
                     type="button"
                     onClick={() => removeProduct(product.id)}
                     className="text-slate-500 transition hover:text-rose-300"
-                    aria-label="Xoa khoi so sanh"
+                    aria-label={t('remove')}
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -162,13 +165,13 @@ function CompareBar() {
             onClick={clear}
             className="rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:bg-white/5 hover:text-white"
           >
-            Xoa tat ca
+            {t('clear')}
           </button>
           <Link
             href="/compare"
             className="rounded-xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110"
           >
-            Mo bang so sanh
+            {t('open')}
           </Link>
         </div>
       </div>

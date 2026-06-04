@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Percent, Copy, CheckCircle2, Tag, Clock, Sparkles } from 'lucide-react'
+import { useLocale, useTranslations } from 'next-intl'
+import type { AppLocale } from '@/i18n/config'
+import { formatCurrency, toIntlLocale } from '@/lib/format'
 
 interface Promotion {
   id: string
@@ -27,6 +30,8 @@ interface ProductPromotion {
 }
 
 export default function PromotionsPage() {
+  const t = useTranslations('promotionsPage')
+  const locale = useLocale() as AppLocale
   const [promotions, setPromotions] = useState<Promotion[]>([])
   const [productPromotions, setProductPromotions] = useState<ProductPromotion[]>([])
   const [loading, setLoading] = useState(true)
@@ -60,10 +65,8 @@ export default function PromotionsPage() {
     return promo.isActive && now >= new Date(promo.ngayBatDau) && now <= new Date(promo.ngayKetThuc)
   }
 
-  const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('vi-VN')
-
-  const formatPrice = (value: number) =>
-    value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 })
+  const formatPromotionDate = (dateString: string) =>
+    new Intl.DateTimeFormat(toIntlLocale(locale), { dateStyle: 'medium' }).format(new Date(dateString))
 
   const handleCopy = (code: string) => {
     navigator.clipboard.writeText(code)
@@ -76,7 +79,7 @@ export default function PromotionsPage() {
       <div className="flex min-h-screen items-center justify-center bg-[#030304] text-white">
         <div className="text-center">
           <div className="animate-pulse h-16 w-16 rounded-2xl bg-[#0f1117] border border-[#1e2535] mx-auto mb-4" />
-          <p className="text-slate-400">Đang tải khuyến mãi...</p>
+          <p className="text-slate-400">{t('loading')}</p>
         </div>
       </div>
     )
@@ -95,8 +98,8 @@ export default function PromotionsPage() {
               <Sparkles className="h-5 w-5 text-[#FFD600]" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold">Khuyến mãi</h1>
-              <p className="text-slate-400 text-sm">Mã giảm giá và ưu đãi đặc biệt dành cho bạn</p>
+              <h1 className="text-3xl font-bold">{t('title')}</h1>
+              <p className="text-slate-400 text-sm">{t('description')}</p>
             </div>
           </div>
         </div>
@@ -108,7 +111,7 @@ export default function PromotionsPage() {
           <section>
             <h2 className="text-xl font-semibold mb-5 flex items-center gap-2">
               <Tag className="h-5 w-5 text-[#FFD600]" />
-              Mã khuyến mãi
+              {t('codesTitle')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {activePromotions.map((promo) => (
@@ -118,7 +121,7 @@ export default function PromotionsPage() {
                 >
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div>
-                      <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Mã khuyến mãi</p>
+                      <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">{t('code')}</p>
                       <p className="font-mono text-xl font-bold tracking-wider text-[#FFD600]">
                         {promo.maKhuyenMai}
                       </p>
@@ -132,7 +135,7 @@ export default function PromotionsPage() {
 
                   <div className="flex items-center gap-2 text-xs text-slate-500 mb-4">
                     <Clock className="w-3.5 h-3.5" />
-                    <span>{formatDate(promo.ngayBatDau)} - {formatDate(promo.ngayKetThuc)}</span>
+                    <span>{formatPromotionDate(promo.ngayBatDau)} - {formatPromotionDate(promo.ngayKetThuc)}</span>
                   </div>
 
                   <button
@@ -140,9 +143,9 @@ export default function PromotionsPage() {
                     className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#F7931A] py-2.5 text-sm font-medium text-white transition hover:bg-[#ff9f2d]"
                   >
                     {copiedCode === promo.maKhuyenMai ? (
-                      <><CheckCircle2 className="w-4 h-4" /> Đã sao chép!</>
+                      <><CheckCircle2 className="w-4 h-4" /> {t('copied')}</>
                     ) : (
-                      <><Copy className="w-4 h-4" /> Sao chép mã</>
+                      <><Copy className="w-4 h-4" /> {t('copy')}</>
                     )}
                   </button>
                 </div>
@@ -156,7 +159,7 @@ export default function PromotionsPage() {
           <section>
             <h2 className="text-xl font-semibold mb-5 flex items-center gap-2">
               <Percent className="w-5 h-5 text-rose-400" />
-              Sản phẩm đang giảm giá
+              {t('productsTitle')}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {activeProductPromotions.map((promo) => (
@@ -169,7 +172,7 @@ export default function PromotionsPage() {
                   </div>
 
                   <div className="bg-[#141a26] h-44 flex items-center justify-center">
-                    <span className="text-slate-600 text-sm">Sản phẩm</span>
+                    <span className="text-slate-600 text-sm">{t('product')}</span>
                   </div>
 
                   <div className="p-4 space-y-3">
@@ -178,20 +181,20 @@ export default function PromotionsPage() {
                     </h3>
 
                     <div>
-                      <p className="text-xs text-slate-500 line-through">{formatPrice(promo.gia)}</p>
-                      <p className="text-lg font-bold text-rose-400">{formatPrice(Math.round(promo.giaSauGiam))}</p>
+                      <p className="text-xs text-slate-500 line-through">{formatCurrency(promo.gia, locale)}</p>
+                      <p className="text-lg font-bold text-rose-400">{formatCurrency(Math.round(promo.giaSauGiam), locale)}</p>
                     </div>
 
                     <div className="flex items-center gap-1.5 text-[10px] text-slate-500">
                       <Clock className="w-3 h-3" />
-                      Đến {formatDate(promo.ngayKetThuc)}
+                      {t('until', { date: formatPromotionDate(promo.ngayKetThuc) })}
                     </div>
 
                     <Link
                       href="/products"
                       className="block w-full rounded-xl border border-white/10 py-2 text-center text-sm text-slate-300 transition hover:border-[#F7931A]/45 hover:text-white"
                     >
-                      Xem chi tiết
+                      {t('details')}
                     </Link>
                   </div>
                 </div>
@@ -206,10 +209,10 @@ export default function PromotionsPage() {
             <div className="w-20 h-20 rounded-2xl bg-[#0f1117] border border-[#1e2535] mx-auto mb-5 flex items-center justify-center">
               <Percent className="w-8 h-8 text-slate-600" />
             </div>
-            <h3 className="text-2xl font-semibold mb-2">Chưa có khuyến mãi</h3>
-            <p className="text-slate-400 mb-6">Hiện tại chưa có chương trình khuyến mãi nào đang hoạt động.</p>
+            <h3 className="text-2xl font-semibold mb-2">{t('emptyTitle')}</h3>
+            <p className="text-slate-400 mb-6">{t('emptyDescription')}</p>
             <Link href="/products" className="inline-flex rounded-xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-6 py-3 font-semibold text-white transition hover:brightness-110">
-              Khám phá sản phẩm
+              {t('explore')}
             </Link>
           </div>
         )}

@@ -1,8 +1,12 @@
-export default function TestPage() {
+import { getTranslator } from '@/i18n/server'
+
+export default async function TestPage() {
+  const t = await getTranslator('testPage')
+
   return (
     <div className="p-8">
-      <h1>Test Page</h1>
-      <p>This is a test page to check if server components work.</p>
+      <h1>{t('title')}</h1>
+      <p>{t('description')}</p>
     </div>
   )
 }

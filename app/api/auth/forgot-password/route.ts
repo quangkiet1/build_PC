@@ -2,6 +2,7 @@ import { randomInt } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendOtpEmail } from '@/lib/mailer'
+import { DEFAULT_LOCALE, isValidLocale, LOCALE_COOKIE_NAME } from '@/i18n/config'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const IS_DEV = process.env.NODE_ENV !== 'production'
@@ -14,6 +15,8 @@ function generateOtp() {
 
 export async function POST(request: NextRequest) {
   try {
+    const cookieLocale = request.cookies.get(LOCALE_COOKIE_NAME)?.value
+    const locale = isValidLocale(cookieLocale) ? cookieLocale : DEFAULT_LOCALE
     const body = await request.json().catch(() => null)
     if (!body || typeof body.email !== 'string') {
       return NextResponse.json({ error: 'Email không hợp lệ' }, { status: 400 })
@@ -71,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     let emailError = ''
     try {
-      await sendOtpEmail(email, otp, user.hoTen)
+      await sendOtpEmail(email, otp, locale, user.hoTen)
       return NextResponse.json({
         message: 'Mã OTP đã được gửi đến email của bạn.',
       })

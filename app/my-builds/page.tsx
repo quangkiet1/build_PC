@@ -6,6 +6,10 @@ import { Trash2, Eye, Copy, AlertCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 import { motion } from 'framer-motion'
+import { useLocale, useTranslations } from 'next-intl'
+import type { AppLocale } from '@/i18n/config'
+import { formatCurrency, formatDate } from '@/lib/format'
+import { getLocalizedApiError } from '@/lib/localized-api-error'
 
 interface BuildItem {
   id: string
@@ -30,6 +34,8 @@ interface Build {
 }
 
 export default function MyBuildsPage() {
+  const t = useTranslations('myBuilds')
+  const locale = useLocale() as AppLocale
   const router = useRouter()
   const [builds, setBuilds] = useState<Build[]>([])
   const [loading, setLoading] = useState(true)
@@ -52,25 +58,25 @@ export default function MyBuildsPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || 'Lỗi khi tải danh sách')
+        setError(getLocalizedApiError(data, locale, t('loadError')))
         return
       }
 
       setBuilds(data.builds)
     } catch (err) {
-      setError('Lỗi khi kết nối đến server')
+      setError(t('networkError'))
       console.error(err)
     } finally {
       setLoading(false)
     }
-  }, [filter])
+  }, [filter, locale, t])
 
   useEffect(() => {
     fetchBuilds()
   }, [fetchBuilds])
 
   const handleDelete = async (buildId: string, buildName: string) => {
-    if (!window.confirm(`Xác nhận xóa cấu hình "${buildName}"?`)) {
+    if (!window.confirm(t('deleteConfirm', { name: buildName }))) {
       return
     }
 
@@ -80,14 +86,14 @@ export default function MyBuildsPage() {
       })
 
       if (!res.ok) {
-        toast.error('Lỗi khi xóa cấu hình')
+        toast.error(t('deleteError'))
         return
       }
 
       setBuilds((prev) => prev.filter((b) => b.id !== buildId))
-      toast.success('Đã xóa cấu hình')
+      toast.success(t('deleteSuccess'))
     } catch (err) {
-      toast.error('Lỗi khi xóa cấu hình')
+      toast.error(t('deleteError'))
       console.error(err)
     }
   }
@@ -95,23 +101,6 @@ export default function MyBuildsPage() {
   const handleLoadBuild = (buildId: string) => {
     // Load build để chỉnh sửa
     router.push(`/builder?loadId=${buildId}`)
-  }
-
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('vi-VN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(price)
   }
 
   return (
@@ -122,8 +111,8 @@ export default function MyBuildsPage() {
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">Cấu Hình Của Tôi</h1>
-          <p className="text-slate-400">Quản lý các cấu hình PC đã lưu của bạn</p>
+          <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">{t('title')}</h1>
+          <p className="text-slate-400">{t('description')}</p>
         </div>
 
         {/* Filters */}
@@ -138,9 +127,7 @@ export default function MyBuildsPage() {
                   : 'bg-white/5 text-slate-300 border-white/10 hover:bg-white/10'
               }`}
             >
-              {f === 'all' && 'Tất cả'}
-              {f === 'completed' && 'Hoàn thành'}
-              {f === 'incomplete' && 'Chưa hoàn thành'}
+              {t(`filters.${f}`)}
             </button>
           ))}
         </div>
@@ -164,13 +151,13 @@ export default function MyBuildsPage() {
         {!loading && builds.length === 0 && (
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-20 bg-[linear-gradient(180deg,rgba(20,25,40,0.6),rgba(10,15,25,0.8))] backdrop-blur-xl border border-white/10 rounded-[24px] shadow-xl">
             <AlertCircle className="mx-auto mb-6 h-16 w-16 text-[#F7931A]/55" />
-            <h3 className="text-2xl font-bold text-white mb-2">Không có cấu hình nào</h3>
-            <p className="text-slate-400 mb-8 max-w-md mx-auto">Bạn chưa lưu cấu hình PC nào. Hãy trải nghiệm ngay công cụ xây dựng PC để tạo ra bộ máy mơ ước của bạn.</p>
+            <h3 className="text-2xl font-bold text-white mb-2">{t('emptyTitle')}</h3>
+            <p className="text-slate-400 mb-8 max-w-md mx-auto">{t('emptyDescription')}</p>
             <Link
               href="/builder"
               className="inline-block rounded-2xl bg-gradient-to-r from-[#EA580C] to-[#F7931A] px-8 py-3 font-semibold text-white shadow-[0_0_20px_rgba(247,147,26,0.28)] transition hover:brightness-110"
             >
-              Tạo Cấu Hình Mới
+              {t('create')}
             </Link>
           </motion.div>
         )}
@@ -199,14 +186,14 @@ export default function MyBuildsPage() {
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1 pr-2">
                       <h3 className="text-lg font-semibold text-white truncate">{build.tenCauHinh}</h3>
-                      <p className="text-sm text-slate-400 mt-1">{build.itemCount} linh kiện</p>
+                      <p className="text-sm text-slate-400 mt-1">{t('componentCount', { count: build.itemCount })}</p>
                     </div>
                     <div className="flex gap-1 shrink-0">
                       {build.isCompleted && (
-                        <span className="px-2 py-1 text-xs bg-green-500/20 text-green-300 rounded">Hoàn thành</span>
+                        <span className="px-2 py-1 text-xs bg-green-500/20 text-green-300 rounded">{t('completed')}</span>
                       )}
                       {build.isPublic && (
-                        <span className="rounded bg-[#F7931A]/15 px-2 py-1 text-xs text-[#FFD600]">Public</span>
+                        <span className="rounded bg-[#F7931A]/15 px-2 py-1 text-xs text-[#FFD600]">{t('public')}</span>
                       )}
                     </div>
                   </div>
@@ -216,19 +203,19 @@ export default function MyBuildsPage() {
                 <div className="p-5 space-y-4 flex-1">
                   {/* Price */}
                   <div className="bg-black/20 rounded-[12px] p-3 border border-white/5">
-                    <p className="text-xs uppercase tracking-wider text-slate-500 mb-1">Tổng giá</p>
-                    <p className="text-2xl font-bold text-[#FFD600]">{formatPrice(build.tongGia)}</p>
+                    <p className="text-xs uppercase tracking-wider text-slate-500 mb-1">{t('total')}</p>
+                    <p className="text-2xl font-bold text-[#FFD600]">{formatCurrency(build.tongGia, locale)}</p>
                   </div>
 
                   {/* Date */}
                   <div>
-                    <p className="text-xs text-slate-500 mb-1">Ngày tạo</p>
-                    <p className="text-sm font-medium text-slate-300">{formatDate(build.ngayTao)}</p>
+                    <p className="text-xs text-slate-500 mb-1">{t('created')}</p>
+                    <p className="text-sm font-medium text-slate-300">{formatDate(build.ngayTao, locale)}</p>
                   </div>
 
                   {/* Items Preview */}
                   <div>
-                    <p className="text-xs text-slate-500 mb-2">Linh kiện ({build.itemCount})</p>
+                    <p className="text-xs text-slate-500 mb-2">{t('components', { count: build.itemCount })}</p>
                     <div className="space-y-1.5 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
                       {build.items.map((item) => (
                         <div key={item.id} className="text-xs text-slate-400 bg-white/5 px-3 py-2 rounded-[8px] border border-white/5 flex justify-between items-center">
@@ -247,7 +234,7 @@ export default function MyBuildsPage() {
                     className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#F7931A]/30 bg-[#F7931A]/10 px-3 py-2.5 text-sm font-medium text-[#FFD600] transition hover:bg-[#F7931A]/20"
                   >
                     <Copy className="w-4 h-4" />
-                    Load
+                    {t('load')}
                   </button>
                   <Link
                     href={`/api/build/${build.id}`}
@@ -255,14 +242,14 @@ export default function MyBuildsPage() {
                     className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 rounded-[12px] transition text-sm font-medium"
                   >
                     <Eye className="w-4 h-4" />
-                    Xem
+                    {t('view')}
                   </Link>
                   <button
                     onClick={() => handleDelete(build.id, build.tenCauHinh)}
                     className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-[12px] transition text-sm font-medium"
                   >
                     <Trash2 className="w-4 h-4" />
-                    Xóa
+                    {t('delete')}
                   </button>
                 </div>
               </motion.div>
