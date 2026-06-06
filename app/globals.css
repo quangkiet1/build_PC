@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@theme inline {
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-body);
+  --font-mono: var(--font-body);
+}
+
 @layer base {
   :root {
     --background: 240 10% 1.6%; /* #030304 */
@@ -34,9 +40,10 @@
     
     --bitcoin-orange: 33 93% 54%;
     --digital-gold: 50 100% 50%;
-    --font-sans: "Segoe UI", Arial, Helvetica, sans-serif;
-    --font-heading: "Segoe UI", Arial, Helvetica, sans-serif;
-    --font-mono: "Cascadia Code", "Consolas", "Courier New", monospace;
+    --font-body: var(--font-lato), "Lato", "Arial", "Helvetica", sans-serif;
+    --font-display: var(--font-body);
+    --font-heading: var(--font-body);
+    --font-code: var(--font-body);
   }
 
   .dark {
@@ -68,25 +75,41 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    font-feature-settings: "rlig" 1, "calt" 1;
-    font-family: var(--font-sans), sans-serif;
+    font-family: var(--font-body);
+    font-feature-settings: "tnum" 1, "rlig" 1, "calt" 1;
+    font-optical-sizing: auto;
+    font-variant-numeric: tabular-nums;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    text-wrap: balance;
   }
 }
 
 .font-heading {
-  font-family: var(--font-heading), sans-serif;
+  font-family: var(--font-heading);
 }
 
 .font-body {
-  font-family: var(--font-sans), sans-serif;
+  font-family: var(--font-body);
+}
+
+.font-display {
+  font-family: var(--font-display);
 }
 
 .font-tech {
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-code);
 }
 
 .font-mono {
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-code);
 }
 
 /* Helper Utilities */

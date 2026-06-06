@@ -15,6 +15,7 @@ import { AuthProvider } from '@/context/AuthContext'
 import { getI18nServer, getTranslator } from '@/i18n/server'
 import { ChatbotWrapper } from '@/components/ChatbotWrapper'
 import { ContentWrapper } from '@/components/ContentWrapper'
+import { latoFont } from './fonts'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator('metadata')
@@ -33,7 +34,10 @@ export default async function RootLayout({
   const { locale, messages } = await getI18nServer()
 
   return (
-    <html lang={locale} className="dark h-full antialiased overflow-x-hidden">
+    <html
+      lang={locale}
+      className={`${latoFont.variable} dark h-full antialiased overflow-x-hidden`}
+    >
       <body className="flex min-h-full flex-col bg-[#030304] font-sans text-white selection:bg-[#F7931A] selection:text-white overflow-x-hidden">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ToastProvider>

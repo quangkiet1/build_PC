@@ -63,7 +63,7 @@ export function HomeScrollFeatures() {
       <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 relative items-start">
         {/* Left pinned section */}
         <div ref={leftRef} className="lg:w-1/2 lg:sticky lg:top-32 space-y-6">
-          <h2 className="text-4xl md:text-6xl font-bold leading-tight" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+          <h2 className="text-4xl md:text-6xl font-display font-bold leading-tight">
             <span className="bg-gradient-to-r from-[#F7931A] to-[#FFD600] bg-clip-text text-transparent">
               Build PC
             </span>
